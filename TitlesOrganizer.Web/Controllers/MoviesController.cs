@@ -116,7 +116,7 @@ namespace TitlesOrganizer.Web.Controllers
 
         private IEnumerable<BaseItem> GetListOfMovies()
         {
-            return _movies.Select(movie => new BaseItem() { Id = movie.Id, Title = movie.Title });
+            return _movies.ConvertAll(movie => movie as BaseItem);
         }
 
         private Movie? GetMovie(int id)

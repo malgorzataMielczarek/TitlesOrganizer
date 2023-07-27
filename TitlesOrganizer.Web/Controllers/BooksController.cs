@@ -114,7 +114,7 @@ namespace TitlesOrganizer.Web.Controllers
 
         private IEnumerable<BaseItem> GetListOfBooks()
         {
-            return _books.Select(book => new BaseItem { Id = book.Id, Title = book.Title });
+            return _books.ConvertAll(book => book as BaseItem);
         }
 
         private Book? GetBook(int id)
