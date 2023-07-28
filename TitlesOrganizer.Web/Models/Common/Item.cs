@@ -9,12 +9,14 @@ namespace TitlesOrganizer.Web.Models.Common
         public string? OriginalTitle { get; set; }
 
         public string? Description { get; set; }
+
         public int? Year { get; set; }
-        public List<string> Categories { get; set; }
+
+        public List<string> Genres { get; set; }
 
         public Item()
         {
-            Categories = new List<string>();
+            Genres = new List<string>();
         }
     }
 }

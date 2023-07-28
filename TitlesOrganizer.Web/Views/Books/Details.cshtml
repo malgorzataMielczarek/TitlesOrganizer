@@ -20,11 +20,11 @@
             @authors
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Categories)
+            @Html.DisplayNameFor(model => model.Genres)
         </dt>
         <dd class="col-sm-10">
             @{
-                string categories = string.Join("/", Model.Categories);
+                string categories = string.Join("/", Model.Genres);
             }
             @categories
         </dd>
