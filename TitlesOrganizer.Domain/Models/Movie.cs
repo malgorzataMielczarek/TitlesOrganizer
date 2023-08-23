@@ -8,10 +8,11 @@
         public string? Description { get; set; }
         public int? Year { get; set; }
         public int? SeriesId { get; set; }
-        public Series? Series { get; set; }
+        public int? NumberInSeries { get; set; }
 
-        public virtual ICollection<MovieGenre>? MovieGenres { get; set; }
-        public virtual ICollection<MovieDirector>? MovieDirectors { get; set; }
-        public virtual ICollection<MovieCountry>? MovieCountries { get; set; }
+        public virtual ICollection<VideoGenre> Genres { get; set; } = new List<VideoGenre>();
+        public virtual ICollection<Director> Directors { get; set; } = new List<Director>();
+        public virtual ICollection<Country> Countries { get; set; } = new List<Country>();
+        public MovieSeries? Series { get; set; }
     }
 }

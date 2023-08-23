@@ -3,16 +3,18 @@
     public class Book
     {
         public int Id { get; set; }
-        public string? Title { get; set; }
+        public required string Title { get; set; }
         public string? OriginalTitle { get; set; }
-        public string? OriginalLanguage { get; set; }
+        public string? OriginalLanguageCode { get; set; }
         public int? Year { get; set; }
         public string? Edition { get; set; }
         public string? Description { get; set; }
-        public int? SeriesId { get; set; }
-        public Series? Series { get; set; }
+        public int? BookSeriesId { get; set; }
+        public int? NumberInSeries { get; set; }
 
-        public virtual ICollection<BookAuthor>? BookAuthors { get; set; }
-        public virtual ICollection<BookGenre>? BookGenres { get; set; }
+        public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
+        public virtual ICollection<LiteratureGenre> Genres { get; set; } = new List<LiteratureGenre>();
+        public Language? OriginalLanguage { get; set; }
+        public BookSeries? BookSeries { get; set; }
     }
 }

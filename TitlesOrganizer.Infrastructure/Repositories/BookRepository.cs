@@ -37,7 +37,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Book> GetBooksByAuthor(int authorId)
         {
-            return _context.Books.Where(b => b.BookAuthors.Select(ba => ba.AuthorId).Contains(authorId));
+            return _context.Books.Where(b => b.Authors.Any(a => a.Id == authorId));
         }
     }
 }

@@ -2,14 +2,13 @@
 
 namespace TitlesOrganizer.Domain.Models
 {
-    public class Country
+    public class Language
     {
         [Key]
         public required string Code { get; set; }
 
         public required string Name { get; set; }
 
-        public virtual ICollection<Movie>? Movies { get; set; }
-        public virtual ICollection<Episode>? Episodes { get; set; }
+        public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }
