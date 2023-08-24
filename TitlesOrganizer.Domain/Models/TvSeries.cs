@@ -9,5 +9,7 @@
 
         public ICollection<Season> Seasons { get; set; } = new List<Season>();
         public ICollection<VideoGenre> Genres { get; set; } = new List<VideoGenre>();
+        public virtual ICollection<Director> Directors { get; set; } = new List<Director>();
+        public virtual ICollection<Country> Countries { get; set; } = new List<Country>();
     }
 }

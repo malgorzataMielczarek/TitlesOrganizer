@@ -7,6 +7,6 @@
         public string? LastName { get; set; }
 
         public virtual ICollection<Movie>? Movies { get; set; }
-        public virtual ICollection<Episode>? Episodes { get; set; }
+        public virtual ICollection<TvSeries>? TvSeries { get; set; }
     }
 }

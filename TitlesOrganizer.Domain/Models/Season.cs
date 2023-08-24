@@ -11,6 +11,6 @@
         public int SeriesId { get; set; }
 
         public virtual ICollection<Episode> Episodes { get; set; } = new List<Episode>();
-        public MovieSeries Series { get; set; } = null!;
+        public TvSeries Series { get; set; } = null!;
     }
 }
