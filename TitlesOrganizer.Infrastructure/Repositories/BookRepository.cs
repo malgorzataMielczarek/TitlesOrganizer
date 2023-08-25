@@ -20,6 +20,39 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return book.Id;
         }
 
+        public int AddNewAuthor(int bookId, Author author)
+        {
+            _context.Authors.Add(author);
+            var book = GetBookById(bookId);
+            if (book != null)
+            {
+                book.Authors.Add(author);
+            }
+
+            _context.SaveChanges();
+
+            return author.Id;
+        }
+
+        public int AddExistingAuthor(int bookId, int authorId)
+        {
+            var book = GetBookById(bookId);
+            if (book != null)
+            {
+                var author = GetAuthorById(authorId);
+                if (author != null)
+                {
+                    book.Authors.Add(author);
+
+                    _context.SaveChanges();
+
+                    return author.Id;
+                }
+            }
+
+            return -1;
+        }
+
         public void DeleteBook(int bookId)
         {
             Book? book = _context.Books.Find(bookId);
@@ -32,12 +65,17 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public Book? GetBookById(int bookId)
         {
-            return _context.Books.FirstOrDefault(book => book.Id == bookId);
+            return _context.Books.Find(bookId);
         }
 
         public IQueryable<Book> GetBooksByAuthor(int authorId)
         {
             return _context.Books.Where(b => b.Authors.Any(a => a.Id == authorId));
+        }
+
+        public Author? GetAuthorById(int authorId)
+        {
+            return _context.Authors.Find(authorId);
         }
     }
 }
