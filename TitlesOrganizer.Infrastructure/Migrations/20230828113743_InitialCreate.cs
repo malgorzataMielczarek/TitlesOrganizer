@@ -56,8 +56,8 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,8 +70,9 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,8 +83,8 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 name: "Countries",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Code = table.Column<string>(type: "char(3)", nullable: false),
+                    Name = table.Column<string>(type: "varchar(25)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,8 +97,8 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,8 +109,8 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 name: "Languages",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Code = table.Column<string>(type: "char(3)", nullable: false),
+                    Name = table.Column<string>(type: "varchar(25)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -122,7 +123,7 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,8 +136,9 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -149,8 +151,9 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     ExpectedLength = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -164,7 +167,7 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -283,12 +286,12 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginalTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OriginalLanguageCode = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    OriginalLanguageCode = table.Column<string>(type: "char(3)", nullable: true),
                     Year = table.Column<int>(type: "int", nullable: true),
-                    Edition = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Edition = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     BookSeriesId = table.Column<int>(type: "int", nullable: true),
                     NumberInSeries = table.Column<int>(type: "int", nullable: true)
                 },
@@ -313,9 +316,9 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginalTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     Year = table.Column<int>(type: "int", nullable: true),
                     SeriesId = table.Column<int>(type: "int", nullable: true),
                     NumberInSeries = table.Column<int>(type: "int", nullable: true)
@@ -334,7 +337,7 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 name: "CountryTvSeries",
                 columns: table => new
                 {
-                    CountriesCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CountriesCode = table.Column<string>(type: "char(3)", nullable: false),
                     TvSeriesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -385,10 +388,10 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     No = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OriginalTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     ExpectedLength = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     SeriesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -478,7 +481,7 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                 name: "CountryMovie",
                 columns: table => new
                 {
-                    CountriesCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CountriesCode = table.Column<string>(type: "char(3)", nullable: false),
                     MovieId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -554,9 +557,9 @@ namespace TitlesOrganizer.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     No = table.Column<int>(type: "int", nullable: false),
                     AbsoluteNo = table.Column<int>(type: "int", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OriginalTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    OriginalTitle = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     SeasonId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
