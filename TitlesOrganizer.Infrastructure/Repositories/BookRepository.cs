@@ -14,8 +14,11 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public int AddBook(Book book)
         {
-            _context.Books.Add(book);
-            _context.SaveChanges();
+            if (!_context.Books.Contains(book))
+            {
+                _context.Books.Add(book);
+                _context.SaveChanges();
+            }
 
             return book.Id;
         }
@@ -28,9 +31,12 @@ namespace TitlesOrganizer.Infrastructure.Repositories
                 var author = GetAuthorById(authorId);
                 if (author != null)
                 {
-                    book.Authors.Add(author);
+                    if (!book.Authors.Contains(author))
+                    {
+                        book.Authors.Add(author);
 
-                    _context.SaveChanges();
+                        _context.SaveChanges();
+                    }
 
                     return author.Id;
                 }
@@ -47,9 +53,12 @@ namespace TitlesOrganizer.Infrastructure.Repositories
                 var genre = GetGenreById(genreId);
                 if (genre != null)
                 {
-                    book.Genres.Add(genre);
+                    if (!book.Genres.Contains(genre))
+                    {
+                        book.Genres.Add(genre);
 
-                    _context.SaveChanges();
+                        _context.SaveChanges();
+                    }
 
                     return genre.Id;
                 }
@@ -60,21 +69,30 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public int AddNewAuthor(int bookId, Author author)
         {
-            _context.Authors.Add(author);
             var book = GetBookById(bookId);
+            if (!_context.Authors.Contains(author))
+            {
+                _context.Authors.Add(author);
+            }
+
             if (book != null)
             {
                 book.Authors.Add(author);
+                _context.SaveChanges();
+
+                return author.Id;
             }
 
-            _context.SaveChanges();
-
-            return author.Id;
+            return -1;
         }
 
         public int AddNewGenre(int bookId, LiteratureGenre genre)
         {
-            _context.LiteratureGenres.Add(genre);
+            if (!_context.LiteratureGenres.Contains(genre))
+            {
+                _context.LiteratureGenres.Add(genre);
+            }
+
             var book = GetBookById(bookId);
             if (book != null)
             {
@@ -84,6 +102,17 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             _context.SaveChanges();
 
             return genre.Id;
+        }
+
+        public int AddSeries(BookSeries series)
+        {
+            if (!_context.BookSeries.Contains(series))
+            {
+                _context.BookSeries.Add(series);
+                _context.SaveChanges();
+            }
+
+            return series.Id;
         }
 
         public void DeleteBook(int bookId)
@@ -108,13 +137,27 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             }
         }
 
-        public IQueryable<Author> GetAllAuthors() => _context.Authors.AsQueryable();
+        public void DeleteSeries(int seriesId)
+        {
+            var series = GetSeriesById(seriesId);
+            if (series != null)
+            {
+                _context.BookSeries.Remove(series);
+                _context.SaveChanges();
+            }
+        }
 
-        public IQueryable<Book> GetAllBooks() => _context.Books.AsQueryable();
+        public IQueryable<Author> GetAllAuthors() => _context.Authors;
 
-        public IQueryable<LiteratureGenre> GetAllGenres() => _context.LiteratureGenres.AsQueryable();
+        public IQueryable<Book> GetAllBooks() => _context.Books;
+
+        public IQueryable<LiteratureGenre> GetAllGenres() => _context.LiteratureGenres;
+
+        public IQueryable<BookSeries> GetAllSeries() => _context.BookSeries;
 
         public Author? GetAuthorById(int authorId) => _context.Authors.Find(authorId);
+
+        public IQueryable<Author>? GetAuthorsOfSeries(int seriesId) => _context.BookSeries.Find(seriesId)?.Books.SelectMany(b => b.Authors).AsQueryable();
 
         public Book? GetBookById(int bookId) => _context.Books.Find(bookId);
 
@@ -122,9 +165,20 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Book>? GetBooksByGenre(int genreId) => GetGenreById(genreId)?.Books?.AsQueryable();
 
+        public IQueryable<Book>? GetBooksInSeries(int seriesId) => _context.BookSeries.Find(seriesId)?.Books.AsQueryable();
+
         public LiteratureGenre? GetGenreById(int genreId) => _context.LiteratureGenres.Find(genreId);
 
-        public void RemoveAuthorFromBook(int bookId, int authorId)
+        public IQueryable<LiteratureGenre>? GetGenresOfSeries(int seriesId) => _context.BookSeries.Find(seriesId)?.Books.SelectMany(b => b.Genres).AsQueryable();
+
+        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => _context.Authors.Find(authorId)?.Books.SkipWhile(b => b.BookSeries == null).Select
+            (b => b.BookSeries!).AsQueryable();
+
+        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => _context.LiteratureGenres.Find(genreId)?.Books?.SkipWhile(b => b.BookSeries == null).Select(b => b.BookSeries!).AsQueryable();
+
+        public BookSeries? GetSeriesById(int seriesId) => _context.BookSeries.Find(seriesId);
+
+        public void RemoveAuthor(int bookId, int authorId)
         {
             var book = GetBookById(bookId);
             if (book != null)
@@ -144,7 +198,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             }
         }
 
-        public void RemoveGenreFromBook(int bookId, int genreId)
+        public void RemoveGenre(int bookId, int genreId)
         {
             var book = GetBookById(bookId);
             if (book != null)
@@ -190,6 +244,17 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             if (_context.SaveChanges() == 1)
             {
                 return genre.Id;
+            }
+
+            return -1;
+        }
+
+        public int UpdateSeries(BookSeries series)
+        {
+            _context.BookSeries.Update(series);
+            if (_context.SaveChanges() == 1)
+            {
+                return series.Id;
             }
 
             return -1;
