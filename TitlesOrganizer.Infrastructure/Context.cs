@@ -49,8 +49,8 @@ namespace TitlesOrganizer.Infrastructure
             modelBuilder.Entity<BookSeries>().Property(bs => bs.OriginalTitle).HasMaxLength(450);
             modelBuilder.Entity<BookSeries>().Property(bs => bs.Description).HasMaxLength(4000);
 
-            modelBuilder.Entity<Country>().Property(c => c.Code).HasColumnType("char(3)");
-            modelBuilder.Entity<Country>().Property(c => c.Name).HasColumnType("varchar(25)");
+            modelBuilder.Entity<Country>().Property(c => c.Code).HasColumnType("char(3)").HasMaxLength(3);
+            modelBuilder.Entity<Country>().Property(c => c.Name).HasColumnType("varchar(25)").HasMaxLength(25);
 
             modelBuilder.Entity<Director>().Property(d => d.Name).HasMaxLength(50);
             modelBuilder.Entity<Director>().Property(d => d.LastName).HasMaxLength(50);
@@ -59,8 +59,8 @@ namespace TitlesOrganizer.Infrastructure
             modelBuilder.Entity<Episode>().Property(e => e.OriginalTitle).HasMaxLength(450);
             modelBuilder.Entity<Episode>().Property(e => e.Description).HasMaxLength(4000);
 
-            modelBuilder.Entity<Language>().Property(lang => lang.Code).HasColumnType("char(3)");
-            modelBuilder.Entity<Language>().Property(lang => lang.Name).HasColumnType("varchar(25)");
+            modelBuilder.Entity<Language>().Property(lang => lang.Code).HasColumnType("char(3)").HasMaxLength(3);
+            modelBuilder.Entity<Language>().Property(lang => lang.Name).HasColumnType("varchar(25)").HasMaxLength(25);
 
             modelBuilder.Entity<LiteratureGenre>().Property(lg => lg.Name).HasMaxLength(50);
 
