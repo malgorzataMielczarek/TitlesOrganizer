@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TitlesOrganizer.Application.Interfaces;
+using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Web.Models;
 using TitlesOrganizer.Web.Models.Common;
 
@@ -9,6 +10,8 @@ namespace TitlesOrganizer.Web.Controllers
     {
         private readonly ILogger<BooksController> _logger;
         private readonly List<Book> _books;
+        private readonly IBookService bookService;
+        private readonly ILanguageService languageService;
 
         public BooksController(ILogger<BooksController> logger)
         {
@@ -16,20 +19,18 @@ namespace TitlesOrganizer.Web.Controllers
             _books = CreateListOfBooks();
         }
 
-        // GET: BooksController
         public ActionResult Index()
         {
-            var list = GetListOfBooks();
-
+            ListBookForListVM list = bookService.GetAllBooksForList();
+            //var list = GetListOfBooks();
             return View(list);
         }
 
-        // GET: BooksController/Details/5
         [HttpGet("/Books/Details/{id?}")]
         public ActionResult Details(int id)
         {
-            Book? book = GetBook(id);
-
+            //Book? book = GetBook(id);
+            BookDetailsVM book = bookService.GetBookDetails(id);
             if (book == null)
             {
                 return BadRequest($"No book with id {id}");
@@ -38,26 +39,41 @@ namespace TitlesOrganizer.Web.Controllers
             return View(book);
         }
 
-        //// GET: BooksController/Create
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
+        [HttpGet]
+        public ActionResult AddBook()
+        {
+            var languages = languageService.GetAllLanguagesForList();
+            return View(languages);
+        }
 
-        //// POST: BooksController/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create(IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddBook(NewBookVM book)
+        {
+            int id = bookService.AddBook(book);
+            return View(id);
+        }
+
+        [HttpGet]
+        public ActionResult AddAuthorsForBook(int bookId)
+        {
+            ListAuthorForBook authors = bookService.GetAllAuthorsForList();
+            return View(authors);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddAuthorsForBook(NewBookVM collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
 
         //// GET: BooksController/Edit/5
         //public ActionResult Edit(int id)
