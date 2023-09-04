@@ -26,6 +26,18 @@ namespace TitlesOrganizer.Web.Controllers
             return View(list);
         }
 
+        public ActionResult Authors()
+        {
+            ListAuthorForListVM authors = bookService.GetAllAuthorsForList();
+            return View(authors);
+        }
+
+        public ActionResult Genres()
+        {
+            List<GenreVM> genres = bookService.GetAllGenres();
+            return View(genres);
+        }
+
         [HttpGet("/Books/Details/{id?}")]
         public ActionResult Details(int id)
         {
@@ -39,6 +51,20 @@ namespace TitlesOrganizer.Web.Controllers
             return View(book);
         }
 
+        [HttpGet("/Books/Authors/Details/{id}")]
+        public ActionResult AuthorDetails(int id)
+        {
+            AuthorDetailsVM author = bookService.GetAuthorDetails(id);
+            return View(author);
+        }
+
+        [HttpGet("/Books/Genres/Details/{id}")]
+        public ActionResult GenreDetails(int id)
+        {
+            GenreDetailsVM genre = bookService.GetGenreDetails(id);
+            return View(genre);
+        }
+
         [HttpGet]
         public ActionResult AddBook()
         {
@@ -48,74 +74,110 @@ namespace TitlesOrganizer.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddBook(NewBookVM book)
+        public ActionResult AddBook(BookVM book)
         {
             int id = bookService.AddBook(book);
             return View(id);
         }
 
         [HttpGet]
-        public ActionResult AddAuthorsForBook(int bookId)
+        public ActionResult AddAuthorsForBook(int id)
         {
-            ListAuthorForBook authors = bookService.GetAllAuthorsForList();
+            ListAuthorForBookVM authors = bookService.GetAllAuthorsForBookList(id);
             return View(authors);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddAuthorsForBook(NewBookVM collection)
+        public ActionResult AddAuthorsForBook(int bookId, List<int> authorsIds)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            bookService.AddAuthorsForBook(bookId, authorsIds);
+            return View(bookId);
         }
 
-        //// GET: BooksController/Edit/5
-        //public ActionResult Edit(int id)
-        //{
-        //    return View();
-        //}
+        [HttpGet]
+        public ActionResult AddNewAuthor()
+        {
+            return View();
+        }
 
-        //// POST: BooksController/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddNewAuthor(NewAuthorVM author)
+        {
+            int id = bookService.AddAuthor(author);
+            return View();
+        }
 
-        //// GET: BooksController/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
+        [HttpGet]
+        public ActionResult AddGenresForBook(int id)
+        {
+            ListGenreForBookVM genres = bookService.GetAllGenresForBookList(id);
+            return View(genres);
+        }
 
-        //// POST: BooksController/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddGenresForBook(int bookId, List<int> genresIds)
+        {
+            bookService.AddGenresForBook(bookId, genresIds);
+            return View(bookId);
+        }
+
+        [HttpGet]
+        public ActionResult AddNewGenre()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddNewGenre(GenreVM genre)
+        {
+            int id = bookService.AddGenre(genre);
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddNewGenre(int bookId, GenreVM genre)
+        {
+            int id = bookService.AddGenre(bookId, genre);
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult EditBook(int id)
+        {
+            return View(id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditBook(BookVM book)
+        {
+            bookService.UpdateBook(book);
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult DeleteBook(int id)
+        {
+            return View(id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteBook(int id, bool confirmation)
+        {
+            if (confirmation)
+            {
+                bookService.DeleteBook(id);
+            }
+
+            return View();
+        }
+
         private List<Book> CreateListOfBooks()
         {
             var books = new List<Book>();

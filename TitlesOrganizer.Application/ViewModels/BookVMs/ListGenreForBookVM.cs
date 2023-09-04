@@ -1,8 +1,8 @@
 ﻿namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class ListAuthorForBook
+    public class ListGenreForBookVM
     {
-        public List<AuthorForBook> Authors { get; set; } = new List<AuthorForBook>();
+        public List<GenreForBookVM> Genres { get; set; } = new List<GenreForBookVM>();
         public int Count { get; set; }
         public int BookId { get; set; }
     }

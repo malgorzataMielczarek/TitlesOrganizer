@@ -1,6 +1,6 @@
 ﻿namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class NewBookVM
+    public class BookVM
     {
         public int Id { get; set; }
         public required string Title { get; set; }

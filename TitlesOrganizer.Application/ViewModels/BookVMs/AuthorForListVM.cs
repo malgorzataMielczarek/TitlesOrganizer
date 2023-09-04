@@ -1,6 +1,6 @@
 ﻿namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class AuthorForList
+    public class AuthorForListVM
     {
         public int Id { get; set; }
         public string FullName { get; set; } = null!;
