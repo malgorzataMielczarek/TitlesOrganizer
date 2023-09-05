@@ -1,5 +1,6 @@
-﻿using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.Mapping;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
@@ -9,11 +10,11 @@ namespace TitlesOrganizer.Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
-        private readonly BookMappings _bookMappings = new BookMappings();
+        private readonly IMapper _mapper;
 
         public int AddAuthor(NewAuthorVM author)
         {
-            Author authorModel = BookMappings.FromNewAuthorVM(author);
+            Author authorModel = _mapper.Map<Author>(author);
 
             int id = _bookRepository.AddNewAuthor(author.BookId, authorModel);
             return id;
@@ -38,7 +39,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddBook(BookVM book)
         {
-            Book bookModel = BookMappings.FromBookVM(null, book);
+            Book bookModel = _mapper.Map<Book>(book);
 
             var id = _bookRepository.AddBook(bookModel);
 
@@ -52,7 +53,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddGenre(int bookId, GenreVM genre)
         {
-            LiteratureGenre genreModel = BookMappings.FromGenreVM(genre);
+            LiteratureGenre genreModel = _mapper.Map<LiteratureGenre>(genre);
 
             int id = _bookRepository.AddNewGenre(bookId, genreModel);
 
@@ -85,7 +86,7 @@ namespace TitlesOrganizer.Application.Services
         {
             var authors = _bookRepository.GetAllAuthors()
                 .OrderBy(a => a.LastName)
-                .Select(a => BookMappings.ToAuthorForBookVM(bookId, a))
+                .ProjectTo<AuthorForBookVM>(_mapper.ConfigurationProvider, new { bookId = bookId })
                 .ToList();
 
             ListAuthorForBookVM list = new ListAuthorForBookVM()
@@ -102,7 +103,7 @@ namespace TitlesOrganizer.Application.Services
         {
             List<AuthorForListVM> authors = _bookRepository.GetAllAuthors()
                 .OrderBy(a => a.LastName)
-                .Select(BookMappings.ToAuthorForListVM)
+                .ProjectTo<AuthorForListVM>(_mapper.ConfigurationProvider)
                 .ToList();
 
             var list = new ListAuthorForListVM()
@@ -117,8 +118,8 @@ namespace TitlesOrganizer.Application.Services
         public ListBookForListVM GetAllBooksForList()
         {
             List<BookForListVM> books = _bookRepository.GetAllBooks()
-                .Select(BookMappings.ToBookForListVM)
-                .OrderBy(bVM => bVM.Title)
+                .OrderBy(b => b.Title)
+                .ProjectTo<BookForListVM>(_mapper.ConfigurationProvider)
                 .ToList();
 
             var list = new ListBookForListVM()
@@ -134,7 +135,7 @@ namespace TitlesOrganizer.Application.Services
         {
             var genres = _bookRepository.GetAllGenres()
                 .OrderBy(g => g.Name)
-                .Select(BookMappings.ToGenreVM)
+                .ProjectTo<GenreVM>(_mapper.ConfigurationProvider)
                 .ToList();
 
             return genres;
@@ -143,7 +144,7 @@ namespace TitlesOrganizer.Application.Services
         public ListGenreForBookVM GetAllGenresForBookList(int bookId)
         {
             var genres = _bookRepository.GetAllGenres()
-                .Select(g => BookMappings.ToGenreForBookVM(bookId, g))
+                .ProjectTo<GenreForBookVM>(_mapper.ConfigurationProvider, new { bookId })
                 .OrderBy(gVM => gVM.IsForBook)
                 .ToList();
 
@@ -160,28 +161,36 @@ namespace TitlesOrganizer.Application.Services
         public AuthorDetailsVM GetAuthorDetails(int id)
         {
             var author = _bookRepository.GetAuthorById(id);
-            AuthorDetailsVM authorVM = author != null ? BookMappings.ToAuthorDetailsVM(author) : new AuthorDetailsVM();
+            var authorVM = author != null ? _mapper.Map<AuthorDetailsVM>(author) : new AuthorDetailsVM();
             return authorVM;
         }
 
         public BookDetailsVM GetBookDetails(int id)
         {
             Book? book = _bookRepository.GetBookById(id);
-            BookDetailsVM bookVM = book != null ? BookMappings.ToBookDetailsVM(book) : new BookDetailsVM();
+            BookDetailsVM bookVM = book != null ? _mapper.Map<BookDetailsVM>(book) : new BookDetailsVM();
             return bookVM;
         }
 
         public GenreDetailsVM GetGenreDetails(int id)
         {
             LiteratureGenre? genre = _bookRepository.GetGenreById(id);
-            GenreDetailsVM genreVM = genre != null ? BookMappings.ToGenreDetailsVM(genre) : new GenreDetailsVM();
+            GenreDetailsVM genreVM = genre != null ? _mapper.Map<GenreDetailsVM>(genre) : new GenreDetailsVM();
             return genreVM;
         }
 
         public void UpdateBook(BookVM bookVM)
         {
-            Book? book = _bookRepository.GetBookById(bookVM.Id);
-            book = BookMappings.FromBookVM(book, bookVM);
+            Book book = _mapper.Map<Book>(bookVM);
+            Book? oldBook = _bookRepository.GetBookById(bookVM.Id);
+            if (oldBook != null)
+            {
+                book.Authors = oldBook.Authors;
+                book.BookSeries = oldBook.BookSeries;
+                book.BookSeriesId = oldBook.BookSeriesId;
+                book.NumberInSeries = oldBook.NumberInSeries;
+                book.Genres = oldBook.Genres;
+            }
 
             int id = _bookRepository.UpdateBook(book);
         }
