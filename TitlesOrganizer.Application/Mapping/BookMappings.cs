@@ -6,25 +6,20 @@ namespace TitlesOrganizer.Application.Mapping
 {
     public class BookMappings
     {
-        public static Func<Book, BookForListVM> ToBookForListVM = book => new BookForListVM()
+        public static Func<Book?, BookVM, Book> FromBookVM = (book, bookVM) => new Book()
         {
-            Id = book.Id,
-            Title = book.Title
-        };
-
-        public static Func<Author, AuthorForListVM> ToAuthorForListVM = author => new AuthorForListVM()
-        {
-            Id = author.Id,
-            FullName = author.Name + " " + author.LastName,
-            Books = string.Join(", ", author.Books.Select(b => b.Title).Order())
-        };
-
-        public static Func<int, Author, AuthorForBookVM> ToAuthorForBookVM = (bookId, author) => new AuthorForBookVM()
-        {
-            Id = author.Id,
-            FullName = author.Name + " " + author.LastName,
-            IsForBook = author.Books.Any(b => b.Id == bookId),
-            OtherBooks = string.Join(", ", author.Books.SkipWhile(b => b.Id == bookId).Select(b => b.Title).Order())
+            Id = bookVM.Id,
+            Title = bookVM.Title,
+            Authors = book?.Authors ?? new List<Author>(),
+            OriginalTitle = bookVM.OriginalTitle,
+            OriginalLanguageCode = bookVM.OriginalLanguageCode,
+            Year = bookVM.Year,
+            Edition = bookVM.Edition,
+            Description = bookVM.Description,
+            BookSeries = book?.BookSeries,
+            BookSeriesId = book?.BookSeriesId,
+            NumberInSeries = book?.NumberInSeries,
+            Genres = book?.Genres ?? new List<LiteratureGenre>()
         };
 
         public static Func<GenreVM, LiteratureGenre> FromGenreVM = genre => new LiteratureGenre()
@@ -40,39 +35,30 @@ namespace TitlesOrganizer.Application.Mapping
             LastName = author.LastName
         };
 
-        public static Func<LiteratureGenre, GenreVM> ToGenreVM = genre => new GenreVM()
-        {
-            Id = genre.Id,
-            Name = genre.Name
-        };
-
-        public static Func<int, LiteratureGenre, GenreForBookVM> ToGenreForBookVM = (bookId, genre) => new GenreForBookVM()
-        {
-            Id = genre.Id,
-            Name = genre.Name,
-            IsForBook = genre.Books?.Any(b => b.Id == bookId) ?? false
-        };
-
-        public static Func<LiteratureGenre, GenreDetailsVM> ToGenreDetailsVM = genre => new GenreDetailsVM()
-        {
-            Id = genre.Id,
-            Name = genre.Name,
-            Books = new ListBookForListVM()
-            {
-                Books = genre.Books?.OrderBy(b => b.Title).Select(ToBookForListVM).ToList() ?? new List<BookForListVM>(),
-                Count = genre.Books?.Count ?? 0
-            }
-        };
-
         public static Func<Author, AuthorDetailsVM> ToAuthorDetailsVM = author => new AuthorDetailsVM()
         {
             Id = author.Id,
             FullName = author.Name + " " + author.LastName,
             Books = new ListBookForListVM()
             {
-                Books = author.Books?.OrderBy(b => b.Title).Select(ToBookForListVM).ToList() ?? new List<BookForListVM>(),
+                Books = author.Books?.OrderBy(b => b.Title).Select(ToBookForListVM!).ToList() ?? new List<BookForListVM>(),
                 Count = author.Books?.Count ?? 0
             }
+        };
+
+        public static Func<int, Author, AuthorForBookVM> ToAuthorForBookVM = (bookId, author) => new AuthorForBookVM()
+        {
+            Id = author.Id,
+            FullName = author.Name + " " + author.LastName,
+            IsForBook = author.Books.Any(b => b.Id == bookId),
+            OtherBooks = string.Join(", ", author.Books.SkipWhile(b => b.Id == bookId).Select(b => b.Title).Order())
+        };
+
+        public static Func<Author, AuthorForListVM> ToAuthorForListVM = author => new AuthorForListVM()
+        {
+            Id = author.Id,
+            FullName = author.Name + " " + author.LastName,
+            Books = string.Join(", ", author.Books.Select(b => b.Title).Order())
         };
 
         public static Func<Book, BookDetailsVM> ToBookDetailsVM = book => new BookDetailsVM()
@@ -94,20 +80,34 @@ namespace TitlesOrganizer.Application.Mapping
                 .Select(g => new KeyValuePair<int, string>(g.Id, g.Name)))
         };
 
-        public static Func<Book?, BookVM, Book> FromBookVM = (book, bookVM) => new Book()
+        public static Func<Book, BookForListVM> ToBookForListVM = book => new BookForListVM()
         {
-            Id = bookVM.Id,
-            Title = bookVM.Title,
-            Authors = book?.Authors ?? new List<Author>(),
-            OriginalTitle = bookVM.OriginalTitle,
-            OriginalLanguageCode = bookVM.OriginalLanguageCode,
-            Year = bookVM.Year,
-            Edition = bookVM.Edition,
-            Description = bookVM.Description,
-            BookSeries = book?.BookSeries,
-            BookSeriesId = book?.BookSeriesId,
-            NumberInSeries = book?.NumberInSeries,
-            Genres = book?.Genres ?? new List<LiteratureGenre>()
+            Id = book.Id,
+            Title = book.Title
+        };
+
+        public static Func<LiteratureGenre, GenreDetailsVM> ToGenreDetailsVM = genre => new GenreDetailsVM()
+        {
+            Id = genre.Id,
+            Name = genre.Name,
+            Books = new ListBookForListVM()
+            {
+                Books = genre.Books?.OrderBy(b => b.Title).Select(ToBookForListVM).ToList() ?? new List<BookForListVM>(),
+                Count = genre.Books?.Count ?? 0
+            }
+        };
+
+        public static Func<int, LiteratureGenre, GenreForBookVM> ToGenreForBookVM = (bookId, genre) => new GenreForBookVM()
+        {
+            Id = genre.Id,
+            Name = genre.Name,
+            IsForBook = genre.Books?.Any(b => b.Id == bookId) ?? false
+        };
+
+        public static Func<LiteratureGenre, GenreVM> ToGenreVM = genre => new GenreVM()
+        {
+            Id = genre.Id,
+            Name = genre.Name
         };
 
         private static string InSeries(int? numberInSeries, BookSeries? bookSeries)

@@ -9,7 +9,6 @@ namespace TitlesOrganizer.Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
-        private readonly ILanguageRepository _languageRepository;
         private readonly BookMappings _bookMappings = new BookMappings();
 
         public int AddAuthor(NewAuthorVM author)
