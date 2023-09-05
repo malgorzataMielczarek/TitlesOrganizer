@@ -14,7 +14,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddAuthor(NewAuthorVM author)
         {
-            Author authorModel = _bookMappings.FromNewAuthorVM(author);
+            Author authorModel = BookMappings.FromNewAuthorVM(author);
 
             int id = _bookRepository.AddNewAuthor(author.BookId, authorModel);
             return id;
@@ -39,7 +39,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddBook(BookVM book)
         {
-            Book bookModel = _bookMappings.FromBookVM(book);
+            Book bookModel = BookMappings.FromBookVM(null, book);
 
             var id = _bookRepository.AddBook(bookModel);
 
@@ -53,7 +53,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddGenre(int bookId, GenreVM genre)
         {
-            LiteratureGenre genreModel = _bookMappings.FromGenreVM(genre);
+            LiteratureGenre genreModel = BookMappings.FromGenreVM(genre);
 
             int id = _bookRepository.AddNewGenre(bookId, genreModel);
 
@@ -86,7 +86,7 @@ namespace TitlesOrganizer.Application.Services
         {
             var authors = _bookRepository.GetAllAuthors()
                 .OrderBy(a => a.LastName)
-                .Select(a => _bookMappings.ToAuthorForBookVM(bookId, a))
+                .Select(a => BookMappings.ToAuthorForBookVM(bookId, a))
                 .ToList();
 
             ListAuthorForBookVM list = new ListAuthorForBookVM()
@@ -103,7 +103,7 @@ namespace TitlesOrganizer.Application.Services
         {
             List<AuthorForListVM> authors = _bookRepository.GetAllAuthors()
                 .OrderBy(a => a.LastName)
-                .Select(_bookMappings.ToAuthorForListVM)
+                .Select(BookMappings.ToAuthorForListVM)
                 .ToList();
 
             var list = new ListAuthorForListVM()
@@ -118,7 +118,7 @@ namespace TitlesOrganizer.Application.Services
         public ListBookForListVM GetAllBooksForList()
         {
             List<BookForListVM> books = _bookRepository.GetAllBooks()
-                .Select(_bookMappings.ToBookForListVM)
+                .Select(BookMappings.ToBookForListVM)
                 .OrderBy(bVM => bVM.Title)
                 .ToList();
 
@@ -135,7 +135,7 @@ namespace TitlesOrganizer.Application.Services
         {
             var genres = _bookRepository.GetAllGenres()
                 .OrderBy(g => g.Name)
-                .Select(_bookMappings.ToGenreVM)
+                .Select(BookMappings.ToGenreVM)
                 .ToList();
 
             return genres;
@@ -144,7 +144,7 @@ namespace TitlesOrganizer.Application.Services
         public ListGenreForBookVM GetAllGenresForBookList(int bookId)
         {
             var genres = _bookRepository.GetAllGenres()
-                .Select(g => _bookMappings.ToGenreForBookVM(bookId, g))
+                .Select(g => BookMappings.ToGenreForBookVM(bookId, g))
                 .OrderBy(gVM => gVM.IsForBook)
                 .ToList();
 
@@ -160,22 +160,31 @@ namespace TitlesOrganizer.Application.Services
 
         public AuthorDetailsVM GetAuthorDetails(int id)
         {
-            throw new NotImplementedException();
+            var author = _bookRepository.GetAuthorById(id);
+            AuthorDetailsVM authorVM = author != null ? BookMappings.ToAuthorDetailsVM(author) : new AuthorDetailsVM();
+            return authorVM;
         }
 
         public BookDetailsVM GetBookDetails(int id)
         {
-            throw new NotImplementedException();
+            Book? book = _bookRepository.GetBookById(id);
+            BookDetailsVM bookVM = book != null ? BookMappings.ToBookDetailsVM(book) : new BookDetailsVM();
+            return bookVM;
         }
 
         public GenreDetailsVM GetGenreDetails(int id)
         {
-            throw new NotImplementedException();
+            LiteratureGenre? genre = _bookRepository.GetGenreById(id);
+            GenreDetailsVM genreVM = genre != null ? BookMappings.ToGenreDetailsVM(genre) : new GenreDetailsVM();
+            return genreVM;
         }
 
-        public void UpdateBook(BookVM book)
+        public void UpdateBook(BookVM bookVM)
         {
-            throw new NotImplementedException();
+            Book? book = _bookRepository.GetBookById(bookVM.Id);
+            book = BookMappings.FromBookVM(book, bookVM);
+
+            int id = _bookRepository.UpdateBook(book);
         }
     }
 }
