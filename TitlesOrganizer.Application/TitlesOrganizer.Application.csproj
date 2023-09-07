@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Services\" />
+    <Folder Include="ViewModels\BookVMs\" />
+    <Folder Include="ViewModels\MovieVMs\" />
+    <Folder Include="ViewModels\TvSeriesVMs\" />
   </ItemGroup>
 
   <ItemGroup>
