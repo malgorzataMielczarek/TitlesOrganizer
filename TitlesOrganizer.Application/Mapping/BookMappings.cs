@@ -11,7 +11,6 @@ namespace TitlesOrganizer.Application.Mapping
         {
             // Parameters
             int bookId = default;
-            Book? book = null;
 
             // Author mappings From
             CreateMap<NewAuthorVM, Author>();
