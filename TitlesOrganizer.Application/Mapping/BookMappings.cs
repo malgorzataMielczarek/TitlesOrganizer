@@ -20,10 +20,10 @@ namespace TitlesOrganizer.Application.Mapping
             CreateProjection<Author, AuthorForBookVM>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Name + " " + src.LastName))
                 .ForMember(dest => dest.IsForBook, opt => opt.MapFrom(src => src.Books.Any(b => b.Id == bookId)))
-                .ForMember(dest => dest.OtherBooks, opt => opt.MapFrom(src => string.Join(", ", src.Books.SkipWhile(b => b.Id == bookId).Select(b => b.Title).Order())));
+                .ForMember(dest => dest.OtherBooks, opt => opt.MapFrom(src => string.Join(", ", src.Books.SkipWhile(b => b.Id == bookId).OrderBy(b => b.Title).Select(b => b.Title))));
             CreateProjection<Author, AuthorForListVM>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Name + " " + src.LastName))
-                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => string.Join(", ", src.Books.Select(b => b.Title).Order())));
+                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => string.Join(", ", src.Books.OrderBy(b => b.Title).Select(b => b.Title))));
 
             // Book mappings From
             CreateMap<BookVM, Book>();
