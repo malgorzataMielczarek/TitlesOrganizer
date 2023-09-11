@@ -11,7 +11,9 @@ namespace TitlesOrganizer.Application.Interfaces
         int AddBook(BookVM book);
 
         int AddGenre(GenreVM genre);
+
         int AddGenre(int bookId, GenreVM genre);
+
         void AddGenresForBook(int bookId, List<int> genresIds);
 
         void DeleteBook(int id);

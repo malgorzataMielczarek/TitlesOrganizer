@@ -1,40 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.ViewModels.BookVMs;
-using TitlesOrganizer.Web.Models;
-using TitlesOrganizer.Web.Models.Common;
-
-namespace TitlesOrganizer.Web.Controllers
+﻿namespace TitlesOrganizer.Web.Controllers
 {
     public class BooksController : Controller
     {
         private readonly ILogger<BooksController> _logger;
-        private readonly List<Book> _books;
-        private readonly IBookService bookService;
-        private readonly ILanguageService languageService;
+        private readonly IBookService _bookService;
+        private readonly ILanguageService _languageService;
 
-        public BooksController(ILogger<BooksController> logger)
+        private readonly List<Book> _books;
+
+        public BooksController(ILogger<BooksController> logger, IBookService bookService, ILanguageService languageService)
         {
             _logger = logger;
+            _bookService = bookService;
+            _languageService = languageService;
+
             _books = CreateListOfBooks();
         }
 
         public ActionResult Index()
         {
-            ListBookForListVM list = bookService.GetAllBooksForList();
+            ListBookForListVM list = _bookService.GetAllBooksForList();
             //var list = GetListOfBooks();
             return View(list);
         }
 
         public ActionResult Authors()
         {
-            ListAuthorForListVM authors = bookService.GetAllAuthorsForList();
+            ListAuthorForListVM authors = _bookService.GetAllAuthorsForList();
             return View(authors);
         }
 
         public ActionResult Genres()
         {
-            List<GenreVM> genres = bookService.GetAllGenres();
+            List<GenreVM> genres = _bookService.GetAllGenres();
             return View(genres);
         }
 
@@ -42,7 +40,7 @@ namespace TitlesOrganizer.Web.Controllers
         public ActionResult Details(int id)
         {
             //Book? book = GetBook(id);
-            BookDetailsVM book = bookService.GetBookDetails(id);
+            BookDetailsVM book = _bookService.GetBookDetails(id);
             if (book == null)
             {
                 return BadRequest($"No book with id {id}");
@@ -54,21 +52,21 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet("/Books/Authors/Details/{id}")]
         public ActionResult AuthorDetails(int id)
         {
-            AuthorDetailsVM author = bookService.GetAuthorDetails(id);
+            AuthorDetailsVM author = _bookService.GetAuthorDetails(id);
             return View(author);
         }
 
         [HttpGet("/Books/Genres/Details/{id}")]
         public ActionResult GenreDetails(int id)
         {
-            GenreDetailsVM genre = bookService.GetGenreDetails(id);
+            GenreDetailsVM genre = _bookService.GetGenreDetails(id);
             return View(genre);
         }
 
         [HttpGet]
         public ActionResult AddBook()
         {
-            var languages = languageService.GetAllLanguagesForList();
+            var languages = _languageService.GetAllLanguagesForList();
             return View(languages);
         }
 
@@ -76,14 +74,14 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddBook(BookVM book)
         {
-            int id = bookService.AddBook(book);
+            int id = _bookService.AddBook(book);
             return View(id);
         }
 
         [HttpGet]
         public ActionResult AddAuthorsForBook(int id)
         {
-            ListAuthorForBookVM authors = bookService.GetAllAuthorsForBookList(id);
+            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(id);
             return View(authors);
         }
 
@@ -91,7 +89,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddAuthorsForBook(int bookId, List<int> authorsIds)
         {
-            bookService.AddAuthorsForBook(bookId, authorsIds);
+            _bookService.AddAuthorsForBook(bookId, authorsIds);
             return View(bookId);
         }
 
@@ -105,14 +103,14 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddNewAuthor(NewAuthorVM author)
         {
-            int id = bookService.AddAuthor(author);
+            int id = _bookService.AddAuthor(author);
             return View();
         }
 
         [HttpGet]
         public ActionResult AddGenresForBook(int id)
         {
-            ListGenreForBookVM genres = bookService.GetAllGenresForBookList(id);
+            ListGenreForBookVM genres = _bookService.GetAllGenresForBookList(id);
             return View(genres);
         }
 
@@ -120,7 +118,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddGenresForBook(int bookId, List<int> genresIds)
         {
-            bookService.AddGenresForBook(bookId, genresIds);
+            _bookService.AddGenresForBook(bookId, genresIds);
             return View(bookId);
         }
 
@@ -134,7 +132,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddNewGenre(GenreVM genre)
         {
-            int id = bookService.AddGenre(genre);
+            int id = _bookService.AddGenre(genre);
             return View();
         }
 
@@ -142,7 +140,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddNewGenre(int bookId, GenreVM genre)
         {
-            int id = bookService.AddGenre(bookId, genre);
+            int id = _bookService.AddGenre(bookId, genre);
             return View();
         }
 
@@ -156,7 +154,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditBook(BookVM book)
         {
-            bookService.UpdateBook(book);
+            _bookService.UpdateBook(book);
             return View();
         }
 
@@ -172,7 +170,7 @@ namespace TitlesOrganizer.Web.Controllers
         {
             if (confirmation)
             {
-                bookService.DeleteBook(id);
+                _bookService.DeleteBook(id);
             }
 
             return View();

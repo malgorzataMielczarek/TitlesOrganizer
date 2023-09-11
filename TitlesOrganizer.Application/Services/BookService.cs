@@ -12,6 +12,12 @@ namespace TitlesOrganizer.Application.Services
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
 
+        public BookService(IBookRepository bookRepository, IMapper mapper)
+        {
+            _bookRepository = bookRepository;
+            _mapper = mapper;
+        }
+
         public int AddAuthor(NewAuthorVM author)
         {
             Author authorModel = _mapper.Map<Author>(author);

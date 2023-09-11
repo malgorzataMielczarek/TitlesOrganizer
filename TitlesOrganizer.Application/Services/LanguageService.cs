@@ -9,6 +9,11 @@ namespace TitlesOrganizer.Application.Services
     {
         private readonly ILanguageRepository _languageRepository;
 
+        public LanguageService(ILanguageRepository languageRepository)
+        {
+            _languageRepository = languageRepository;
+        }
+
         public ListLanguageForListVM GetAllLanguagesForList()
         {
             var languages = _languageRepository.GetAllLanguages().OrderBy(l => l.Name).Select(LanguageMappings.ToLanguageForListVM).ToList();
