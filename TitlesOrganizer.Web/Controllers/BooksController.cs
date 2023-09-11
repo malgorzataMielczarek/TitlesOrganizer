@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Web.Models;
 using TitlesOrganizer.Web.Models.Common;
 
@@ -8,11 +8,17 @@ namespace TitlesOrganizer.Web.Controllers
     public class BooksController : Controller
     {
         private readonly ILogger<BooksController> _logger;
+        private readonly IBookService _bookService;
+        private readonly ILanguageService _languageService;
+
         private readonly List<Book> _books;
 
-        public BooksController(ILogger<BooksController> logger)
+        public BooksController(ILogger<BooksController> logger, IBookService bookService, ILanguageService languageService)
         {
             _logger = logger;
+            _bookService = bookService;
+            _languageService = languageService;
+
             _books = CreateListOfBooks();
         }
 

@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Mvc;
+using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Web.Models;
 using TitlesOrganizer.Web.Models.Common;
 
@@ -9,11 +8,17 @@ namespace TitlesOrganizer.Web.Controllers
     public class MoviesController : Controller
     {
         private readonly ILogger<MoviesController> _logger;
+        private readonly IMovieService _movieService;
+        private readonly ICountryService _countryService;
+
         private readonly List<Movie> _movies;
 
-        public MoviesController(ILogger<MoviesController> logger)
+        public MoviesController(ILogger<MoviesController> logger, IMovieService movieService, ICountryService countryService)
         {
             _logger = logger;
+            _movieService = movieService;
+            _countryService = countryService;
+
             _movies = CreateListOfMovies();
         }
 
