@@ -3,11 +3,11 @@ using TitlesOrganizer.Domain.Interfaces;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class MovieService : VideoService, IMovieService
+    public class MovieService : IMovieService
     {
         private readonly IMovieRepository _movieRepository;
 
-        public MovieService(IVideoRepository videoRepository, IMovieRepository movieRepository) : base(videoRepository)
+        public MovieService(IMovieRepository movieRepository)
         {
             _movieRepository = movieRepository;
         }

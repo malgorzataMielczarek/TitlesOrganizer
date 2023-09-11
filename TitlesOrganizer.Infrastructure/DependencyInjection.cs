@@ -12,8 +12,7 @@ namespace TitlesOrganizer.Infrastructure
                 .AddTransient<ICountryRepository, CountryRepository>()
                 .AddTransient<ILanguageRepository, LanguageRepository>()
                 .AddTransient<IMovieRepository, MovieRepository>()
-                .AddTransient<ITvSeriesRepository, TvSeriesRepository>()
-                .AddTransient<IVideoRepository, VideoRepository>();
+                .AddTransient<ITvSeriesRepository, TvSeriesRepository>();
 
             return services;
         }

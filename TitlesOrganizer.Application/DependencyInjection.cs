@@ -13,8 +13,7 @@ namespace TitlesOrganizer.Application
                 .AddTransient<ICountryService, CountryService>()
                 .AddTransient<ILanguageService, LanguageService>()
                 .AddTransient<IMovieService, MovieService>()
-                .AddTransient<ITvSeriesService, TvSeriesService>()
-                .AddTransient<IVideoService, VideoService>();
+                .AddTransient<ITvSeriesService, TvSeriesService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             return services;

@@ -3,11 +3,11 @@ using TitlesOrganizer.Domain.Interfaces;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class TvSeriesService : VideoService, ITvSeriesService
+    public class TvSeriesService : ITvSeriesService
     {
         private readonly ITvSeriesRepository _tvSeriesRepository;
 
-        public TvSeriesService(IVideoRepository videoRepository, ITvSeriesRepository tvSeriesRepository) : base(videoRepository)
+        public TvSeriesService(ITvSeriesRepository tvSeriesRepository)
         {
             _tvSeriesRepository = tvSeriesRepository;
         }

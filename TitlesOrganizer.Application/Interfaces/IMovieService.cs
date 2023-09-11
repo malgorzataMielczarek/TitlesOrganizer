@@ -1,5 +1,5 @@
 ﻿namespace TitlesOrganizer.Application.Interfaces
 {
-    public interface IMovieService : IVideoService
+    public interface IMovieService
     { }
 }
