@@ -1,4 +1,10 @@
-﻿namespace TitlesOrganizer.Web.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using TitlesOrganizer.Application.Interfaces;
+using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Web.Models;
+using TitlesOrganizer.Web.Models.Common;
+
+namespace TitlesOrganizer.Web.Controllers
 {
     public class BooksController : Controller
     {
