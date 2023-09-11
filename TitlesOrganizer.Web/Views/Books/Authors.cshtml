@@ -1,0 +1,47 @@
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForListVM
+
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<h1>Authors</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                No
+            </th>
+            <th>
+                Full Name
+            </th>
+            <th>
+                Books
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var (author, index) in Model.Authors.Select((value, index) => (value, index +1))) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => index)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => author.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => author.Books)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = author.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = author.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = author.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

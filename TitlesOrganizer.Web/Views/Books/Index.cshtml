@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TitlesOrganizer.Web.Models.Common.BaseItem>
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListBookForListVM
 
 @{
     ViewData["Title"] = "Books";
@@ -13,27 +13,27 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                No
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var (book, index) in Model.Books.Select((value, index) => (value, index + 1))) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Id)
+                @Html.DisplayFor(modelItem => index)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => book.Title)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Edit", "Edit", new { id = book.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = book.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = book.Id })
             </td>
         </tr>
 }

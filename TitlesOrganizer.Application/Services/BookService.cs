@@ -6,7 +6,7 @@ using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
-{
+{//TODO: include related data when puling data from database
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;

@@ -26,7 +26,6 @@ namespace TitlesOrganizer.Web.Controllers
         public ActionResult Index()
         {
             ListBookForListVM list = _bookService.GetAllBooksForList();
-            //var list = GetListOfBooks();
             return View(list);
         }
 
