@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using TitlesOrganizer.Application.Interfaces;
+using TitlesOrganizer.Application.Mapping;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
@@ -20,10 +20,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddAuthor(NewAuthorVM author)
         {
-            Author authorModel = _mapper.Map<Author>(author);
-
-            int id = _bookRepository.AddNewAuthor(author.BookId, authorModel);
-            return id;
+            return _bookRepository.AddNewAuthor(author.BookId, author.MapToBase(_mapper));
         }
 
         public void AddAuthorsForBook(int bookId, List<int> authorsIds)
@@ -45,11 +42,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddBook(BookVM book)
         {
-            Book bookModel = _mapper.Map<Book>(book);
-
-            var id = _bookRepository.AddBook(bookModel);
-
-            return id;
+            return _bookRepository.AddBook(book.MapToBase(_mapper));
         }
 
         public int AddGenre(GenreVM genre)
@@ -59,11 +52,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddGenre(int bookId, GenreVM genre)
         {
-            LiteratureGenre genreModel = _mapper.Map<LiteratureGenre>(genre);
-
-            int id = _bookRepository.AddNewGenre(bookId, genreModel);
-
-            return id;
+            return _bookRepository.AddNewGenre(bookId, genre.MapToBase(_mapper));
         }
 
         public void AddGenresForBook(int bookId, List<int> genresIds)
@@ -88,117 +77,26 @@ namespace TitlesOrganizer.Application.Services
             _bookRepository.DeleteBook(id);
         }
 
-        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId)
-        {
-            var authors = _bookRepository.GetAllAuthors()
-                .OrderBy(a => a.LastName)
-                .ProjectTo<AuthorForBookVM>(_mapper.ConfigurationProvider, new { bookId = bookId })
-                .ToList();
+        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId) => _bookRepository.GetAllAuthors().OrderBy(a => a.LastName).MapToList(bookId);
 
-            ListAuthorForBookVM list = new ListAuthorForBookVM()
-            {
-                Authors = authors,
-                Count = authors.Count,
-                BookId = bookId
-            };
+        public ListAuthorForListVM GetAllAuthorsForList() => _bookRepository.GetAllAuthors().OrderBy(a => a.LastName).MapToList();
 
-            return list;
-        }
+        public ListBookForListVM GetAllBooksForList() => _bookRepository.GetAllBooks().OrderBy(b => b.Title).MapToList(_mapper);
 
-        public ListAuthorForListVM GetAllAuthorsForList()
-        {
-            List<AuthorForListVM> authors = _bookRepository.GetAllAuthors()
-                .OrderBy(a => a.LastName)
-                .ProjectTo<AuthorForListVM>(_mapper.ConfigurationProvider)
-                .ToList();
+        public List<GenreVM> GetAllGenres() => _bookRepository.GetAllGenres().OrderBy(g => g.Name).Map().ToList();
 
-            var list = new ListAuthorForListVM()
-            {
-                Authors = authors,
-                Count = authors.Count
-            };
+        public ListGenreForBookVM GetAllGenresForBookList(int bookId) => _bookRepository.GetAllGenres().MapToList(bookId);
 
-            return list;
-        }
+        public AuthorDetailsVM GetAuthorDetails(int id) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper) ?? new AuthorDetailsVM();
 
-        public ListBookForListVM GetAllBooksForList()
-        {
-            List<BookForListVM> books = _bookRepository.GetAllBooks()
-                .OrderBy(b => b.Title)
-                .ProjectTo<BookForListVM>(_mapper.ConfigurationProvider)
-                .ToList();
+        public BookDetailsVM GetBookDetails(int id) => _bookRepository.GetBookById(id)?.MapToDetails() ?? new BookDetailsVM();
 
-            var list = new ListBookForListVM()
-            {
-                Books = books,
-                Count = books.Count
-            };
-
-            return list;
-        }
-
-        public List<GenreVM> GetAllGenres()
-        {
-            var genres = _bookRepository.GetAllGenres()
-                .OrderBy(g => g.Name)
-                .ProjectTo<GenreVM>(_mapper.ConfigurationProvider)
-                .ToList();
-
-            return genres;
-        }
-
-        public ListGenreForBookVM GetAllGenresForBookList(int bookId)
-        {
-            var genres = _bookRepository.GetAllGenres()
-                .ProjectTo<GenreForBookVM>(_mapper.ConfigurationProvider, new { bookId })
-                .OrderBy(gVM => gVM.IsForBook)
-                .ToList();
-
-            var list = new ListGenreForBookVM()
-            {
-                Genres = genres,
-                Count = genres.Count,
-                BookId = bookId
-            };
-
-            return list;
-        }
-
-        public AuthorDetailsVM GetAuthorDetails(int id)
-        {
-            var author = _bookRepository.GetAuthorById(id);
-            var authorVM = author != null ? _mapper.Map<AuthorDetailsVM>(author) : new AuthorDetailsVM();
-            return authorVM;
-        }
-
-        public BookDetailsVM GetBookDetails(int id)
-        {
-            Book? book = _bookRepository.GetBookById(id);
-            BookDetailsVM bookVM = book != null ? _mapper.Map<BookDetailsVM>(book) : new BookDetailsVM();
-            return bookVM;
-        }
-
-        public GenreDetailsVM GetGenreDetails(int id)
-        {
-            LiteratureGenre? genre = _bookRepository.GetGenreById(id);
-            GenreDetailsVM genreVM = genre != null ? _mapper.Map<GenreDetailsVM>(genre) : new GenreDetailsVM();
-            return genreVM;
-        }
+        public GenreDetailsVM GetGenreDetails(int id) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper) ?? new GenreDetailsVM();
 
         public void UpdateBook(BookVM bookVM)
         {
-            Book book = _mapper.Map<Book>(bookVM);
             Book? oldBook = _bookRepository.GetBookById(bookVM.Id);
-            if (oldBook != null)
-            {
-                book.Authors = oldBook.Authors;
-                book.BookSeries = oldBook.BookSeries;
-                book.BookSeriesId = oldBook.BookSeriesId;
-                book.NumberInSeries = oldBook.NumberInSeries;
-                book.Genres = oldBook.Genres;
-            }
-
-            int id = _bookRepository.UpdateBook(book);
+            int id = _bookRepository.UpdateBook(bookVM.MapToBase(_mapper, oldBook));
         }
     }
 }

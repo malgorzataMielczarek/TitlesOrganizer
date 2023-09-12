@@ -2,7 +2,7 @@
 {
     public class ListBookForListVM
     {
-        public List<BookForListVM> Books { get; set; }
+        public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
 
         public int Count { get; set; }
     }
