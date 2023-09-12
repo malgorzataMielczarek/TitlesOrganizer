@@ -77,15 +77,15 @@ namespace TitlesOrganizer.Application.Services
             _bookRepository.DeleteBook(id);
         }
 
-        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId) => _bookRepository.GetAllAuthors().OrderBy(a => a.LastName).MapToList(bookId);
+        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId) => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList(bookId);
 
-        public ListAuthorForListVM GetAllAuthorsForList() => _bookRepository.GetAllAuthors().OrderBy(a => a.LastName).MapToList();
+        public ListAuthorForListVM GetAllAuthorsForList() => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList();
 
         public ListBookForListVM GetAllBooksForList() => _bookRepository.GetAllBooks().OrderBy(b => b.Title).MapToList(_mapper);
 
         public List<GenreVM> GetAllGenres() => _bookRepository.GetAllGenres().OrderBy(g => g.Name).Map().ToList();
 
-        public ListGenreForBookVM GetAllGenresForBookList(int bookId) => _bookRepository.GetAllGenres().MapToList(bookId);
+        public ListGenreForBookVM GetAllGenresForBookList(int bookId) => _bookRepository.GetAllGenresWithBooks().MapToList(bookId);
 
         public AuthorDetailsVM GetAuthorDetails(int id) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper) ?? new AuthorDetailsVM();
 

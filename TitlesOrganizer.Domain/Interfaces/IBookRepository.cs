@@ -23,13 +23,13 @@ namespace TitlesOrganizer.Domain.Interfaces
         void DeleteSeries(int seriesId);
 
         IQueryable<Author> GetAllAuthors();
-
+        IQueryable<Author> GetAllAuthorsWithBooks();
         IQueryable<Book> GetAllBooks();
-
+        IQueryable<Book> GetAllBooksWithRelated();
         IQueryable<LiteratureGenre> GetAllGenres();
-
+        IQueryable<LiteratureGenre> GetAllGenresWithBooks();
         IQueryable<BookSeries> GetAllSeries();
-
+        IQueryable<BookSeries> GetAllSeriesWithBooks();
         Author? GetAuthorById(int authorId);
 
         IQueryable<Author>? GetAuthorsOfSeries(int seriesId);

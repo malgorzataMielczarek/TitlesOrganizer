@@ -1,4 +1,5 @@
-﻿using TitlesOrganizer.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Infrastructure.Repositories
@@ -149,34 +150,42 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Author> GetAllAuthors() => _context.Authors;
 
+        public IQueryable<Author> GetAllAuthorsWithBooks() => _context.Authors.Include(a => a.Books);
+
         public IQueryable<Book> GetAllBooks() => _context.Books;
+
+        public IQueryable<Book> GetAllBooksWithRelated() => _context.Books.Include(b => b.OriginalLanguage).Include(b => b.Genres).Include(b => b.Authors).Include(b => b.BookSeries);
 
         public IQueryable<LiteratureGenre> GetAllGenres() => _context.LiteratureGenres;
 
+        public IQueryable<LiteratureGenre> GetAllGenresWithBooks() => _context.LiteratureGenres.Include(g => g.Books);
+
         public IQueryable<BookSeries> GetAllSeries() => _context.BookSeries;
 
-        public Author? GetAuthorById(int authorId) => _context.Authors.Find(authorId);
+        public IQueryable<BookSeries> GetAllSeriesWithBooks() => _context.BookSeries.Include(s => s.Books);
 
-        public IQueryable<Author>? GetAuthorsOfSeries(int seriesId) => _context.BookSeries.Find(seriesId)?.Books.SelectMany(b => b.Authors).AsQueryable();
+        public Author? GetAuthorById(int authorId) => _context.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == authorId);
 
-        public Book? GetBookById(int bookId) => _context.Books.Find(bookId);
+        public IQueryable<Author>? GetAuthorsOfSeries(int seriesId) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == seriesId)?.Books.SelectMany(b => b.Authors).AsQueryable();
+
+        public Book? GetBookById(int bookId) => _context.Books.Include(b => b.OriginalLanguage).Include(b => b.Genres).Include(b => b.Authors).Include(b => b.BookSeries).FirstOrDefault(b => b.Id == bookId);
 
         public IQueryable<Book>? GetBooksByAuthor(int authorId) => GetAuthorById(authorId)?.Books.AsQueryable();
 
         public IQueryable<Book>? GetBooksByGenre(int genreId) => GetGenreById(genreId)?.Books?.AsQueryable();
 
-        public IQueryable<Book>? GetBooksInSeries(int seriesId) => _context.BookSeries.Find(seriesId)?.Books.AsQueryable();
+        public IQueryable<Book>? GetBooksInSeries(int seriesId) => _context.Books.Include(b => b.BookSeries).Where(b => b.BookSeriesId == seriesId);
 
-        public LiteratureGenre? GetGenreById(int genreId) => _context.LiteratureGenres.Find(genreId);
+        public LiteratureGenre? GetGenreById(int genreId) => _context.LiteratureGenres.Include(g => g.Books).FirstOrDefault(g => g.Id == genreId);
 
-        public IQueryable<LiteratureGenre>? GetGenresOfSeries(int seriesId) => _context.BookSeries.Find(seriesId)?.Books.SelectMany(b => b.Genres).AsQueryable();
+        public IQueryable<LiteratureGenre>? GetGenresOfSeries(int seriesId) => GetBooksInSeries(seriesId)?.SelectMany(b => b.Genres).AsQueryable();
 
-        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => _context.Authors.Find(authorId)?.Books.SkipWhile(b => b.BookSeries == null).Select
+        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => GetBooksByAuthor(authorId)?.SkipWhile(b => b.BookSeries == null).Select
             (b => b.BookSeries!).AsQueryable();
 
-        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => _context.LiteratureGenres.Find(genreId)?.Books?.SkipWhile(b => b.BookSeries == null).Select(b => b.BookSeries!).AsQueryable();
+        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => GetBooksByGenre(genreId)?.SkipWhile(b => b.BookSeries == null).Select(b => b.BookSeries!).AsQueryable();
 
-        public BookSeries? GetSeriesById(int seriesId) => _context.BookSeries.Find(seriesId);
+        public BookSeries? GetSeriesById(int seriesId) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == seriesId);
 
         public void RemoveAuthor(int bookId, int authorId)
         {
