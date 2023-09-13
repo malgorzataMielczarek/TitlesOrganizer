@@ -95,10 +95,11 @@ namespace TitlesOrganizer.Application.Mapping
                 OriginalLanguage = book.OriginalLanguage?.Name ?? string.Empty,
                 Authors = new Dictionary<int, string>(book.Authors.Select(a => new KeyValuePair<int, string>(a.Id, a.Name + " " + a.LastName))),
                 Genres = new Dictionary<int, string>(book.Genres.Select(g => new KeyValuePair<int, string>(g.Id, g.Name))),
-                Description = book.Description ?? string.Empty,
+                Description = book.Description?.Replace("\\r\\n", "\r\n").Replace("\\n\\r", "\n\r").Replace("\\n", "\n") ?? string.Empty,
                 Year = book.Year?.ToString() ?? string.Empty,
                 Edition = book.Edition ?? string.Empty,
                 SeriesId = book.BookSeriesId,
+                SeriesTitle = book.BookSeries?.Title,
                 InSeries = InSeries(book.NumberInSeries, book.BookSeries)
             };
         }
@@ -179,15 +180,11 @@ namespace TitlesOrganizer.Application.Mapping
                 if (bookSeries.Title != null)
                 {
                     result.Append(" in ");
-                    result.Append(bookSeries.Title);
-                    result.Append(" series");
                 }
             }
             else if (bookSeries.Title != null)
             {
                 result.Append("Part of ");
-                result.Append(bookSeries.Title);
-                result.Append(" series");
             }
 
             return result.ToString();

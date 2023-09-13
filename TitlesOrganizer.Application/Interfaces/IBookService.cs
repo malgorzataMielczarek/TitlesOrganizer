@@ -34,6 +34,8 @@ namespace TitlesOrganizer.Application.Interfaces
 
         GenreDetailsVM GetGenreDetails(int id);
 
+        GenreDetailsVM GetSeriesDetails(int id);
+
         void UpdateBook(BookVM book);
     }
 }

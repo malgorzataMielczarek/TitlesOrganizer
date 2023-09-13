@@ -3,49 +3,90 @@
 @{
     ViewData["Title"] = Model.Title;
 }
+<div class="container">
+    <div class="d-flex flex-column pb-1" style="width: fit-content;">
+        <div class="m-0 pb-0" style="width:fit-content;">
+            <h1 class="mb-0 align-bottom text-wrap" style="width:fit-content;">@Model.Title</h1>
+        </div>
+        <div class="pt-0 text-right align-top">
+            @if (!string.IsNullOrEmpty(Model.InSeries))
+            {
+                <span>@Model.InSeries <a asp-action="SeriesDetails" asp-route-id="@Model.SeriesId">@Model.SeriesTitle</a> series</span>
+            }
+        </div>
+    </div>
+    <div class="px-1">
+        <nav class="nav">
+                @foreach (var author in Model.Authors)
+                {
+                    <h3 class="px-0"><a asp-action="AuthorDetails" , asp-route-id="@author.Key" class="nav-link px-2">@author.Value</a></h3>
+                }
+        </nav>
+    </div>
+    <div class="accordion" id="accordionExample">
+        <div class="card px-0">
+            <div class="card-header" id="headingOne">
+                <h2 class="mb-0">
+                    <button class="btn btn-block text-left text-primary" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Book description
+                    </button>
+                </h2>
+            </div>
 
-<h1>@Model.Title</h1>
-@if (!string.IsNullOrEmpty(Model.InSeries))
-{
-    <div>@Model.InSeries @Html.ActionLink("go to series","", new { id = Model.SeriesId })</div>
-}
-<div>
-    @foreach (var author in Model.Authors)
-    {
-        @Html.ActionLink(author.Value, "AuthorDetails", new { id = author.Key })
-    }
-</div>
-<div>
-    <h6>@Model.Description</h6>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.OriginalTitle)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.OriginalTitle)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.OriginalLanguage)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.OriginalLanguage)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Year)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Year)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Edition)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Edition)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body">
+                    <p class="text-justify" style="white-space: pre-line;">@Model.Description</p>
+                </div>
+            </div>
+        </div>
+        <div class="card px-0">
+            <div class="card-header" id="headingTwo">
+                <h2 class="mb-0">
+                    <button class="btn btn-block text-left text-primary collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Book details
+                    </button>
+                </h2>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.OriginalTitle)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.OriginalTitle)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.OriginalLanguage)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.OriginalLanguage)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Year)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Year)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Edition)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Edition)
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="p-4">
+            @foreach (var genre in Model.Genres)
+            {
+                <a type="button" asp-action="GenreDetails" asp-route-id="@genre.Key" class="btn btn-outline-primary m-1">@genre.Value</a>
+            }
+    </div>
+    <div>
+        @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>

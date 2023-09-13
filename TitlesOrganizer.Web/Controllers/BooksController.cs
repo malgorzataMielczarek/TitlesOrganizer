@@ -68,6 +68,13 @@ namespace TitlesOrganizer.Web.Controllers
             return View(genre);
         }
 
+        [HttpGet("/Books/Series/Details/{id}")]
+        public ActionResult SeriesDetails(int id)
+        {
+            GenreDetailsVM genre = _bookService.GetSeriesDetails(id);
+            return View(genre);
+        }
+
         [HttpGet]
         public ActionResult AddBook()
         {

@@ -89,9 +89,23 @@ namespace TitlesOrganizer.Application.Services
 
         public AuthorDetailsVM GetAuthorDetails(int id) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper) ?? new AuthorDetailsVM();
 
-        public BookDetailsVM GetBookDetails(int id) => _bookRepository.GetBookById(id)?.MapToDetails() ?? new BookDetailsVM();
+        public BookDetailsVM GetBookDetails(int id)
+        {
+            var book = _bookRepository.GetBookById(id);
+            if (book?.BookSeries != null)
+            {
+                book.BookSeries = _bookRepository.GetSeriesById(book.BookSeries.Id);
+            }
+
+            return book?.MapToDetails() ?? new BookDetailsVM();
+        }
 
         public GenreDetailsVM GetGenreDetails(int id) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper) ?? new GenreDetailsVM();
+
+        public GenreDetailsVM GetSeriesDetails(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public void UpdateBook(BookVM bookVM)
         {

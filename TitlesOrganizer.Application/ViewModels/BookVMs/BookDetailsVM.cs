@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public string Title { get; set; } = null!;
         public string? InSeries { get; set; }
+        public string? SeriesTitle { get; set; }
         public int? SeriesId { get; set; }
         public Dictionary<int, string> Authors { get; set; } = new Dictionary<int, string>();
         public string Description { get; set; } = string.Empty;
