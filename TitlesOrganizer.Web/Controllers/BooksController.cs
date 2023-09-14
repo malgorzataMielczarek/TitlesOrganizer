@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Web.Models;
 using TitlesOrganizer.Web.Models.Common;
 
@@ -23,9 +24,22 @@ namespace TitlesOrganizer.Web.Controllers
             _books = CreateListOfBooks();
         }
 
+        [HttpGet]
         public ActionResult Index()
         {
-            ListBookForListVM list = _bookService.GetAllBooksForList();
+            ListBookForListVM list = _bookService.GetAllBooksForList(SortByEnum.Ascending, 2, 1, "");
+            return View(list);
+        }
+
+        [HttpPost]
+        public ActionResult Index(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        {
+            if (!pageNo.HasValue)
+            {
+                pageNo = 1;
+            }
+
+            ListBookForListVM list = _bookService.GetAllBooksForList(sortBy, pageSize, (int)pageNo, searchString);
             return View(list);
         }
 
@@ -57,14 +71,14 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet("/Books/Authors/Details/{id}")]
         public ActionResult AuthorDetails(int id)
         {
-            AuthorDetailsVM author = _bookService.GetAuthorDetails(id);
+            AuthorDetailsVM author = _bookService.GetAuthorDetails(id, SortByEnum.Ascending, 2, 1, "");
             return View(author);
         }
 
         [HttpGet("/Books/Genres/Details/{id}")]
         public ActionResult GenreDetails(int id)
         {
-            GenreDetailsVM genre = _bookService.GetGenreDetails(id);
+            GenreDetailsVM genre = _bookService.GetGenreDetails(id, SortByEnum.Ascending, 2, 1, "");
             return View(genre);
         }
 

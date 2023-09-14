@@ -9,33 +9,101 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                No
-            </th>
-            <th>
-                Title
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var (book, index) in Model.Books.Select((value, index) => (value, index + 1))) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => index)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => book.Title)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = book.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = book.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = book.Id })
-            </td>
-        </tr>
+<form asp-action="Index" asp-controller="Books" method="post">
+    <div class="row">
+        <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()"></select>
+            <select asp-for="PageSize">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+            </select>
+        <input type="text" asp-for="SearchString" name="searchString" id="searchString" />
+        <input type="submit" value="Search" />
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        No
+                    </th>
+                    <th>
+                        Title
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+        @foreach (var (book, index) in Model.Books.Select((value, index) => (value, index + 1))) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => index)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => book.Title)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = book.Id }) |
+                            @Html.ActionLink("Details", "Details", new { id = book.Id }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = book.Id })
+                    </td>
+                </tr>
+        }
+            </tbody>
+        </table>
+    </div>
+    <div>
+        @{
+            var pages = Math.Ceiling(Model.Count / (double)Model.PageSize);
+            int numbersNextTo = 2;
+        }
+        <nav aria-label="...">
+            <ul class="pagination justify-content-center">
+                @if (Model.PageNo > numbersNextTo + 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.PageNo - numbersNextTo - 1))" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+                @for (int i = numbersNextTo; i >= 1; i--)
+                {
+                    if (i < Model.PageNo)
+                    {
+                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.PageNo - i))">@(Model.PageNo - i)</a></li>
+                    }
+                }
+                @if (pages > 1)
+                {
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">@Model.PageNo</span>
+                    </li>
+                }
+                @for (int i = 1; i <= numbersNextTo && Model.PageNo + i <= pages; i++)
+                {
+                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.PageNo + i))">@(Model.PageNo + i)</a></li>
+                }
+                @if (Model.PageNo + numbersNextTo + 1 <= pages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.PageNo + numbersNextTo + 1))" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <input type="hidden" name="pageNo" id="pageNo"/>
+    </div>
+</form>
+@section Scripts {
+    <script type="text/javascript">
+        function PagerClick(index){
+            document.getElementById("pageNo").value = index;
+            document.forms[0].submit();
+        }
+    </script>
 }
-    </tbody>
-</table>

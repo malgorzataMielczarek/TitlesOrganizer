@@ -22,17 +22,17 @@ namespace TitlesOrganizer.Application.Interfaces
 
         ListAuthorForListVM GetAllAuthorsForList();
 
-        ListBookForListVM GetAllBooksForList();
+        ListBookForListVM GetAllBooksForList(ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         List<GenreVM> GetAllGenres();
 
         ListGenreForBookVM GetAllGenresForBookList(int bookId);
 
-        AuthorDetailsVM GetAuthorDetails(int id);
+        AuthorDetailsVM GetAuthorDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         BookDetailsVM GetBookDetails(int id);
 
-        GenreDetailsVM GetGenreDetails(int id);
+        GenreDetailsVM GetGenreDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         GenreDetailsVM GetSeriesDetails(int id);
 

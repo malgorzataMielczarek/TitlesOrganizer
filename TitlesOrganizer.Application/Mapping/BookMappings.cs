@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using System.Text;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Mapping
@@ -75,13 +76,13 @@ namespace TitlesOrganizer.Application.Mapping
             return mapper.Map<LiteratureGenre>(genreVM);
         }
 
-        public static AuthorDetailsVM MapToDetails(this Author author, IMapper mapper)
+        public static AuthorDetailsVM MapToDetails(this Author author, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
         {
             return new AuthorDetailsVM()
             {
                 Id = author.Id,
                 FullName = author.Name + " " + author.LastName,
-                Books = author.Books.AsQueryable().MapToList(mapper)
+                Books = author.Books.AsQueryable().MapToList(mapper, sortBy, pageSize, pageNo, searchString)
             };
         }
 
@@ -104,13 +105,13 @@ namespace TitlesOrganizer.Application.Mapping
             };
         }
 
-        public static GenreDetailsVM MapToDetails(this LiteratureGenre genre, IMapper mapper)
+        public static GenreDetailsVM MapToDetails(this LiteratureGenre genre, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
         {
             return new GenreDetailsVM()
             {
                 Id = genre.Id,
                 Name = genre.Name,
-                Books = genre.Books?.AsQueryable().MapToList(mapper) ?? new ListBookForListVM()
+                Books = genre.Books?.AsQueryable().MapToList(mapper, sortBy, pageSize, pageNo, searchString) ?? new ListBookForListVM()
             };
         }
 
@@ -137,13 +138,23 @@ namespace TitlesOrganizer.Application.Mapping
             };
         }
 
-        public static ListBookForListVM MapToList(this IQueryable<Book> books, IMapper mapper)
+        public static ListBookForListVM MapToList(this IQueryable<Book> books, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
         {
-            List<BookForListVM> booksForList = books.Map(mapper).ToList();
+            if (searchString is null)
+            {
+                searchString = string.Empty;
+            }
+
+            var filteredAndSortedBooks = books.Where(b => b.Title.Contains(searchString)).Sort(sortBy, b => b.Title);
+
             return new ListBookForListVM()
             {
-                Books = booksForList,
-                Count = booksForList.Count
+                Books = filteredAndSortedBooks.Skip(pageSize * (pageNo - 1)).Take(pageSize).Map(mapper).ToList(),
+                Count = filteredAndSortedBooks.Count(),
+                SortBy = sortBy,
+                PageSize = pageSize,
+                PageNo = pageNo,
+                SearchString = searchString
             };
         }
 

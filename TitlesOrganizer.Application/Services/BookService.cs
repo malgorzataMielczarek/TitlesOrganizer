@@ -81,13 +81,18 @@ namespace TitlesOrganizer.Application.Services
 
         public ListAuthorForListVM GetAllAuthorsForList() => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList();
 
-        public ListBookForListVM GetAllBooksForList() => _bookRepository.GetAllBooks().OrderBy(b => b.Title).MapToList(_mapper);
+        public ListBookForListVM GetAllBooksForList(ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            var books = _bookRepository.GetAllBooks();
+
+            return books.MapToList(_mapper, sortBy, pageSize, pageNo, searchString);
+        }
 
         public List<GenreVM> GetAllGenres() => _bookRepository.GetAllGenres().OrderBy(g => g.Name).Map().ToList();
 
         public ListGenreForBookVM GetAllGenresForBookList(int bookId) => _bookRepository.GetAllGenresWithBooks().MapToList(bookId);
 
-        public AuthorDetailsVM GetAuthorDetails(int id) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper) ?? new AuthorDetailsVM();
+        public AuthorDetailsVM GetAuthorDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new AuthorDetailsVM();
 
         public BookDetailsVM GetBookDetails(int id)
         {
@@ -100,7 +105,7 @@ namespace TitlesOrganizer.Application.Services
             return book?.MapToDetails() ?? new BookDetailsVM();
         }
 
-        public GenreDetailsVM GetGenreDetails(int id) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper) ?? new GenreDetailsVM();
+        public GenreDetailsVM GetGenreDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new GenreDetailsVM();
 
         public GenreDetailsVM GetSeriesDetails(int id)
         {
