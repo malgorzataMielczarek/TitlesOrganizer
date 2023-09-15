@@ -2,14 +2,13 @@
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class ListBookForListVM
+    public class ListBookForListVM : ListItems<BookForListVM>
     {
-        public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
-        public int Count { get; set; }
+        public ListBookForListVM()
+        { }
 
-        public SortByEnum SortBy { get; set; }
-        public int PageSize { get; set; }
-        public int PageNo { get; set; }
-        public string SearchString { get; set; } = string.Empty;
+        public ListBookForListVM(IQueryable<BookForListVM> list, int count, SortByEnum sortBy, int pageSize, int pageNo, string searchString) : base(list, count, sortBy, pageSize, pageNo, searchString)
+        {
+        }
     }
 }

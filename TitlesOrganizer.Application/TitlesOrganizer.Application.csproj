@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\BookVMs\" />
     <Folder Include="ViewModels\MovieVMs\" />
     <Folder Include="ViewModels\TvSeriesVMs\" />
   </ItemGroup>

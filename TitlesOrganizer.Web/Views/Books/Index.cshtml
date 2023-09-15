@@ -6,8 +6,11 @@
 
 <h1>Books</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="row">
+    <a asp-action="Create" class="col">Create New</a>
+    <a asp-action="Authors" class="col">See Authors</a>
+    <a asp-action="Genres" class="col">See Genres</a>
+    <a asp-action="Series" class="col">See Book Series</a>
 </p>
 <form asp-action="Index" asp-controller="Books" method="post">
     <div class="row">
@@ -36,7 +39,7 @@
                 </tr>
             </thead>
             <tbody>
-        @foreach (var (book, index) in Model.Books.Select((value, index) => (value, index + 1))) {
+        @foreach (var (book, index) in Model.List.Select((value, index) => (value, index + 1))) {
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => index)

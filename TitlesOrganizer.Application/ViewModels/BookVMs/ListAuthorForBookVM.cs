@@ -1,9 +1,16 @@
-﻿namespace TitlesOrganizer.Application.ViewModels.BookVMs
+﻿using TitlesOrganizer.Application.ViewModels.Common;
+
+namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class ListAuthorForBookVM
+    public class ListAuthorForBookVM : ListItems<AuthorForBookVM>
     {
-        public List<AuthorForBookVM> Authors { get; set; } = new List<AuthorForBookVM>();
-        public int Count { get; set; }
         public int BookId { get; set; }
+
+        public ListAuthorForBookVM()
+        { }
+
+        public ListAuthorForBookVM(IQueryable<AuthorForBookVM> list, int count, SortByEnum sortBy, int pageSize, int pageNo, string searchString) : base(list, count, sortBy, pageSize, pageNo, searchString)
+        {
+        }
     }
 }

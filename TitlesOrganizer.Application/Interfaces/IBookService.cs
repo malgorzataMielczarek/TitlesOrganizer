@@ -1,4 +1,5 @@
 ﻿using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Common;
 
 namespace TitlesOrganizer.Application.Interfaces
 {
@@ -16,17 +17,25 @@ namespace TitlesOrganizer.Application.Interfaces
 
         void AddGenresForBook(int bookId, List<int> genresIds);
 
+        int AddNewSeries(NewSeriesVM newSeries);
+
+        void AddSeriesForBook(int bookId, int seriesId);
+
         void DeleteBook(int id);
 
-        ListAuthorForBookVM GetAllAuthorsForBookList(int bookId);
+        ListAuthorForBookVM GetAllAuthorsForBookList(int bookId, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
-        ListAuthorForListVM GetAllAuthorsForList();
+        ListAuthorForListVM GetAllAuthorsForList(ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         ListBookForListVM GetAllBooksForList(ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
-        List<GenreVM> GetAllGenres();
+        ListGenreVM GetAllGenres(ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
-        ListGenreForBookVM GetAllGenresForBookList(int bookId);
+        ListGenreForBookVM GetAllGenresForBookList(int bookId, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
+
+        ListSeriesForBookVM GetAllSeriesForBookList(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString);
+
+        ListSeriesForListVM GetAllSeriesForList(SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         AuthorDetailsVM GetAuthorDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
@@ -34,7 +43,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         GenreDetailsVM GetGenreDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
-        GenreDetailsVM GetSeriesDetails(int id);
+        SeriesDetailsVM GetSeriesDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         void UpdateBook(BookVM book);
     }

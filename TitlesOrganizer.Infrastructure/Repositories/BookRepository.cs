@@ -68,6 +68,28 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return -1;
         }
 
+        public int AddExistingSeries(int bookId, int seriesId)
+        {
+            var book = GetBookById(bookId);
+            if (book != null)
+            {
+                var series = GetSeriesById(seriesId);
+                if (series != null)
+                {
+                    if (book.BookSeries != series)
+                    {
+                        book.BookSeries = series;
+
+                        _context.SaveChanges();
+                    }
+
+                    return series.Id;
+                }
+            }
+
+            return -1;
+        }
+
         public int AddNewAuthor(int bookId, Author author)
         {
             var book = GetBookById(bookId);
@@ -105,13 +127,19 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return genre.Id;
         }
 
-        public int AddSeries(BookSeries series)
+        public int AddNewSeries(int bookId, BookSeries series)
         {
             if (!_context.BookSeries.Contains(series))
             {
                 _context.BookSeries.Add(series);
-                _context.SaveChanges();
             }
+
+            var book = GetBookById(bookId);
+            if (book != null)
+            {
+                book.BookSeries = series;
+            }
+            _context.SaveChanges();
 
             return series.Id;
         }

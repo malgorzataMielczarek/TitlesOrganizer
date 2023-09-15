@@ -10,11 +10,13 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         int AddExistingGenre(int bookId, int genreId);
 
+        int AddExistingSeries(int bookId, int seriesId);
+
         int AddNewAuthor(int bookId, Author author);
 
         int AddNewGenre(int bookId, LiteratureGenre genre);
 
-        int AddSeries(BookSeries series);
+        int AddNewSeries(int bookId, BookSeries series);
 
         void DeleteBook(int bookId);
 
@@ -23,13 +25,21 @@ namespace TitlesOrganizer.Domain.Interfaces
         void DeleteSeries(int seriesId);
 
         IQueryable<Author> GetAllAuthors();
+
         IQueryable<Author> GetAllAuthorsWithBooks();
+
         IQueryable<Book> GetAllBooks();
+
         IQueryable<Book> GetAllBooksWithRelated();
+
         IQueryable<LiteratureGenre> GetAllGenres();
+
         IQueryable<LiteratureGenre> GetAllGenresWithBooks();
+
         IQueryable<BookSeries> GetAllSeries();
+
         IQueryable<BookSeries> GetAllSeriesWithBooks();
+
         Author? GetAuthorById(int authorId);
 
         IQueryable<Author>? GetAuthorsOfSeries(int seriesId);
