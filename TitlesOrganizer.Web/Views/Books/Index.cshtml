@@ -15,13 +15,14 @@
 <form asp-action="Index" asp-controller="Books" method="post">
     <div class="row">
         <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()"></select>
-            <select asp-for="PageSize">
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-            </select>
+        <select asp-for="PageSize">
+            <option value="5">5 books</option>
+            <option value="10">10 books</option>
+            <option value="20">20 books</option>
+            <option value="30">30 books</option>
+            <option value="50">50 books</option>
+            <option value="100">100 books</option>
+        </select>
         <input type="text" asp-for="SearchString" name="searchString" id="searchString" />
         <input type="submit" value="Search" />
     </div>
@@ -29,35 +30,27 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>
-                        No
-                    </th>
-                    <th>
-                        Title
-                    </th>
+                    <th>No</th>
+                    <th>Title</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-        @foreach (var (book, index) in Model.List.Select((value, index) => (value, index + 1))) {
+            @foreach (var (book, index) in Model.List.Select((value, index) => (value, index + 1))) {
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => index)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => book.Title)
-                    </td>
+                    <td>@Html.DisplayFor(modelItem => index)</td>
+                    <td>@Html.DisplayFor(modelItem => book.Title)</td>
                     <td>
                         @Html.ActionLink("Edit", "Edit", new { id = book.Id }) |
-                            @Html.ActionLink("Details", "Details", new { id = book.Id }) |
-                            @Html.ActionLink("Delete", "Delete", new { id = book.Id })
+                        @Html.ActionLink("Details", "Details", new { id = book.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = book.Id })
                     </td>
                 </tr>
-        }
+            }
             </tbody>
         </table>
     </div>
-    <div>
+    <div class="row">
         @{
             var pages = Math.Ceiling(Model.Count / (double)Model.PageSize);
             int numbersNextTo = 2;

@@ -5,10 +5,10 @@ namespace TitlesOrganizer.Application.ViewModels.Common
 {
     public enum SortByEnum
     {
-        [Display(Name = "A-Z")]
+        [Display(Name = "[A-Z]")]
         Ascending = 0,
 
-        [Display(Name = "Z-A")]
+        [Display(Name = "[Z-A]")]
         Descending = 1
     }
 
