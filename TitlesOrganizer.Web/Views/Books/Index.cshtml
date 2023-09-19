@@ -14,16 +14,9 @@
 </p>
 <form asp-action="Index" asp-controller="Books" method="post">
     <div class="row">
-        <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()"></select>
-        <select asp-for="PageSize">
-            <option value="5">5 books</option>
-            <option value="10">10 books</option>
-            <option value="20">20 books</option>
-            <option value="30">30 books</option>
-            <option value="50">50 books</option>
-            <option value="100">100 books</option>
-        </select>
-        <input type="text" asp-for="SearchString" name="searchString" id="searchString" />
+        <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()" onchange="javascript:Submit();"></select>
+        <select asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Common.PageSize.List, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataTextField)" onchange="javascript:Submit();" action="/Books/Index"></select>
+        <input type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
         <input type="submit" value="Search" />
     </div>
     <div class="row">
@@ -50,13 +43,13 @@
             </tbody>
         </table>
     </div>
-    <div class="row">
+    <div class="row justify-content-center">
         @{
             var pages = Math.Ceiling(Model.Count / (double)Model.PageSize);
             int numbersNextTo = 2;
         }
         <nav aria-label="...">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination">
                 @if (Model.PageNo > numbersNextTo + 1)
                 {
                     <li class="page-item">
@@ -99,6 +92,9 @@
     <script type="text/javascript">
         function PagerClick(index){
             document.getElementById("pageNo").value = index;
+            Submit();
+        }
+        function Submit(){
             document.forms[0].submit();
         }
     </script>
