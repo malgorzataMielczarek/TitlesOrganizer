@@ -50,35 +50,35 @@
         }
         <nav aria-label="...">
             <ul class="pagination">
-                @if (Model.PageNo > numbersNextTo + 1)
+                @if (Model.CurrentPage > numbersNextTo + 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="javascript:PagerClick(@(Model.PageNo - numbersNextTo - 1))" aria-label="Previous">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 }
                 @for (int i = numbersNextTo; i >= 1; i--)
                 {
-                    if (i < Model.PageNo)
+                    if (i < Model.CurrentPage)
                     {
-                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.PageNo - i))">@(Model.PageNo - i)</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - i))">@(Model.CurrentPage - i)</a></li>
                     }
                 }
                 @if (pages > 1)
                 {
                     <li class="page-item active" aria-current="page">
-                        <span class="page-link">@Model.PageNo</span>
+                        <span class="page-link">@Model.CurrentPage</span>
                     </li>
                 }
-                @for (int i = 1; i <= numbersNextTo && Model.PageNo + i <= pages; i++)
+                @for (int i = 1; i <= numbersNextTo && Model.CurrentPage + i <= pages; i++)
                 {
-                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.PageNo + i))">@(Model.PageNo + i)</a></li>
+                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + i))">@(Model.CurrentPage + i)</a></li>
                 }
-                @if (Model.PageNo + numbersNextTo + 1 <= pages)
+                @if (Model.CurrentPage + numbersNextTo + 1 <= pages)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="javascript:PagerClick(@(Model.PageNo + numbersNextTo + 1))" aria-label="Next">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

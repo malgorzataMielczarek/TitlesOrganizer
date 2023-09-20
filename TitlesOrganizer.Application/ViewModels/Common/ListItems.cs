@@ -7,7 +7,7 @@
 
         public SortByEnum SortBy { get; set; }
         public int PageSize { get; set; }
-        public int PageNo { get; set; }
+        public int CurrentPage { get; set; }
         public string SearchString { get; set; }
 
         public ListItems()
@@ -22,7 +22,7 @@
             Count = count;
             SortBy = sortBy;
             PageSize = pageSize;
-            PageNo = pageNo;
+            CurrentPage = pageNo;
             SearchString = searchString;
         }
     }
