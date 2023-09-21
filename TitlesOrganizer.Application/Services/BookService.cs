@@ -42,6 +42,11 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddBook(BookVM book)
         {
+            if (book == null || string.IsNullOrWhiteSpace(book.Title))
+            {
+                return -1;
+            }
+
             return _bookRepository.AddBook(book.MapToBase(_mapper));
         }
 

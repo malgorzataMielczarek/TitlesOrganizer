@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Common;
@@ -133,7 +134,9 @@ namespace TitlesOrganizer.Web.Controllers
         public ActionResult AddBook()
         {
             var languages = _languageService.GetAllLanguagesForList();
-            return View(languages);
+            ViewBag.Languages = languages.Languages.Select(lang => new SelectListItem(lang.Name, lang.Code));
+
+            return View(new BookVM() { Title = string.Empty });
         }
 
         [HttpPost]
