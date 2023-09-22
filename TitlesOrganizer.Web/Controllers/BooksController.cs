@@ -144,7 +144,7 @@ namespace TitlesOrganizer.Web.Controllers
         public ActionResult AddBook(BookVM book)
         {
             int id = _bookService.AddBook(book);
-            return View(id);
+            return RedirectToAction("Details", new { id = id });
         }
 
         [HttpGet]

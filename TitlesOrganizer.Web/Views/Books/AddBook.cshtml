@@ -5,48 +5,60 @@
 }
 
 <h1>Create New Book</h1>
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddBook">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OriginalTitle" class="control-label">Original title</label>
-                <input asp-for="OriginalTitle" class="form-control" />
-                <span asp-validation-for="OriginalTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OriginalLanguageCode" class="control-label">Original language</label>
-                <select asp-for="OriginalLanguageCode" class="form-control" asp-items="@ViewBag.Languages">
-                    <option value="">Select language...</option>
-                </select>
-                <span asp-validation-for="OriginalLanguageCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Year" class="control-label"></label>
-                <input type="number" max="@DateTime.Now.Year" min="800" asp-for="Year" class="form-control" />
-                <span asp-validation-for="Year" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Edition" class="control-label"></label>
-                <input asp-for="Edition" class="form-control" />
-                <span asp-validation-for="Edition" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="AddBook">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group row">
+        <label asp-for="Title" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
     </div>
-</div>
+    <div class="form-group row">
+        <label asp-for="OriginalTitle" class="col-sm-3 col-form-label">Original title</label>
+        <div class="col-sm-9">
+            <input asp-for="OriginalTitle" class="form-control" />
+            <span asp-validation-for="OriginalTitle" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="OriginalLanguageCode" class="col-sm-3 col-form-label">Original language</label>
+        <div class="col-sm-9">
+            <select asp-for="OriginalLanguageCode" class="form-control" asp-items="@ViewBag.Languages">
+                <option value="">Select language...</option>
+            </select>
+            <span asp-validation-for="OriginalLanguageCode" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Year" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input type="number" max="@DateTime.Now.Year" min="800" asp-for="Year" class="form-control" />
+            <span asp-validation-for="Year" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Edition" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="Edition" class="form-control" />
+            <span asp-validation-for="Edition" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Description" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-9">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
 
 <div>
     <a asp-action="Index">Back to List</a>
