@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TitlesOrganizer.Application;
@@ -14,10 +15,11 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<Context>();
 
-builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.AddApplication();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddFluentValidationAutoValidation(fv => fv.DisableDataAnnotationsValidation = true).AddFluentValidationClientsideAdapters();
 
 var app = builder.Build();
 
