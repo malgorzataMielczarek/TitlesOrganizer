@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Ignore Spelling: Validator
+
+using FluentValidation;
+using FormHelper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
@@ -13,12 +17,14 @@ namespace TitlesOrganizer.Web.Controllers
         private readonly ILogger<BooksController> _logger;
         private readonly IBookService _bookService;
         private readonly ILanguageService _languageService;
+        private readonly IValidator<BookVM> _bookValidator;
 
-        public BooksController(ILogger<BooksController> logger, IBookService bookService, ILanguageService languageService)
+        public BooksController(ILogger<BooksController> logger, IBookService bookService, ILanguageService languageService, IValidator<BookVM> bookValidator)
         {
             _logger = logger;
             _bookService = bookService;
             _languageService = languageService;
+            _bookValidator = bookValidator;
         }
 
         [HttpGet]
@@ -139,12 +145,23 @@ namespace TitlesOrganizer.Web.Controllers
             return View(new BookVM() { Title = string.Empty });
         }
 
-        [HttpPost]
+        [HttpPost, FormValidator]
         [ValidateAntiForgeryToken]
         public ActionResult AddBook(BookVM book)
         {
-            int id = _bookService.AddBook(book);
-            return RedirectToAction("Details", new { id = id });
+            var result = _bookValidator.Validate(book);
+
+            if (result.IsValid)
+            {
+                int id = _bookService.AddBook(book);
+
+                if (id > 0)
+                {
+                    return RedirectToAction("Details", new { id = id });
+                }
+            }
+            result.AddToModelState(ModelState);
+            return View(book);
         }
 
         [HttpGet]
