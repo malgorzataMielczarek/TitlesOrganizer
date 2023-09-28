@@ -1,10 +1,13 @@
 using FormHelper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using TitlesOrganizer.Application;
 using TitlesOrganizer.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -19,7 +22,6 @@ builder.Services.AddInfrastructure();
 builder.Services.AddApplication();
 
 builder.Services.AddControllersWithViews().AddViewOptions(opt => { opt.ClientModelValidatorProviders.Clear(); }).AddFormHelper();
-//builder.Services.AddFluentValidationAutoValidation(fv => fv.DisableDataAnnotationsValidation = true);//.AddFluentValidationClientsideAdapters();
 
 var app = builder.Build();
 
@@ -41,6 +43,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseFormHelper();
+
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 app.UseAuthorization();
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Services;
+using TitlesOrganizer.Application.Validators.BookValidators;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 
 namespace TitlesOrganizer.Application

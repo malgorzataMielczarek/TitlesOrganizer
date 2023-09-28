@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Common;
+using TitlesOrganizer.Web.Controllers.Helper;
 
 namespace TitlesOrganizer.Web.Controllers
 {
@@ -147,21 +148,20 @@ namespace TitlesOrganizer.Web.Controllers
 
         [HttpPost, FormValidator]
         [ValidateAntiForgeryToken]
-        public ActionResult AddBook(BookVM book)
+        public async Task<IActionResult> AddBook(BookVM book)
         {
-            var result = _bookValidator.Validate(book);
-
+            var result = await _bookValidator.ValidateAsync(book);
             if (result.IsValid)
             {
                 int id = _bookService.AddBook(book);
 
                 if (id > 0)
                 {
-                    return RedirectToAction("Details", new { id = id });
+                    return FormResult.CreateSuccessResult("Book added.", Url.Action("Details", new { id = id }));
                 }
             }
-            result.AddToModelState(ModelState);
-            return View(book);
+
+            return result.CreateErrorResult("Check entered data.");
         }
 
         [HttpGet]
