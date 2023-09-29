@@ -10,12 +10,12 @@ namespace TitlesOrganizer.Application.Validators.BookValidators
         public BookValidator()
         {
             RuleFor(x => x.Id).NotNull();
-            RuleFor(x => x.Title).NotNull().NotEmpty().MaximumLength(450);
-            RuleFor(x => x.OriginalTitle).MaximumLength(450);
+            RuleFor(x => x.Title).NotNull().NotEmpty().MaximumLength(225);
+            RuleFor(x => x.OriginalTitle).MaximumLength(225);
             RuleFor(x => x.OriginalLanguageCode).Length(3).Must(lang => lang.ToLower().All(c => c >= 'a' && c <= 'z')).Unless(x => x.OriginalLanguageCode is null);
             RuleFor(x => x.Year).GreaterThan(0).LessThanOrEqualTo(DateTime.Now.Year);
-            RuleFor(x => x.Edition).MaximumLength(50);
-            RuleFor(x => x.Description).MaximumLength(4000);
+            RuleFor(x => x.Edition).MaximumLength(25);
+            RuleFor(x => x.Description).MaximumLength(2000);
         }
     }
 }

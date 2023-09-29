@@ -5,6 +5,7 @@
 }
 
 <h1>Create New Book</h1>
+@*<form asp-action="AddBook">*@
 <form asp-formhelper="true" asp-action="AddBook" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
@@ -25,9 +26,10 @@
     <div class="form-group row">
         <label asp-for="OriginalLanguageCode" class="col-sm-3 col-form-label">Original language</label>
         <div class="col-sm-9">
-            <select asp-for="OriginalLanguageCode" class="form-control" asp-items="@ViewBag.Languages">
+            <input asp-for="OriginalLanguageCode" class="form-control" />
+            @*<select asp-for="OriginalLanguageCode" class="form-control" asp-items="@ViewBag.Languages">
                 <option value="">Select language...</option>
-            </select>
+            </select>*@
             <span asp-validation-for="OriginalLanguageCode" class="text-danger"></span>
         </div>
     </div>

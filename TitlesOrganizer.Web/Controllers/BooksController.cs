@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Common;
-using TitlesOrganizer.Web.Controllers.Helper;
 
 namespace TitlesOrganizer.Web.Controllers
 {
@@ -146,12 +145,39 @@ namespace TitlesOrganizer.Web.Controllers
             return View(new BookVM() { Title = string.Empty });
         }
 
+        //[HttpPost, FormValidator]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> AddBook(BookVM book)
+        //{
+        //    var result = await _bookValidator.ValidateAsync(book);
+        //    if (result.IsValid)
+        //    {
+        //        int id = _bookService.AddBook(book);
+
+        // if (id > 0) { return FormResult.CreateSuccessResult("Book added.", Url.Action("Details",
+        // new { id = id })); } }
+
+        //    return result.CreateErrorResult("Check entered data.");
+        //}
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult AddBook(BookVM book)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        int id = _bookService.AddBook(book);
+
+        // if (id > 0) { return RedirectToAction("Details", new { id = id }); } }
+
+        //    return View(book);
+        //}
+
         [HttpPost, FormValidator]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddBook(BookVM book)
+        public ActionResult AddBook(BookVM book)
         {
-            var result = await _bookValidator.ValidateAsync(book);
-            if (result.IsValid)
+            if (ModelState.IsValid)
             {
                 int id = _bookService.AddBook(book);
 
@@ -161,7 +187,7 @@ namespace TitlesOrganizer.Web.Controllers
                 }
             }
 
-            return result.CreateErrorResult("Check entered data.");
+            return FormResult.CreateErrorResult("Check entered data.");
         }
 
         [HttpGet]

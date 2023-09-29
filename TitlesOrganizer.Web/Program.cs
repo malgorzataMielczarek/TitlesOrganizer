@@ -21,7 +21,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();
 
-builder.Services.AddControllersWithViews().AddViewOptions(opt => { opt.ClientModelValidatorProviders.Clear(); }).AddFormHelper();
+builder.Services.AddControllersWithViews()/*.AddViewOptions(opt => { opt.ClientModelValidatorProviders.Clear(); })*/.AddFormHelper();
 
 var app = builder.Build();
 
