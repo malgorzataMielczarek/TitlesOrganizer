@@ -252,7 +252,10 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public int UpdateAuthor(Author author)
         {
-            _context.Authors.Update(author);
+            _context.Attach(author);
+            _context.Entry(author).Property(nameof(Author.Name)).IsModified = true;
+            _context.Entry(author).Property(nameof(Author.LastName)).IsModified = true;
+            //_context.Authors.Update(author);
 
             if (_context.SaveChanges() == 1)
             {
