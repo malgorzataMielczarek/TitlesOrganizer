@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
 
+builder.Logging.AddFile("Logs/myLog-{Date}.txt");
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<Context>(options =>
