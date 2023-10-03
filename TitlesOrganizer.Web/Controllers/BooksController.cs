@@ -257,35 +257,26 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditBook(int id)
+        public ActionResult Edit(int id)
         {
-            return View(id);
+            //BookVM book = _bookService.GetBook(id);
+            //return View(book);
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditBook(BookVM book)
+        public ActionResult Edit(BookVM book)
         {
             _bookService.UpdateBook(book);
             return View();
         }
 
         [HttpGet]
-        public ActionResult DeleteBook(int id)
+        public ActionResult Delete(int id)
         {
-            return View(id);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteBook(int id, bool confirmation)
-        {
-            if (confirmation)
-            {
-                _bookService.DeleteBook(id);
-            }
-
-            return View();
+            _bookService.DeleteBook(id);
+            return RedirectToAction("Index");
         }
     }
 }

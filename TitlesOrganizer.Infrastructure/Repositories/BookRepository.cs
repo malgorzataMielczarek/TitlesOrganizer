@@ -182,7 +182,11 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Book> GetAllBooks() => _context.Books;
 
-        public IQueryable<Book> GetAllBooksWithRelated() => _context.Books.Include(b => b.OriginalLanguage).Include(b => b.Genres).Include(b => b.Authors).Include(b => b.BookSeries);
+        public IQueryable<Book> GetAllBooksWithRelated() => _context.Books
+            .Include(b => b.OriginalLanguage)
+            .Include(b => b.Genres)
+            .Include(b => b.Authors)
+            .Include(b => b.BookSeries);
 
         public IQueryable<LiteratureGenre> GetAllGenres() => _context.LiteratureGenres;
 
@@ -194,24 +198,34 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public Author? GetAuthorById(int authorId) => _context.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == authorId);
 
-        public IQueryable<Author>? GetAuthorsOfSeries(int seriesId) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == seriesId)?.Books.SelectMany(b => b.Authors).AsQueryable();
+        public IQueryable<Author>? GetAuthorsOfSeries(int seriesId) => _context.BookSeries
+            .Include(s => s.Books)
+            .FirstOrDefault(s => s.Id == seriesId)?.Books.SelectMany(b => b.Authors).AsQueryable();
 
-        public Book? GetBookById(int bookId) => _context.Books.Include(b => b.OriginalLanguage).Include(b => b.Genres).Include(b => b.Authors).Include(b => b.BookSeries).FirstOrDefault(b => b.Id == bookId);
+        public Book? GetBookById(int bookId) => _context.Books
+            .Include(b => b.OriginalLanguage)
+            .Include(b => b.Genres)
+            .Include(b => b.Authors)
+            .Include(b => b.BookSeries)
+            .FirstOrDefault(b => b.Id == bookId);
 
         public IQueryable<Book>? GetBooksByAuthor(int authorId) => GetAuthorById(authorId)?.Books.AsQueryable();
 
         public IQueryable<Book>? GetBooksByGenre(int genreId) => GetGenreById(genreId)?.Books?.AsQueryable();
 
-        public IQueryable<Book>? GetBooksInSeries(int seriesId) => _context.Books.Include(b => b.BookSeries).Where(b => b.BookSeriesId == seriesId);
+        public IQueryable<Book>? GetBooksInSeries(int seriesId) => _context.Books
+            .Include(b => b.BookSeries)
+            .Where(b => b.BookSeriesId == seriesId);
 
         public LiteratureGenre? GetGenreById(int genreId) => _context.LiteratureGenres.Include(g => g.Books).FirstOrDefault(g => g.Id == genreId);
 
         public IQueryable<LiteratureGenre>? GetGenresOfSeries(int seriesId) => GetBooksInSeries(seriesId)?.SelectMany(b => b.Genres).AsQueryable();
 
-        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => GetBooksByAuthor(authorId)?.SkipWhile(b => b.BookSeries == null).Select
-            (b => b.BookSeries!).AsQueryable();
+        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => GetBooksByAuthor(authorId)?.SkipWhile(b => b.BookSeries == null)
+            .Select(b => b.BookSeries!).AsQueryable();
 
-        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => GetBooksByGenre(genreId)?.SkipWhile(b => b.BookSeries == null).Select(b => b.BookSeries!).AsQueryable();
+        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => GetBooksByGenre(genreId)?.SkipWhile(b => b.BookSeries == null)
+            .Select(b => b.BookSeries!).AsQueryable();
 
         public BookSeries? GetSeriesById(int seriesId) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == seriesId);
 
@@ -253,51 +267,35 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         public int UpdateAuthor(Author author)
         {
             _context.Attach(author);
-            _context.Entry(author).Property(nameof(Author.Name)).IsModified = true;
-            _context.Entry(author).Property(nameof(Author.LastName)).IsModified = true;
+            if (!(_context.Entry(author).State == EntityState.Added))
+            {
+                _context.Entry(author).Property(nameof(Author.Name)).IsModified = true;
+                _context.Entry(author).Property(nameof(Author.LastName)).IsModified = true;
+            }
             //_context.Authors.Update(author);
 
-            if (_context.SaveChanges() == 1)
-            {
-                return author.Id;
-            }
-
-            return -1;
+            return author.Id;
         }
 
         public int UpdateBook(Book book)
         {
             _context.Books.Update(book);
 
-            if (_context.SaveChanges() == 1)
-            {
-                return book.Id;
-            }
-
-            return -1;
+            return book.Id;
         }
 
         public int UpdateGenre(LiteratureGenre genre)
         {
             _context.LiteratureGenres.Update(genre);
 
-            if (_context.SaveChanges() == 1)
-            {
-                return genre.Id;
-            }
-
-            return -1;
+            return genre.Id;
         }
 
         public int UpdateSeries(BookSeries series)
         {
             _context.BookSeries.Update(series);
-            if (_context.SaveChanges() == 1)
-            {
-                return series.Id;
-            }
 
-            return -1;
+            return series.Id;
         }
     }
 }
