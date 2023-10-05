@@ -66,9 +66,9 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         void RemoveGenre(int bookId, int genreId);
 
-        int UpdateAuthor(Author author);
+        int UpsertAuthor(Author author);
 
-        int UpdateBook(Book book);
+        int UpsertBook(Book book);
 
         int UpdateGenre(LiteratureGenre genre);
 

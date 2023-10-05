@@ -3,7 +3,6 @@ using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Mapping;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Interfaces;
-using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
@@ -40,14 +39,14 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
-        public int AddBook(BookVM book)
+        public int UpsertBook(BookVM book)
         {
             if (book == null || string.IsNullOrWhiteSpace(book.Title))
             {
-                return -1;
+                return default;
             }
 
-            return _bookRepository.AddBook(book.MapToBase(_mapper));
+            return _bookRepository.UpsertBook(book.MapToBase(_mapper));
         }
 
         public int AddGenre(GenreVM genre)
@@ -113,6 +112,8 @@ namespace TitlesOrganizer.Application.Services
 
         public AuthorDetailsVM GetAuthorDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new AuthorDetailsVM();
 
+        public BookVM GetBook(int id) => _bookRepository.GetBookById(id)?.MapForUpdate(_mapper) ?? new BookVM();
+
         public BookDetailsVM GetBookDetails(int id)
         {
             var book = _bookRepository.GetBookById(id);
@@ -127,11 +128,5 @@ namespace TitlesOrganizer.Application.Services
         public GenreDetailsVM GetGenreDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new GenreDetailsVM();
 
         public SeriesDetailsVM GetSeriesDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetSeriesById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new SeriesDetailsVM();
-
-        public void UpdateBook(BookVM bookVM)
-        {
-            Book? oldBook = _bookRepository.GetBookById(bookVM.Id);
-            int id = _bookRepository.UpdateBook(bookVM.MapToBase(_mapper, oldBook));
-        }
     }
 }

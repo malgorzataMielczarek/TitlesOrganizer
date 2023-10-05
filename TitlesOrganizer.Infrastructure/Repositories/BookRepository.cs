@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Ignore Spelling: Upsert
+
+using Microsoft.EntityFrameworkCore;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
 
@@ -264,7 +266,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             }
         }
 
-        public int UpdateAuthor(Author author)
+        public int UpsertAuthor(Author author)
         {
             _context.Attach(author);
             if (!(_context.Entry(author).State == EntityState.Added))
@@ -272,14 +274,27 @@ namespace TitlesOrganizer.Infrastructure.Repositories
                 _context.Entry(author).Property(nameof(Author.Name)).IsModified = true;
                 _context.Entry(author).Property(nameof(Author.LastName)).IsModified = true;
             }
-            //_context.Authors.Update(author);
+
+            _context.SaveChanges();
 
             return author.Id;
         }
 
-        public int UpdateBook(Book book)
+        public int UpsertBook(Book book)
         {
-            _context.Books.Update(book);
+            _context.Attach(book);
+            if (!(_context.Entry(book).State == EntityState.Added))
+            {
+                _context.Entry(book).Property(nameof(Book.Title)).IsModified = true;
+                _context.Entry(book).Property(nameof(Book.OriginalTitle)).IsModified = true;
+                _context.Entry(book).Property(nameof(Book.OriginalLanguageCode)).IsModified = true;
+                _context.Entry(book).Property(nameof(Book.Year)).IsModified = true;
+                _context.Entry(book).Property(nameof(Book.Edition)).IsModified = true;
+                _context.Entry(book).Property(nameof(Book.Description)).IsModified = true;
+                _context.Entry(book).Property(nameof(Book.NumberInSeries)).IsModified = true;
+            }
+
+            _context.SaveChanges();
 
             return book.Id;
         }

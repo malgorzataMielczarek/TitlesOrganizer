@@ -71,25 +71,24 @@ namespace TitlesOrganizer.Application.Mapping
             });
         }
 
+        public static BookVM MapForUpdate(this Book book, IMapper mapper)
+        {
+            var bookVM = mapper.Map<BookVM>(book);
+            bookVM.Authors = string.Join(", ", book.Authors.Select(a => a.Name + " " + a.LastName));
+            bookVM.Genres = string.Join(", ", book.Genres.Select(g => g.Name));
+            bookVM.Series = book.BookSeries?.Title;
+
+            return bookVM;
+        }
+
         public static Author MapToBase(this NewAuthorVM authorVM, IMapper mapper)
         {
             return mapper.Map<Author>(authorVM);
         }
 
-        public static Book MapToBase(this BookVM bookVM, IMapper mapper, Book? oldBook = null)
+        public static Book MapToBase(this BookVM bookVM, IMapper mapper)
         {
-            Book book = mapper.Map<Book>(bookVM);
-
-            if (oldBook != null)
-            {
-                book.Authors = oldBook.Authors;
-                book.BookSeries = oldBook.BookSeries;
-                book.BookSeriesId = oldBook.BookSeriesId;
-                book.NumberInSeries = oldBook.NumberInSeries;
-                book.Genres = oldBook.Genres;
-            }
-
-            return book;
+            return mapper.Map<Book>(bookVM);
         }
 
         public static LiteratureGenre MapToBase(this GenreVM genreVM, IMapper mapper)
@@ -313,7 +312,10 @@ namespace TitlesOrganizer.Application.Mapping
         public BookMappings()
         {
             CreateMap<NewAuthorVM, Author>().ForMember(dest => dest.Books, opt => opt.Ignore());
-            CreateMap<BookVM, Book>();
+            CreateMap<BookVM, Book>()
+                .ForMember(dest => dest.Authors, opt => opt.Ignore())
+                .ForMember(dest => dest.BookSeries, opt => opt.Ignore())
+                .ForMember(dest => dest.Genres, opt => opt.Ignore()).ReverseMap();
             CreateProjection<Book, BookForListVM>();
             CreateMap<GenreVM, LiteratureGenre>().ForMember(dest => dest.Books, opt => opt.Ignore());
             CreateMap<BookSeries, SeriesDetailsVM>().ForMember(dest => dest.Books, opt => opt.Ignore());
