@@ -7,7 +7,7 @@ namespace TitlesOrganizer.Application.Interfaces
     {
         int AddAuthor(NewAuthorVM author);
 
-        void AddAuthorsForBook(int bookId, List<int> authorsIds);
+        void SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook);
 
         int UpsertBook(BookVM book);
 
@@ -44,6 +44,9 @@ namespace TitlesOrganizer.Application.Interfaces
         GenreDetailsVM GetGenreDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
 
         SeriesDetailsVM GetSeriesDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString);
+
         BookVM GetBook(int id);
+
+        ListAuthorForBookVM GetAllAuthorsForBookList(ListAuthorForBookVM listAuthorForBook);
     }
 }

@@ -38,7 +38,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddAuthorsForBook(int bookId, List<int> authorsIds)
         {
-            _bookService.AddAuthorsForBook(bookId, authorsIds);
+            //_bookService.AddAuthorsForBook(bookId, authorsIds);
             return View(bookId);
         }
 
@@ -259,9 +259,9 @@ namespace TitlesOrganizer.Web.Controllers
         //    return View(book);
         //}
 
-        [HttpPost, FormValidator]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpsertBook(BookVM book)
+        public ActionResult SelectAuthors(BookVM book)
         {
             if (ModelState.IsValid)
             {
@@ -269,13 +269,71 @@ namespace TitlesOrganizer.Web.Controllers
 
                 if (id > 0)
                 {
+                    ViewData["BookTitle"] = book.Title;
+
+                    return RedirectToAction(nameof(SelectAuthorsForBook), new { id = id });
+                }
+            }
+
+            ViewData["Title"] = "Update Book";
+            return FormResult.CreateErrorResult("Check entered data.");
+        }
+
+        [HttpPost, FormValidator]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateBook(BookVM book)
+        {
+            if (ModelState.IsValid)
+            {
+                int id = _bookService.UpsertBook(book);
+
+                if (id > 0)
+                {
+                    if (string.IsNullOrEmpty(book.Authors))
+                    {
+                        ViewData["Title"] = "Update Book";
+                        return FormResult.CreateErrorResult("Specify the author of the book.");
+                    }
+
+                    if (string.IsNullOrEmpty(book.Genres))
+                    {
+                        ViewData["Title"] = "Update Book";
+                        return FormResult.CreateErrorResult("Specify the genre of the book.");
+                    }
+
                     return FormResult.CreateSuccessResult("Book added.", Url.Action("Details", new { id = id }));
                 }
             }
 
             ViewData["Title"] = "Update Book";
-
             return FormResult.CreateErrorResult("Check entered data.");
+        }
+
+        [HttpGet]
+        public ActionResult SelectAuthorsForBook(int id)
+        {
+            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(id, SortByEnum.Ascending, PAGE_SIZE, 1, string.Empty);
+
+            return View(authors);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
+        {
+            _bookService.SelectAuthorsForBook(listAuthorForBook);
+            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(listAuthorForBook);
+
+            return View(authors);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult FinalizeSelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
+        {
+            _bookService.SelectAuthorsForBook(listAuthorForBook);
+
+            return RedirectToAction(nameof(UpsertBook), new { id = listAuthorForBook.BookId });
         }
     }
 }

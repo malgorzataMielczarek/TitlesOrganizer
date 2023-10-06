@@ -1,0 +1,118 @@
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
+@{
+    ViewData["Title"] = "Select authors";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="BookId" />
+    <div class="row">
+        <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()" onchange="javascript:Submit();"></select>
+        <select asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Common.PageSize.List, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataTextField)" onchange="javascript:Submit();"></select>
+        <input type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
+        <input type="submit" value="Search" asp-action="SelectAuthorsForBook" />
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                
+                    </th>
+                    <th>
+                        Author
+                    </th>
+                    <th>
+                        Books
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+        @for (int i = 0; i < Model.List.Count; i++)
+        {
+                <tr>
+                    <input type="hidden" asp-for="@Model.List[i].Id" />
+                    <td>
+                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" />
+                    </td>
+                    <td>
+                            <input type="text" class="col-form-label" readonly disabled asp-for="@Model.List[i].FullName" />
+                    </td>
+                    <td>
+                            <input type="text" class="col-form-label" readonly disabled asp-for="@Model.List[i].OtherBooks" />
+                    </td>
+                </tr>
+        }
+                <tr>
+                    <td colspan="3">
+                        <button type="submit" title="Add new author" href="/Books/Update/AddAuthor">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row justify-content-center">
+        @{
+            var pages = Math.Ceiling(Model.Count / (double)Model.PageSize);
+            int numbersNextTo = 2;
+        }
+        <nav aria-label="...">
+            <ul class="pagination">
+                @if (Model.CurrentPage > numbersNextTo + 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+                @for (int i = numbersNextTo; i >= 1; i--)
+                {
+                    if (i < Model.CurrentPage)
+                    {
+                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - i))">@(Model.CurrentPage - i)</a></li>
+                    }
+                }
+                @if (pages > 1)
+                {
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">@Model.CurrentPage</span>
+                    </li>
+                }
+                @for (int i = 1; i <= numbersNextTo && Model.CurrentPage + i <= pages; i++)
+                {
+                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + i))">@(Model.CurrentPage + i)</a></li>
+                }
+                @if (Model.CurrentPage + numbersNextTo + 1 <= pages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <input type="hidden" name="pageNo" id="pageNo" />
+    </div>
+    <div class="row">
+        <input type="submit" asp-action="FinalizeSelectAuthorsForBook" value="Select authors" class="btn btn-primary btn-lg" formmethod="post" />
+    </div>
+</form>
+@section Scripts {
+    <script type="text/javascript">
+        function PagerClick(index) {
+            document.getElementById("pageNo").value = index;
+            Submit();
+        }
+        function Submit() {
+            document.forms[0].setAttribute("action", "SelectAuthorsForBook").submit();
+        }
+    </script>
+}

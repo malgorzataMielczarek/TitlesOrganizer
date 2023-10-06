@@ -26,28 +26,6 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return book.Id;
         }
 
-        public int AddExistingAuthor(int bookId, int authorId)
-        {
-            var book = GetBookById(bookId);
-            if (book != null)
-            {
-                var author = GetAuthorById(authorId);
-                if (author != null)
-                {
-                    if (!book.Authors.Contains(author))
-                    {
-                        book.Authors.Add(author);
-
-                        _context.SaveChanges();
-                    }
-
-                    return author.Id;
-                }
-            }
-
-            return -1;
-        }
-
         public int AddExistingGenre(int bookId, int genreId)
         {
             var book = GetBookById(bookId);
@@ -311,6 +289,13 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             _context.BookSeries.Update(series);
 
             return series.Id;
+        }
+
+        public void UpdateAuthorsOfBook(Book book)
+        {
+            _context.Attach(book);
+            _context.Entry(book).Collection(nameof(Book.Authors)).IsModified = true;
+            _context.SaveChanges();
         }
     }
 }

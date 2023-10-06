@@ -6,8 +6,6 @@ namespace TitlesOrganizer.Domain.Interfaces
     {
         int AddBook(Book book);
 
-        int AddExistingAuthor(int bookId, int authorId);
-
         int AddExistingGenre(int bookId, int genreId);
 
         int AddExistingSeries(int bookId, int seriesId);
@@ -73,5 +71,7 @@ namespace TitlesOrganizer.Domain.Interfaces
         int UpdateGenre(LiteratureGenre genre);
 
         int UpdateSeries(BookSeries series);
+
+        void UpdateAuthorsOfBook(Book book);
     }
 }

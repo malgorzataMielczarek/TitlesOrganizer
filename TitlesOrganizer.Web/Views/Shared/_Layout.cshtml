@@ -55,6 +55,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="//cdn.jsdelivr.net/gh/sinanbozkus/remotemodal/remotemodal.js"></script>
+    <script type="text/javascript">
+        $(document).on('click', '[data-form-submit][data-form-action]', function (event) {
+            var $this = $(this);
+            var formAction = $this.attr('data-form-action');
+            var form = $this.closest('form')
+            form.attr('action', formAction);
+            if ($this.attr('data-form-submit') == "true") {
+                form.submit();
+            }
+        });
+        $(document).on('click', '[data-form-submit][data-form-route]', function (event) {
+            var $this = $(this);
+            var formHref = $this.attr('data-form-route');
+            var form = $this.closest('form');
+            form.attr('href', formHref);
+            if ($this.attr('data-form-submit') == "true") {
+                form.submit();
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

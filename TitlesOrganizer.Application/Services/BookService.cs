@@ -1,8 +1,11 @@
-﻿using AutoMapper;
+﻿// Ignore Spelling: Upsert
+
+using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Mapping;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Interfaces;
+using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
@@ -22,21 +25,27 @@ namespace TitlesOrganizer.Application.Services
             return _bookRepository.AddNewAuthor(author.BookId, author.MapToBase(_mapper));
         }
 
-        public void AddAuthorsForBook(int bookId, List<int> authorsIds)
+        public void SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
         {
-            foreach (var authorId in authorsIds)
+            Book? book = _bookRepository.GetBookById(listAuthorForBook.BookId);
+            if (book == null)
             {
-                _bookRepository.AddExistingAuthor(bookId, authorId);
+                return;
             }
 
-            var authorsToRemoveIds = _bookRepository.GetBookById(bookId)?.Authors.Select(a => a.Id).SkipWhile(id => authorsIds.Contains(id));
-            if (authorsToRemoveIds?.Any() ?? false)
+            List<Author> authors = new List<Author>();
+            foreach (var authorId in listAuthorForBook.List.Where(a => a.IsForBook).Select(a => a.Id))
             {
-                foreach (var authorId in authorsToRemoveIds)
+                Author? author = _bookRepository.GetAuthorById(authorId);
+                if (author != null)
                 {
-                    _bookRepository.RemoveAuthor(bookId, authorId);
+                    authors.Add(author);
                 }
             }
+
+            book.Authors = authors;
+
+            _bookRepository.UpdateAuthorsOfBook(book);
         }
 
         public int UpsertBook(BookVM book)
@@ -128,5 +137,12 @@ namespace TitlesOrganizer.Application.Services
         public GenreDetailsVM GetGenreDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new GenreDetailsVM();
 
         public SeriesDetailsVM GetSeriesDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetSeriesById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new SeriesDetailsVM();
+
+        public ListAuthorForBookVM GetAllAuthorsForBookList(ListAuthorForBookVM listAuthorForBook) => GetAllAuthorsForBookList(
+            listAuthorForBook.BookId,
+            listAuthorForBook.SortBy,
+            listAuthorForBook.PageSize,
+            listAuthorForBook.CurrentPage,
+            listAuthorForBook.SearchString);
     }
 }
