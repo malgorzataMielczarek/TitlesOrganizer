@@ -7,6 +7,38 @@
 <form enctype="multipart/form-data" method="post">
     <input type="hidden" asp-for="BookId" />
     <div class="row">
+        <table class="table" id="selectedAuthors">
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        Selected authors
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        Author
+                    </th>
+                    <th>
+                        Books
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var author in Model.SelectedAuthors)
+                {
+                    <tr>
+                        <td>
+                            @Html.Label(author.FullName)
+                        </td>
+                        <td>
+                            @Html.Label(author.OtherBooks)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
         <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()" onchange="javascript:Submit();"></select>
         <select asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Common.PageSize.List, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataTextField)" onchange="javascript:Submit();"></select>
         <input type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
@@ -34,13 +66,13 @@
                 <tr>
                     <input type="hidden" asp-for="@Model.List[i].Id" />
                     <td>
-                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" />
+                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" onchange="javascript:AuthorSelectionChanged(value, '@Model.List[i].FullName', '@Model.List[i].OtherBooks')" />
                     </td>
                     <td>
-                            <input type="text" class="col-form-label" readonly disabled asp-for="@Model.List[i].FullName" />
+                        @Html.Label(Model.List[i].FullName)
                     </td>
                     <td>
-                            <input type="text" class="col-form-label" readonly disabled asp-for="@Model.List[i].OtherBooks" />
+                        @Html.Label(Model.List[i].OtherBooks)
                     </td>
                 </tr>
         }
@@ -106,13 +138,5 @@
     </div>
 </form>
 @section Scripts {
-    <script type="text/javascript">
-        function PagerClick(index) {
-            document.getElementById("pageNo").value = index;
-            Submit();
-        }
-        function Submit() {
-            document.forms[0].setAttribute("action", "SelectAuthorsForBook").submit();
-        }
-    </script>
+    <script type="text/javascript" src="~/js/Books/SelectAuthorsForBook.js"></script>
 }

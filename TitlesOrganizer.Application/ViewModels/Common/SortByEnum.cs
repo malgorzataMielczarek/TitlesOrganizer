@@ -62,25 +62,5 @@ namespace TitlesOrganizer.Application.ViewModels.Common
 
             return result;
         }
-
-        public static string SortByEnumToName(this SortByEnum sortByEnum)
-        {
-            return sortByEnum switch
-            {
-                SortByEnum.Ascending => "A-Z",
-                SortByEnum.Descending => "Z-A",
-                _ => ""
-            };
-        }
-
-        public static SortByEnum SortByNameToEnum(this string sortByName)
-        {
-            return sortByName switch
-            {
-                "A-Z" => SortByEnum.Ascending,
-                "Z-A" => SortByEnum.Descending,
-                _ => SortByEnum.Ascending
-            };
-        }
     }
 }

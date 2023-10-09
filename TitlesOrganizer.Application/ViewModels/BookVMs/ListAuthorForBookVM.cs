@@ -5,6 +5,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
     public class ListAuthorForBookVM : ListItems<AuthorForBookVM>
     {
         public int BookId { get; set; }
+        public List<AuthorForBookVM> SelectedAuthors { get; set; } = new List<AuthorForBookVM>();
 
         public ListAuthorForBookVM()
         { }

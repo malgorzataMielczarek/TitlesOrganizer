@@ -153,19 +153,18 @@ namespace TitlesOrganizer.Application.Mapping
             searchString ??= string.Empty;
 
             var list = authors
-                .Sort(SortByEnum.Descending, a => a.Books.Any(b => b.Id == bookId),
-                (SortBy: sortBy, Selector: a => a.LastName),
-                (SortBy: sortBy, Selector: a => a.Name))
-                .Map(bookId)
-                .Where(a => a.FullName.Contains(searchString));
+                .Sort(sortBy, a => a.LastName, a => a.Name)
+                .Map(bookId);
             int count = list.Count();
             var limitedList = list
+                .Where(a => a.FullName.Contains(searchString))
                 .Skip(pageSize * (pageNo - 1))
                 .Take(pageSize);
 
             return new ListAuthorForBookVM(limitedList, count, sortBy, pageSize, pageNo, searchString)
             {
-                BookId = bookId
+                BookId = bookId,
+                SelectedAuthors = list.Where(a => a.IsForBook).ToList()
             };
         }
 
@@ -222,8 +221,8 @@ namespace TitlesOrganizer.Application.Mapping
             searchString ??= string.Empty;
 
             var list = genres
-                .Where(g => g.Name.Contains(searchString))
                 .Map(bookId)
+                .Where(g => g.Name.Contains(searchString) || g.IsForBook)
                 .Sort(SortByEnum.Descending, g => g.IsForBook,
                 (SortBy: sortBy, Selector: g => g.Name));
             int count = list.Count();

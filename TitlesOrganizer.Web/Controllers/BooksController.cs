@@ -13,7 +13,7 @@ namespace TitlesOrganizer.Web.Controllers
     public class BooksController : Controller
     {
         private const int PAGE_SIZE = 10;
-        private const int SMALL_PAGE_SIZE = 3;
+        private const int SMALL_PAGE_SIZE = 5;
         private readonly IBookService _bookService;
         private readonly IValidator<BookVM> _bookValidator;
         private readonly ILanguageService _languageService;
@@ -312,15 +312,17 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet]
         public ActionResult SelectAuthorsForBook(int id)
         {
-            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(id, SortByEnum.Ascending, PAGE_SIZE, 1, string.Empty);
+            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
 
             return View(authors);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
+        public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook, int? pageNo)
         {
+            listAuthorForBook.CurrentPage = pageNo.HasValue ? pageNo.Value : 1;
+
             _bookService.SelectAuthorsForBook(listAuthorForBook);
             ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(listAuthorForBook);
 
