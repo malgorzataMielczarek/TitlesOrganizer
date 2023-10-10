@@ -11,38 +11,44 @@ function Submit() {
 function AuthorSelectionChanged(selected, fullName, otherBooks) {
     var selectedTable = document.querySelector("#selectedAuthors > tbody");
     if (selectedTable) {
-        var authors = selectedTable.querySelectorAll("tr > td [textContent='" + fullName + "']");
+        var authors = $(selectedTable).find('tr > td > label:contains("' + fullName + '")');
         var author = undefined
-        var books = undefined;
+        var booksTd = undefined;
 
         if (authors.length > 0) {
             for (var i = 0; i < authors.length; i++) {
-                if (authors[i].nextSibling.textContent == otherBooks) {
+                booksTd = authors[i].parentElement.nextElementSibling;
+                if (booksTd.querySelector("label").innerText == otherBooks) {
                     author = authors[i];
-                    books = authors[i].nextSibling;
                     break;
                 }
+
+                booksTd = undefined;
             }
         }
 
-        if (selected === "true") {
-            if (!(author && books)) {
+        if (selected) {
+            if (!(author && booksTd)) {
                 var row = document.createElement("tr");
 
                 var authorTd = document.createElement("td");
-                authorTd.textContent = fullName;
+                var authorLbl = document.createElement("label");
+                authorLbl.innerText = fullName;
+                authorTd.appendChild(authorLbl);
                 row.appendChild(authorTd);
 
                 var otherBooksTd = document.createElement("td");
-                otherBooksTd.textContent = otherBooks;
+                var otherBooksLbl = document.createElement("label");
+                otherBooksLbl.innerText = otherBooks;
+                otherBooksTd.appendChild(otherBooksLbl);
                 row.appendChild(otherBooksTd);
 
                 selectedTable.appendChild(row);
             }
         }
         else {
-            if (author && books) {
-                selectedTable.removeChild(author.parentElement);
+            if (author && booksTd) {
+                selectedTable.removeChild(booksTd.parentElement);
             }
         }
     }

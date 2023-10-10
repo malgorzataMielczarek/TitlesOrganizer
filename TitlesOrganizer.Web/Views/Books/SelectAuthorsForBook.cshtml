@@ -7,23 +7,18 @@
 <form enctype="multipart/form-data" method="post">
     <input type="hidden" asp-for="BookId" />
     <div class="row">
-        <table class="table" id="selectedAuthors">
-            <thead>
+        <table class="table table-success table-sm" id="selectedAuthors">
+            <thead class="table-dark">
                 <tr>
-                    <th colspan="2">
-                        Selected authors
+                    <th scope="col">
+                        Selected author
                     </th>
-                </tr>
-                <tr>
-                    <th>
-                        Author
-                    </th>
-                    <th>
-                        Books
+                    <th scope="col">
+                        Other books
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
                 @foreach (var author in Model.SelectedAuthors)
                 {
                     <tr>
@@ -45,7 +40,7 @@
         <input type="submit" value="Search" asp-action="SelectAuthorsForBook" />
     </div>
     <div class="row">
-        <table class="table">
+        <table class="table table-hover table-bordered">
             <thead>
                 <tr>
                     <th>
@@ -55,9 +50,8 @@
                         Author
                     </th>
                     <th>
-                        Books
+                        Other books
                     </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -65,8 +59,10 @@
         {
                 <tr>
                     <input type="hidden" asp-for="@Model.List[i].Id" />
-                    <td>
-                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" onchange="javascript:AuthorSelectionChanged(value, '@Model.List[i].FullName', '@Model.List[i].OtherBooks')" />
+                    <td class="text-center">
+                        <div class="form-check-inline">
+                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" aria-label="Author selected" autocomplete="off" onchange="javascript:AuthorSelectionChanged(this.checked, '@Model.List[i].FullName', '@Model.List[i].OtherBooks')" />
+                        </div>
                     </td>
                     <td>
                         @Html.Label(Model.List[i].FullName)
