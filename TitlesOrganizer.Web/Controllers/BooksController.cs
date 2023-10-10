@@ -28,21 +28,6 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult AddAuthorsForBook(int id)
-        {
-            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(id, SortByEnum.Ascending, PAGE_SIZE, 1, "");
-            return View(authors);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult AddAuthorsForBook(int bookId, List<int> authorsIds)
-        {
-            //_bookService.AddAuthorsForBook(bookId, authorsIds);
-            return View(bookId);
-        }
-
-        [HttpGet]
         public ActionResult AddGenresForBook(int id)
         {
             ListGenreForBookVM genres = _bookService.GetAllGenresForBookList(id, SortByEnum.Ascending, PAGE_SIZE, 1, "");

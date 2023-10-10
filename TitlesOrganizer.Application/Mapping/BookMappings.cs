@@ -148,7 +148,7 @@ namespace TitlesOrganizer.Application.Mapping
             return details;
         }
 
-        public static ListAuthorForBookVM MapToList(this IQueryable<Author> authors, int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        public static ListAuthorForBookVM MapToList(this IQueryable<Author> authors, int bookId, string bookTitle, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
         {
             searchString ??= string.Empty;
 
@@ -164,6 +164,7 @@ namespace TitlesOrganizer.Application.Mapping
             return new ListAuthorForBookVM(limitedList, count, sortBy, pageSize, pageNo, searchString)
             {
                 BookId = bookId,
+                BookTitle = bookTitle,
                 SelectedAuthors = list.Where(a => a.IsForBook).ToList()
             };
         }

@@ -1,6 +1,6 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
 @{
-    ViewData["Title"] = "Select authors";
+    ViewData["Title"] = "Select authors of \"" + Model.BookTitle + "\"";
 }
 <h1>@ViewData["Title"]</h1>
 
@@ -19,14 +19,15 @@
                 </tr>
             </thead>
             <tbody class="table-group-divider">
-                @foreach (var author in Model.SelectedAuthors)
+                @for (var i = 0; i < Model.SelectedAuthors.Count; i++)
                 {
                     <tr>
+                        @Html.HiddenFor(model => model.SelectedAuthors[i].Id)
                         <td>
-                            @Html.Label(author.FullName)
+                            @Html.DisplayTextFor(model => model.SelectedAuthors[i].FullName)
                         </td>
                         <td>
-                            @Html.Label(author.OtherBooks)
+                            @Html.DisplayTextFor(model => model.SelectedAuthors[i].OtherBooks)
                         </td>
                     </tr>
                 }
@@ -58,17 +59,17 @@
         @for (int i = 0; i < Model.List.Count; i++)
         {
                 <tr>
-                    <input type="hidden" asp-for="@Model.List[i].Id" />
+                    @Html.HiddenFor(model => model.List[i].Id)
                     <td class="text-center">
                         <div class="form-check-inline">
-                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" aria-label="Author selected" autocomplete="off" onchange="javascript:AuthorSelectionChanged(this.checked, '@Model.List[i].FullName', '@Model.List[i].OtherBooks')" />
+                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" aria-label="Author selected" autocomplete="off" onchange="javascript:AuthorSelectionChanged(this)" />
                         </div>
                     </td>
                     <td>
-                        @Html.Label(Model.List[i].FullName)
+                        @Html.DisplayTextFor(model => model.List[i].FullName)
                     </td>
                     <td>
-                        @Html.Label(Model.List[i].OtherBooks)
+                        @Html.DisplayTextFor(model => model.List[i].OtherBooks)
                     </td>
                 </tr>
         }

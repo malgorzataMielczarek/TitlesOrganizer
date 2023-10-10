@@ -100,7 +100,18 @@ namespace TitlesOrganizer.Application.Services
             _bookRepository.DeleteBook(id);
         }
 
-        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList(bookId, sortBy, pageSize, pageNo, searchString);
+        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            Book? book = _bookRepository.GetBookById(bookId);
+            if (book == null)
+            {
+                return new ListAuthorForBookVM();
+            }
+
+            string bookTitle = book.Title;
+
+            return _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList(bookId, bookTitle, sortBy, pageSize, pageNo, searchString);
+        }
 
         public ListAuthorForListVM GetAllAuthorsForList(ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList(sortBy, pageSize, pageNo, searchString);
 
