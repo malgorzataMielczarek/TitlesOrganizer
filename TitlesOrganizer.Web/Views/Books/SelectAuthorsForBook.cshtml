@@ -45,7 +45,7 @@
             <thead>
                 <tr>
                     <th>
-                
+
                     </th>
                     <th>
                         Author
@@ -56,23 +56,32 @@
                 </tr>
             </thead>
             <tbody>
-        @for (int i = 0; i < Model.List.Count; i++)
-        {
-                <tr>
-                    <input type="hidden" asp-for="@Model.List[i].Id" value="@Model.List[i].Id" />
-                    <td class="text-center">
-                        <div class="form-check-inline">
-                            <input type="checkbox" class="form-check-input" asp-for="@Model.List[i].IsForBook" aria-label="Author selected" onchange="javascript:AuthorSelectionChanged(this)" />
-                        </div>
-                    </td>
-                    <td>
-                        @Html.DisplayTextFor(model => model.List[i].FullName)
-                    </td>
-                    <td>
-                        @Html.DisplayTextFor(model => model.List[i].OtherBooks)
-                    </td>
-                </tr>
-        }
+                @foreach (var author in Model.List)
+                {
+                    <tr>
+                        <input type="hidden" name="List.Index" value="@author.Id" />
+                        <input type="hidden" name="List[@author.Id].Id" value="@author.Id" />
+                        <td class="text-center">
+                            <div class="form-check-inline">
+                                @if (author.IsForBook)
+                                {
+                                    <input type="checkbox" class="form-check-input" name="List[@author.Id].IsForBook" value="true" aria-label="Author selected" onchange="javascript:AuthorSelectionChanged(this)" checked />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="form-check-input" name="List[@author.Id].IsForBook" value="true" aria-label="Author selected" onchange="javascript:AuthorSelectionChanged(this)" />
+                                }
+                                <input type="hidden" name="List[@author.Id].IsForBook" value="false" />
+                            </div>
+                        </td>
+                        <td>
+                            @author.FullName
+                        </td>
+                        <td>
+                            @author.OtherBooks
+                        </td>
+                    </tr>
+                }
                 <tr>
                     <td colspan="3">
                         <button type="submit" title="Add new author" href="/Books/Update/AddAuthor">

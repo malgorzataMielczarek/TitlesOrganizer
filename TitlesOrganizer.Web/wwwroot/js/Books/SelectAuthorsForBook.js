@@ -10,7 +10,7 @@ function Submit() {
 
 function AuthorSelectionChanged(checkbox) {
     var row = $(checkbox).closest("tr")[0];
-    var id = row.querySelector('input[type="hidden"]').value;
+    var id = row.querySelector('input[type="hidden"]:first-of-type').value;
     var fullName = row.querySelector('td:nth-of-type(2)').innerText;
     var otherBooks = row.querySelector('td:nth-of-type(3)').innerText;
 
