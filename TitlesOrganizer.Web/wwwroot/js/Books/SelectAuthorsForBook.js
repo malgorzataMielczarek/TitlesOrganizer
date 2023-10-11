@@ -26,13 +26,21 @@ function AuthorSelectionChanged(checkbox) {
                 idInput.setAttribute("type", "hidden");
                 idInput.setAttribute("value", id);
                 var lastInput = selectedTable.querySelector('tr:last-of-type > input[type="hidden"]');
-                var lastName = lastInput.getAttribute("name");
-                var numberStart = lastName.indexOf('[') + 1;
-                var numberEnd = lastName.indexOf(']');
-                var number = lastName.substring(numberStart, numberEnd);
-                var newNumber = (parseInt(number) + 1).toString();
-                var name = lastName.replace(number, newNumber);
-                var identifier = lastInput.id.replace(number, newNumber);
+                var name;
+                var identifier;
+                if (lastInput) {
+                    var lastName = lastInput.getAttribute("name");
+                    var numberStart = lastName.indexOf('[') + 1;
+                    var numberEnd = lastName.indexOf(']');
+                    var number = lastName.substring(numberStart, numberEnd);
+                    var newNumber = (parseInt(number) + 1).toString();
+                    name = lastName.replace(number, newNumber);
+                    identifier = lastInput.id.replace(number, newNumber);
+                }
+                else {
+                    name = "SelectedAuthors[0].Id";
+                    identifier = "SelectedAuthors_0__Id"
+                }
                 idInput.setAttribute("name", name);
                 idInput.id = identifier;
                 row.appendChild(idInput);

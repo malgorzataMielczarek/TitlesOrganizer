@@ -261,12 +261,12 @@ namespace TitlesOrganizer.Web.Controllers
             }
 
             ViewData["Title"] = "Update Book";
-            return FormResult.CreateErrorResult("Check entered data.");
+            return View("UpsertBook", book);
         }
 
-        [HttpPost, FormValidator]
+        [HttpPost("/Books/CreateNew"), HttpPost("/Books/Update"), FormValidator]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateBook(BookVM book)
+        public ActionResult UpsertBook(BookVM book)
         {
             if (ModelState.IsValid)
             {
@@ -291,7 +291,7 @@ namespace TitlesOrganizer.Web.Controllers
             }
 
             ViewData["Title"] = "Update Book";
-            return FormResult.CreateErrorResult("Check entered data.");
+            return FormResult.CreateErrorResult("Check entered data.", "/Books/Update");
         }
 
         [HttpGet]
@@ -321,6 +321,26 @@ namespace TitlesOrganizer.Web.Controllers
             _bookService.SelectAuthorsForBook(listAuthorForBook);
 
             return RedirectToAction(nameof(UpsertBook), new { id = listAuthorForBook.BookId });
+        }
+
+        [HttpPost("/Books/Update/AddAuthor")]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddNewAuthorForBook(ListAuthorForBookVM listAuthorForBook)
+        {
+            _bookService.SelectAuthorsForBook(listAuthorForBook);
+            var author = new NewAuthorVM() { BookId = listAuthorForBook.BookId, BookTitle = listAuthorForBook.BookTitle };
+
+            return View(author);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddNewAuthorForBook(NewAuthorVM author)
+        {
+            if (ModelState.IsValid)
+            {
+            }
+            return View(author);
         }
     }
 }
