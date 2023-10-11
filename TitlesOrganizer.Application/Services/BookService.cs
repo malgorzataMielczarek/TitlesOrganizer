@@ -33,17 +33,47 @@ namespace TitlesOrganizer.Application.Services
                 return;
             }
 
-            List<Author> authors = new List<Author>();
-            foreach (var authorId in listAuthorForBook.List.Where(a => a.IsForBook).Select(a => a.Id))
+            var selectedIds = listAuthorForBook.SelectedAuthors.Select(a => a.Id).ToList();
+            // Compare lists in case JavaScript function didn't work
+            foreach (var author in listAuthorForBook.List)
+            {
+                if (author.IsForBook)
+                {
+                    if (!selectedIds.Contains(author.Id))
+                    {
+                        selectedIds.Add(author.Id);
+                    }
+                }
+                else
+                {
+                    if (selectedIds.Contains(author.Id))
+                    {
+                        selectedIds.Remove(author.Id);
+                    }
+                }
+            }
+
+            // Update list of selected authors
+            foreach (var author in book.Authors.ToList())
+            {
+                if (selectedIds.Contains(author.Id))
+                {
+                    selectedIds.Remove(author.Id);
+                }
+                else
+                {
+                    book.Authors.Remove(author);
+                }
+            }
+
+            foreach (var authorId in selectedIds)
             {
                 Author? author = _bookRepository.GetAuthorById(authorId);
                 if (author != null)
                 {
-                    authors.Add(author);
+                    book.Authors.Add(author);
                 }
             }
-
-            book.Authors = authors;
 
             _bookRepository.UpdateAuthorsOfBook(book);
         }

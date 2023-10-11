@@ -153,19 +153,20 @@ namespace TitlesOrganizer.Application.Mapping
             searchString ??= string.Empty;
 
             var list = authors
-                .Sort(sortBy, a => a.LastName, a => a.Name)
-                .Map(bookId);
+                .Sort(sortBy, a => a.LastName, a => a.Name);
             int count = list.Count();
             var limitedList = list
+                .Map(bookId)
                 .Where(a => a.FullName.Contains(searchString))
                 .Skip(pageSize * (pageNo - 1))
                 .Take(pageSize);
+            var selectedAuthors = list.Where(a => a.Books.Any(b => b.Id == bookId)).Map().ToList();
 
             return new ListAuthorForBookVM(limitedList, count, sortBy, pageSize, pageNo, searchString)
             {
                 BookId = bookId,
                 BookTitle = bookTitle,
-                SelectedAuthors = list.Where(a => a.IsForBook).ToList()
+                SelectedAuthors = selectedAuthors
             };
         }
 
