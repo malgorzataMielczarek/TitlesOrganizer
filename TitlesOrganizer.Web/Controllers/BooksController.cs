@@ -196,7 +196,7 @@ namespace TitlesOrganizer.Web.Controllers
 
         [HttpGet("/Books/CreateNew")]
         [HttpGet("/Books/Update/{id?}")]
-        public ActionResult UpsertBook(int? id)
+        public ActionResult GetUpsertBook(int? id)
         {
             var languages = _languageService.GetAllLanguagesForList();
             ViewBag.Languages = languages.Languages.Select(lang => new SelectListItem(lang.Name, lang.Code));
@@ -213,7 +213,7 @@ namespace TitlesOrganizer.Web.Controllers
                 book = new BookVM();
             }
 
-            return View(book);
+            return View("UpsertBook", book);
         }
 
         //[HttpPost, FormValidator]
@@ -244,7 +244,7 @@ namespace TitlesOrganizer.Web.Controllers
         //    return View(book);
         //}
 
-        [HttpPost]
+        [HttpPost, FormValidator]
         [ValidateAntiForgeryToken]
         public ActionResult SelectAuthors(BookVM book)
         {
@@ -256,15 +256,15 @@ namespace TitlesOrganizer.Web.Controllers
                 {
                     ViewData["BookTitle"] = book.Title;
 
-                    return RedirectToAction(nameof(SelectAuthorsForBook), new { id = id });
+                    return FormResult.CreateInfoResult("Select authors of this book", Url.Action(nameof(SelectAuthorsForBook), new { id = id }), 0);
                 }
             }
 
             ViewData["Title"] = "Update Book";
-            return View("UpsertBook", book);
+            return FormResult.CreateErrorResultWithObject(book, "You must specify book title first.", Url.Action(nameof(UpsertBook)));
         }
 
-        [HttpPost("/Books/CreateNew"), HttpPost("/Books/Update"), FormValidator]
+        [HttpPost, FormValidator]
         [ValidateAntiForgeryToken]
         public ActionResult UpsertBook(BookVM book)
         {
@@ -320,7 +320,7 @@ namespace TitlesOrganizer.Web.Controllers
         {
             _bookService.SelectAuthorsForBook(listAuthorForBook);
 
-            return RedirectToAction(nameof(UpsertBook), new { id = listAuthorForBook.BookId });
+            return RedirectToAction(nameof(GetUpsertBook), new { id = listAuthorForBook.BookId });
         }
 
         [HttpPost("/Books/Update/AddAuthor")]
