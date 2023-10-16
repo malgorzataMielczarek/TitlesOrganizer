@@ -20,7 +20,7 @@ namespace TitlesOrganizer.Application.Services
             _mapper = mapper;
         }
 
-        public int AddAuthor(NewAuthorVM author)
+        public int AddAuthor(AuthorVM author)
         {
             return _bookRepository.AddNewAuthor(author.BookId, author.MapToBase(_mapper));
         }

@@ -26,7 +26,7 @@ namespace TitlesOrganizer.Application.Mapping
             {
                 Id = a.Id,
                 FullName = a.Name + " " + a.LastName,
-                Books = string.Join(", ", a.Books.OrderBy(b => b.Title).Select(b => b.Title))
+                Books = a.Books.OrderBy(b => b.Title).Select(b => b.Title).ToList()
             });
         }
 
@@ -81,7 +81,7 @@ namespace TitlesOrganizer.Application.Mapping
             return bookVM;
         }
 
-        public static Author MapToBase(this NewAuthorVM authorVM, IMapper mapper)
+        public static Author MapToBase(this AuthorVM authorVM, IMapper mapper)
         {
             return mapper.Map<Author>(authorVM);
         }
@@ -180,7 +180,7 @@ namespace TitlesOrganizer.Application.Mapping
                 .Where(a => a.FullName.Contains(searchString));
             int count = list.Count();
             var limitedList = list
-                .Skip(pageSize * (pageSize - 1))
+                .Skip(pageSize * (pageNo - 1))
                 .Take(pageSize);
 
             return new ListAuthorForListVM(limitedList, count, sortBy, pageSize, pageNo, searchString);
@@ -312,7 +312,7 @@ namespace TitlesOrganizer.Application.Mapping
     {
         public BookMappings()
         {
-            CreateMap<NewAuthorVM, Author>().ForMember(dest => dest.Books, opt => opt.Ignore());
+            CreateMap<AuthorVM, Author>().ForMember(dest => dest.Books, opt => opt.Ignore());
             CreateMap<BookVM, Book>()
                 .ForMember(dest => dest.Authors, opt => opt.Ignore())
                 .ForMember(dest => dest.BookSeries, opt => opt.Ignore())

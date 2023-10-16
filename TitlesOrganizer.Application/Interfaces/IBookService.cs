@@ -5,7 +5,7 @@ namespace TitlesOrganizer.Application.Interfaces
 {
     public interface IBookService
     {
-        int AddAuthor(NewAuthorVM author);
+        int AddAuthor(AuthorVM author);
 
         void SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook);
 

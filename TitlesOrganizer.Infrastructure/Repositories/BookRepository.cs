@@ -81,12 +81,11 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             if (book != null)
             {
                 book.Authors.Add(author);
-                _context.SaveChanges();
-
-                return author.Id;
             }
 
-            return -1;
+            _context.SaveChanges();
+
+            return author.Id;
         }
 
         public int AddNewGenre(int bookId, LiteratureGenre genre)

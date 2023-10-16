@@ -45,15 +45,39 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet]
         public ActionResult AddNewAuthor()
         {
-            return View();
+            return View(new AuthorVM());
         }
 
-        [HttpPost]
+        [HttpPost, FormValidator]
         [ValidateAntiForgeryToken]
-        public ActionResult AddNewAuthor(NewAuthorVM author)
+        public ActionResult AddNewAuthor(AuthorVM author)
         {
-            int id = _bookService.AddAuthor(author);
-            return View();
+            if (ModelState.IsValid)
+            {
+                if (string.IsNullOrWhiteSpace(author.Name) && string.IsNullOrWhiteSpace(author.LastName))
+                {
+                    return FormResult.CreateErrorResult("Enter name or/and last name of the author.");
+                }
+
+                int id = _bookService.AddAuthor(author);
+
+                if (id > 0)
+                {
+                    string? redirectUri;
+                    if (author.BookId == default)
+                    {
+                        redirectUri = Url.Action(nameof(Authors));
+                    }
+                    else
+                    {
+                        redirectUri = Url.Action(nameof(SelectAuthorsForBook), new { id = author.BookId });
+                    }
+
+                    return FormResult.CreateSuccessResult("New author added.", redirectUri);
+                }
+            }
+
+            return FormResult.CreateErrorResult("Check entered data.");
         }
 
         [HttpGet]
@@ -256,7 +280,7 @@ namespace TitlesOrganizer.Web.Controllers
                 {
                     ViewData["BookTitle"] = book.Title;
 
-                    return FormResult.CreateInfoResult("Select authors of this book", Url.Action(nameof(SelectAuthorsForBook), new { id = id }), 0);
+                    return FormResult.CreateInfoResult("Select authors of this book", Url.Action(nameof(SelectAuthorsForBook), new { id = id }), 1);
                 }
             }
 
@@ -328,19 +352,9 @@ namespace TitlesOrganizer.Web.Controllers
         public ActionResult AddNewAuthorForBook(ListAuthorForBookVM listAuthorForBook)
         {
             _bookService.SelectAuthorsForBook(listAuthorForBook);
-            var author = new NewAuthorVM() { BookId = listAuthorForBook.BookId, BookTitle = listAuthorForBook.BookTitle };
+            var author = new AuthorVM() { BookId = listAuthorForBook.BookId, BookTitle = listAuthorForBook.BookTitle };
 
-            return View(author);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult AddNewAuthorForBook(NewAuthorVM author)
-        {
-            if (ModelState.IsValid)
-            {
-            }
-            return View(author);
+            return View("AddNewAuthor", author);
         }
     }
 }

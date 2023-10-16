@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class NewAuthorVM
+    public class AuthorVM
     {
         public int Id { get; set; }
 
@@ -16,6 +16,6 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public int BookId { get; set; }
 
-        public string BookTitle { get; set; } = string.Empty;
+        public string? BookTitle { get; set; } = string.Empty;
     }
 }
