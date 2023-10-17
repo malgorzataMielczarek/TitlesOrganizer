@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="Validators\MovieValidators\" />
     <Folder Include="Validators\TvSeriesValidators\" />
+    <Folder Include="ViewModels\BookVMs\Update\" />
     <Folder Include="ViewModels\MovieVMs\" />
     <Folder Include="ViewModels\TvSeriesVMs\" />
   </ItemGroup>

@@ -4,6 +4,8 @@ using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Mapping;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.Details;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ForList;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
 
@@ -184,6 +186,6 @@ namespace TitlesOrganizer.Application.Services
             listAuthorForBook.SortBy,
             listAuthorForBook.PageSize,
             listAuthorForBook.CurrentPage,
-            listAuthorForBook.SearchString);
+            listAuthorForBook.SearchString!);
     }
 }

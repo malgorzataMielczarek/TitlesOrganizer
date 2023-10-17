@@ -1,4 +1,4 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListBookForListVM
+﻿@model ListBookForListVM
 
 @{
     ViewData["Title"] = "Books";
@@ -14,24 +14,43 @@
 </p>
 <form asp-action="Index" asp-controller="Books" method="post">
     <div class="row">
-        <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()" onchange="javascript:Submit();"></select>
-        <select asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Common.PageSize.List, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataTextField)" onchange="javascript:Submit();" action="/Books/Index"></select>
-        <input type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
-        <input type="submit" value="Search" />
+        <div class="mb-1">
+            <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle filters</button>
+        </div>
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="container list-group list-group-horizontal-md">
+                    <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                        <select class="form-select" asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()" onchange="javascript:Submit();"></select>
+                    </div>
+                    <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                        <select class="form-select" asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Common.PageSize.List, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataTextField)" onchange="javascript:Submit();" action="/Books/Index"></select>
+                    </div>
+                    <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                        <div class="input-group">
+                            <input class="form-control" type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
+                            <input type="submit" class="btn btn-outline-secondary float-start" value="Search" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <table class="table">
             <thead>
                 <tr>
-                    <th>No</th>
                     <th>Title</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-            @foreach (var (book, index) in Model.List.Select((value, index) => (value, index + 1))) {
+            @foreach (var book in Model.List) {
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => index)</td>
                     <td>@Html.DisplayFor(modelItem => book.Title)</td>
                     <td>
                         <a href=@($"/Books/Update/{book.Id}")>Edit</a> |

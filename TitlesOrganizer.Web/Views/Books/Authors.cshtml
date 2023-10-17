@@ -1,4 +1,4 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForListVM
+﻿@model ListAuthorForListVM
 
 @{
     ViewData["Title"] = "Authors";
@@ -6,49 +6,36 @@
 
 <h1>Authors</h1>
 <div class="container">
-    <div class="row row-cols-2 row-cols-lg-4 row-cols-md-3 gy-5">
-    @foreach (var author in Model.List) 
+    <div class="row row-cols-2 row-cols-lg-4 row-cols-md-3 g-2 g-lg-3">
+    @foreach (var author in Model.List)
     {
-            <div class="col-6 card p-3 border-0">
-                <div class="modal fade" id=@("modalDetails_" + author.Id) tabindex="-1" aria-labelledby="@("modalDetailsLabel_" + author.Id)" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id=@("modalDetailsLabel_" + author.Id)>@author.FullName</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <h5>Books</h5>
-                                <ul class="list-group list-group-flash" style="text-align:left;">
-                                    @foreach (var book in author.Books)
-                                    {
-                                        <li class="list-group-item">@book</li>
-                                    }
-                                </ul>
-                            </div>
+        <div class="col-6 card p-3 border-0">
+            <button class="card-body btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target=@("#modalDetails_" + author.Id)>
+                <h5 class="card-title">@author.FullName</h5>
+            </button>
+
+            <div class="modal fade" id=@("modalDetails_" + author.Id) tabindex="-1" aria-labelledby="@("modalDetailsLabel_" + author.Id)" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id=@("modalDetailsLabel_" + author.Id)>@author.FullName</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5>Books</h5>
+                            <ul class="list-group list-group-flash" style="text-align:left;">
+                                @foreach (var book in author.Books)
+                                {
+                                    <li class="list-group-item">
+                                        <a asp-action="Details" asp-route-id=@book.Id>@book.Title</a>
+                                    </li>
+                                }
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <button class="card-body btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target=@("#modalDetails_" + author.Id)>
-                <h5 class="card-title">@author.FullName</h5>
-                <div class="card-header" style="text-align:left;">Books</div>
-                <ul class="list-group list-group-flash" style="text-align:left;">
-            @{
-                int count = author.Books.Count;
-                if (count > 3)
-                {
-                    count = 3;
-                }
-
-                for (int i = 0; i < count; i++)
-                {
-                    <li class="list-group-item">@author.Books[i]</li>
-                }
-            }
-                </ul>
-            </button>
+        </div>
     }
     </div>
 </div>

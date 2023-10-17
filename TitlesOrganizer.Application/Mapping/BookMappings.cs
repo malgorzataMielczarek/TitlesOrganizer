@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using System.Text;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.Details;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ForList;
 using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
@@ -18,21 +19,6 @@ namespace TitlesOrganizer.Application.Mapping
                 IsForBook = a.Books.Any(b => b.Id == bookId),
                 OtherBooks = string.Join(", ", a.Books.Where(b => b.Id != bookId).OrderBy(b => b.Title).Select(b => b.Title))
             });
-        }
-
-        public static IQueryable<AuthorForListVM> Map(this IQueryable<Author> authors)
-        {
-            return authors.Select(a => new AuthorForListVM()
-            {
-                Id = a.Id,
-                FullName = a.Name + " " + a.LastName,
-                Books = a.Books.OrderBy(b => b.Title).Select(b => b.Title).ToList()
-            });
-        }
-
-        public static IQueryable<BookForListVM> Map(this IQueryable<Book> books, IMapper mapper)
-        {
-            return books.ProjectTo<BookForListVM>(mapper.ConfigurationProvider);
         }
 
         public static IQueryable<GenreForBookVM> Map(this IQueryable<LiteratureGenre> genres, int bookId)
@@ -58,16 +44,6 @@ namespace TitlesOrganizer.Application.Mapping
                 Title = s.Title ?? string.Empty,
                 IsForBook = s.Books.Any(b => b.Id == bookId),
                 OtherBooks = string.Join(", ", s.Books.Where(b => b.Id != bookId).OrderBy(b => b.Title).Select(b => b.NumberInSeries))
-            });
-        }
-
-        public static IQueryable<SeriesForListVM> Map(this IQueryable<BookSeries> series)
-        {
-            return series.Select(s => new SeriesForListVM()
-            {
-                Id = s.Id,
-                Title = s.Title ?? string.Empty,
-                Books = string.Join(", ", s.Books.OrderBy(b => b.Title).Select(b => b.NumberInSeries))
             });
         }
 
@@ -99,16 +75,6 @@ namespace TitlesOrganizer.Application.Mapping
         public static BookSeries MapToBase(this NewSeriesVM seriesVM, IMapper mapper)
         {
             return mapper.Map<BookSeries>(seriesVM);
-        }
-
-        public static AuthorDetailsVM MapToDetails(this Author author, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            return new AuthorDetailsVM()
-            {
-                Id = author.Id,
-                FullName = author.Name + " " + author.LastName,
-                Books = author.Books.AsQueryable().MapToList(mapper, sortBy, pageSize, pageNo, searchString)
-            };
         }
 
         public static BookDetailsVM MapToDetails(this Book book)
@@ -170,38 +136,6 @@ namespace TitlesOrganizer.Application.Mapping
             };
         }
 
-        public static ListAuthorForListVM MapToList(this IQueryable<Author> authors, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            searchString ??= string.Empty;
-
-            var list = authors
-                .Sort(sortBy, a => a.LastName, a => a.Name)
-                .Map()
-                .Where(a => a.FullName.Contains(searchString));
-            int count = list.Count();
-            var limitedList = list
-                .Skip(pageSize * (pageNo - 1))
-                .Take(pageSize);
-
-            return new ListAuthorForListVM(limitedList, count, sortBy, pageSize, pageNo, searchString);
-        }
-
-        public static ListBookForListVM MapToList(this IQueryable<Book> books, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            searchString ??= string.Empty;
-
-            var list = books
-                .Where(b => b.Title.Contains(searchString))
-                .Sort(sortBy, b => b.Title);
-            int count = list.Count();
-            var limitedList = list
-                .Skip(pageSize * (pageNo - 1))
-                .Take(pageSize)
-                .Map(mapper);
-
-            return new ListBookForListVM(limitedList, count, sortBy, pageSize, pageNo, searchString);
-        }
-
         public static ListGenreVM MapToList(this IQueryable<LiteratureGenre> genres, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
         {
             searchString ??= string.Empty;
@@ -236,22 +170,6 @@ namespace TitlesOrganizer.Application.Mapping
             {
                 BookId = bookId
             };
-        }
-
-        public static ListSeriesForListVM MapToList(this IQueryable<BookSeries> series, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            var list = series
-                .Where(s => string.IsNullOrEmpty(searchString)
-                || (s.Title != null && s.Title.Contains(searchString))
-                || s.Books.Any(b => b.Title.Contains(searchString)))
-                .Map()
-                .Sort(sortBy, s => s.Title, s => s.Books);
-            int count = list.Count();
-            var limitedList = list
-                .Skip(pageSize * (pageNo - 1))
-                .Take(pageSize);
-
-            return new ListSeriesForListVM(limitedList, count, sortBy, pageSize, pageNo, searchString);
         }
 
         public static ListSeriesForBookVM MapToList(this IQueryable<BookSeries> series, int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)

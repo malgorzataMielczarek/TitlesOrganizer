@@ -1,4 +1,6 @@
 ﻿using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.Details;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ForList;
 using TitlesOrganizer.Application.ViewModels.Common;
 
 namespace TitlesOrganizer.Application.Interfaces
