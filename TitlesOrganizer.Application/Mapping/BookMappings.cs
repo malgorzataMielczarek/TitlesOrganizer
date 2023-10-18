@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using System.Text;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.Details;
-using TitlesOrganizer.Application.ViewModels.BookVMs.ForList;
+using TitlesOrganizer.Application.ViewModels.BookVMs.QueriesVMs.ForListVMs;
 using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
@@ -31,11 +29,6 @@ namespace TitlesOrganizer.Application.Mapping
             });
         }
 
-        public static IQueryable<GenreVM> Map(this IQueryable<LiteratureGenre> genres)
-        {
-            return genres.Select(g => new GenreVM() { Id = g.Id, Name = g.Name });
-        }
-
         public static IQueryable<SeriesForBookVM> Map(this IQueryable<BookSeries> series, int bookId)
         {
             return series.Select(s => new SeriesForBookVM()
@@ -45,73 +38,6 @@ namespace TitlesOrganizer.Application.Mapping
                 IsForBook = s.Books.Any(b => b.Id == bookId),
                 OtherBooks = string.Join(", ", s.Books.Where(b => b.Id != bookId).OrderBy(b => b.Title).Select(b => b.NumberInSeries))
             });
-        }
-
-        public static BookVM MapForUpdate(this Book book, IMapper mapper)
-        {
-            var bookVM = mapper.Map<BookVM>(book);
-            bookVM.Authors = string.Join(", ", book.Authors.Select(a => a.Name + " " + a.LastName));
-            bookVM.Genres = string.Join(", ", book.Genres.Select(g => g.Name));
-            bookVM.Series = book.BookSeries?.Title;
-
-            return bookVM;
-        }
-
-        public static Author MapToBase(this AuthorVM authorVM, IMapper mapper)
-        {
-            return mapper.Map<Author>(authorVM);
-        }
-
-        public static Book MapToBase(this BookVM bookVM, IMapper mapper)
-        {
-            return mapper.Map<Book>(bookVM);
-        }
-
-        public static LiteratureGenre MapToBase(this GenreVM genreVM, IMapper mapper)
-        {
-            return mapper.Map<LiteratureGenre>(genreVM);
-        }
-
-        public static BookSeries MapToBase(this NewSeriesVM seriesVM, IMapper mapper)
-        {
-            return mapper.Map<BookSeries>(seriesVM);
-        }
-
-        public static BookDetailsVM MapToDetails(this Book book)
-        {
-            return new BookDetailsVM()
-            {
-                Id = book.Id,
-                Title = book.Title,
-                OriginalTitle = book.OriginalTitle ?? string.Empty,
-                OriginalLanguage = book.OriginalLanguage?.Name ?? string.Empty,
-                Authors = new Dictionary<int, string>(book.Authors.Select(a => new KeyValuePair<int, string>(a.Id, a.Name + " " + a.LastName))),
-                Genres = new Dictionary<int, string>(book.Genres.Select(g => new KeyValuePair<int, string>(g.Id, g.Name))),
-                Description = book.Description?.Replace("\\r\\n", "\r\n").Replace("\\n\\r", "\n\r").Replace("\\n", "\n") ?? string.Empty,
-                Year = book.Year?.ToString() ?? string.Empty,
-                Edition = book.Edition ?? string.Empty,
-                SeriesId = book.BookSeriesId,
-                SeriesTitle = book.BookSeries?.Title,
-                InSeries = InSeries(book.NumberInSeries, book.BookSeries)
-            };
-        }
-
-        public static GenreDetailsVM MapToDetails(this LiteratureGenre genre, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            return new GenreDetailsVM()
-            {
-                Id = genre.Id,
-                Name = genre.Name,
-                Books = genre.Books?.AsQueryable().MapToList(mapper, sortBy, pageSize, pageNo, searchString) ?? new ListBookForListVM()
-            };
-        }
-
-        public static SeriesDetailsVM MapToDetails(this BookSeries series, IMapper mapper, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            var details = mapper.Map<SeriesDetailsVM>(series);
-            details.Books = series.Books?.AsQueryable().MapToList(mapper, sortBy, pageSize, pageNo, searchString) ?? new ListBookForListVM();
-
-            return details;
         }
 
         public static ListAuthorForBookVM MapToList(this IQueryable<Author> authors, int bookId, string bookTitle, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
@@ -134,22 +60,6 @@ namespace TitlesOrganizer.Application.Mapping
                 BookTitle = bookTitle,
                 SelectedAuthors = selectedAuthors
             };
-        }
-
-        public static ListGenreVM MapToList(this IQueryable<LiteratureGenre> genres, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            searchString ??= string.Empty;
-
-            var list = genres
-                .Where(g => g.Name.Contains(searchString))
-                .Sort(sortBy, g => g.Name)
-                .Map();
-            int count = list.Count();
-            var limitedList = list
-                .Skip(pageSize * (pageNo - 1))
-                .Take(pageSize);
-
-            return new ListGenreVM(limitedList, count, sortBy, pageSize, pageNo, searchString);
         }
 
         public static ListGenreForBookVM MapToList(this IQueryable<LiteratureGenre> genres, int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
@@ -193,52 +103,13 @@ namespace TitlesOrganizer.Application.Mapping
                 BookId = bookId
             };
         }
-
-        private static string InSeries(int? numberInSeries, BookSeries? bookSeries)
-        {
-            if (bookSeries == null)
-            {
-                return string.Empty;
-            }
-
-            StringBuilder result = new StringBuilder();
-            if (numberInSeries != null)
-            {
-                result.Append(numberInSeries);
-                int count;
-                if ((count = bookSeries.Books.Count) > 0)
-                {
-                    result.Append(" of ");
-                    result.Append(count);
-                }
-
-                if (bookSeries.Title != null)
-                {
-                    result.Append(" in ");
-                }
-            }
-            else if (bookSeries.Title != null)
-            {
-                result.Append("Part of ");
-            }
-
-            return result.ToString();
-        }
     }
 
     public class BookMappings : Profile
     {
         public BookMappings()
         {
-            CreateMap<AuthorVM, Author>().ForMember(dest => dest.Books, opt => opt.Ignore());
-            CreateMap<BookVM, Book>()
-                .ForMember(dest => dest.Authors, opt => opt.Ignore())
-                .ForMember(dest => dest.BookSeries, opt => opt.Ignore())
-                .ForMember(dest => dest.Genres, opt => opt.Ignore()).ReverseMap();
             CreateProjection<Book, BookForListVM>();
-            CreateMap<GenreVM, LiteratureGenre>().ForMember(dest => dest.Books, opt => opt.Ignore());
-            CreateMap<BookSeries, SeriesDetailsVM>().ForMember(dest => dest.Books, opt => opt.Ignore());
-            CreateMap<NewSeriesVM, BookSeries>().ForMember(dest => dest.Books, opt => opt.Ignore());
         }
     }
 }

@@ -1,11 +1,16 @@
-﻿using TitlesOrganizer.Application.ViewModels.Common;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Application.ViewModels.BookVMs.ForList
+namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueriesVMs.ForListVMs
 {
     public class AuthorForListVM
     {
+        [ScaffoldColumn(false)]
         public int Id { get; set; }
+
+        [DisplayName("Author")]
         public string FullName { get; set; } = null!;
     }
 
@@ -27,13 +32,31 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.ForList
             });
         }
 
+        public static List<AuthorForListVM> Map(this ICollection<Author> authors)
+        {
+            return authors.Select(a => new AuthorForListVM()
+            {
+                Id = a.Id,
+                FullName = a.Name + " " + a.LastName
+            }).ToList();
+        }
+
+        public static List<AuthorForListVM> Map(this IEnumerable<Author> authors)
+        {
+            return authors.Select(a => new AuthorForListVM()
+            {
+                Id = a.Id,
+                FullName = a.Name + " " + a.LastName
+            }).ToList();
+        }
+
         public static ListAuthorForListVM MapToList(this IQueryable<Author> authors, Paging paging, Filtering filtering)
         {
             var queryable = authors
                 .Sort(filtering.SortBy, a => a.LastName, a => a.Name)
                 .Map()
                 .Where(a => a.FullName.Contains(filtering.SearchString));
-            int count = queryable.Count();
+            paging.Count = queryable.Count();
             var limitedList = queryable
                 .Skip(paging.PageSize * (paging.CurrentPage - 1))
                 .Take(paging.PageSize)
@@ -45,6 +68,11 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.ForList
                 Paging = paging,
                 Filtering = filtering
             };
+        }
+
+        public static ListAuthorForListVM MapToList(this ListData<Author> authors)
+        {
+            return authors.Values.MapToList(authors.Paging, authors.Filtering);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using TitlesOrganizer.Application.ViewModels.BookVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.Details;
-using TitlesOrganizer.Application.ViewModels.BookVMs.ForList;
+using TitlesOrganizer.Application.ViewModels.BookVMs.CommendVMs.UpsertModelVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.QueriesVMs.DetailsVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.QueriesVMs.ForListVMs;
 using TitlesOrganizer.Application.ViewModels.Common;
 
 namespace TitlesOrganizer.Application.Interfaces
@@ -19,7 +20,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         void AddGenresForBook(int bookId, List<int> genresIds);
 
-        int AddNewSeries(NewSeriesVM newSeries);
+        int AddNewSeries(SeriesVM newSeries);
 
         void AddSeriesForBook(int bookId, int seriesId);
 

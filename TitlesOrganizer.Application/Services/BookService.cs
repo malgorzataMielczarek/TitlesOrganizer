@@ -4,8 +4,9 @@ using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Mapping;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.Details;
-using TitlesOrganizer.Application.ViewModels.BookVMs.ForList;
+using TitlesOrganizer.Application.ViewModels.BookVMs.CommendVMs.UpsertModelVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.QueriesVMs.DetailsVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.QueriesVMs.ForListVMs;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
 
@@ -117,7 +118,7 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
-        public int AddNewSeries(NewSeriesVM newSeries)
+        public int AddNewSeries(SeriesVM newSeries)
         {
             return _bookRepository.AddNewSeries(newSeries.BookId, newSeries.MapToBase(_mapper));
         }
@@ -164,7 +165,7 @@ namespace TitlesOrganizer.Application.Services
 
         public AuthorDetailsVM GetAuthorDetails(int id, ViewModels.Common.SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new AuthorDetailsVM();
 
-        public BookVM GetBook(int id) => _bookRepository.GetBookById(id)?.MapForUpdate(_mapper) ?? new BookVM();
+        public BookVM GetBook(int id) => _bookRepository.GetBookById(id)?.MapFromBase(_mapper) ?? new BookVM();
 
         public BookDetailsVM GetBookDetails(int id)
         {

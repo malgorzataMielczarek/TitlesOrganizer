@@ -4,7 +4,7 @@ using System.Reflection;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Services;
 using TitlesOrganizer.Application.Validators.BookValidators;
-using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.CommendVMs.UpsertModelVMs;
 
 namespace TitlesOrganizer.Application
 {
