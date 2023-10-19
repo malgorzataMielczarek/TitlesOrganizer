@@ -25,10 +25,10 @@
             <div class="offcanvas-body">
                 <div class="container list-group list-group-horizontal-md">
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Common.SortByEnum>()" onchange="javascript:Submit();"></select>
+                        <select class="form-select" asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Common.PageSize.List, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Common.PageSize.DataTextField)" onchange="javascript:Submit();" action="/Books/Index"></select>
+                        <select class="form-select" asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Helpers.PageSize.List, TitlesOrganizer.Application.ViewModels.Helpers.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Helpers.PageSize.DataTextField)" onchange="javascript:Submit();" action="/Books/Index"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
                         <div class="input-group">
