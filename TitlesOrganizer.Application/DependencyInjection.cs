@@ -3,8 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Services;
-using TitlesOrganizer.Application.Validators.BookValidators;
-using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs.UpsertModelVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
 
 namespace TitlesOrganizer.Application
 {
@@ -13,7 +12,7 @@ namespace TitlesOrganizer.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             // Services
-            services.AddTransient<IBookService, BookService>()
+            services//.AddTransient<IBookService, BookService>()
                 .AddTransient<ICountryService, CountryService>()
                 .AddTransient<ILanguageService, LanguageService>()
                 .AddTransient<IMovieService, MovieService>()
@@ -22,7 +21,10 @@ namespace TitlesOrganizer.Application
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             // Validation
-            services.AddTransient<IValidator<BookVM>, BookValidator>();
+            services.AddTransient<IValidator<AuthorVM>, AuthorValidator>()
+                .AddTransient<IValidator<BookVM>, BookValidator>()
+                .AddTransient<IValidator<GenreVM>, GenreValidator>()
+                .AddTransient<IValidator<SeriesVM>, SeriesValidator>();
 
             return services;
         }

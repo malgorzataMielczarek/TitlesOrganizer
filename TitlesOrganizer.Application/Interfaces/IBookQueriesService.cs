@@ -11,48 +11,52 @@ namespace TitlesOrganizer.Application.Interfaces
 {
     public interface IBookQueriesService
     {
-        AuthorDetailsVM GetDetailsOfAuthor(int id, int booksPageSize, int booksPageNo, int genresPageSize, int genresPageNo, int seriesPageSize, int seriesPageNo);
+        AuthorVM GetAuthor(int id, int pageSize, int pageNo);
 
-        BookDetailsVM GetDetailsOfBook(int id);
+        AuthorDetailsVM GetAuthorDetails(int id, int booksPageSize, int booksPageNo, int authorsPageSize, int authorsPageNo, int seriesPageSize, int seriesPageNo);
 
-        GenreDetailsVM GetDetailsOfGenre(int id);
+        ListAuthorForListVM GetAuthorsList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListAuthorForListVM GetDetailsOfGenrePartialListOfAuthors(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListAuthorForBookVM GetAuthorsListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListBookForListVM GetDetailsOfGenrePartialListOfBooks(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        PartialList<AuthorForListVM> GetAuthorsPartialListForGenre(int genreId, int pageSize, int pageNo);
 
-        ListSeriesForListVM GetDetailsOfGenrePartialListOfSeries(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        BookVM GetBook(int id);
 
-        SeriesDetailsVM GeDetailsOftSeries(int id);
+        BookDetailsVM GetBookDetails(int id);
 
-        ListBookForListVM GetDetailsOfSeriesPartialListOfBooks(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListBookForListVM GetBooksList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListBookForAuthorVM GetListForAuthorOfBooks(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListBookForAuthorVM GetBooksListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListAuthorForBookVM GetListForBookOfAuthors(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListBookForGenreVM GetBooksListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListGenreForBookVM GetListForBookOfGenres(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListBookForSeriesVM GetBooksListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListSeriesForBookVM GetListForBookOfSeries(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        PartialList<BookForListVM> GetBooksPartialListForAuthor(int authorId, int pageSize, int pageNo);
 
-        ListBookForGenreVM GetListForGenreOfBooks(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        PartialList<BookForListVM> GetBooksPartialListForGenre(int genreId, int pageSize, int pageNo);
 
-        ListBookForSeriesVM GetListForSeriesOfBooks(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        GenreVM GetGenre(int id, int pageSize, int pageNo);
 
-        ListAuthorForListVM GetListOfAuthors(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        GenreDetailsVM GetGenreDetails(int id, int booksPageSize, int booksPageNo, int authorsPageSize, int authorsPageNo, int seriesPageSize, int seriesPageNo);
 
-        ListBookForListVM GetListOfBooks(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListGenreForListVM GetGenresList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListGenreForListVM GetListOfGenres(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        ListGenreForBookVM GetGenresListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListSeriesForListVM GetListOfSeries(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        PartialList<GenreForListVM> GetGenresPartialListForAuthor(int authorId, int pageSize, int pageNo);
 
-        AuthorVM GetForUpdateAuthor(int id, int pageSize, int pageNo);
+        SeriesVM GetSeries(int id, int pageSize, int pageNo);
 
-        BookVM GetForUpdateBook(int id);
+        SeriesDetailsVM GetSeriesDetails(int id, int booksPageSize, int booksPageNo);
 
-        GenreVM GetForUpdateGenre(int id, int pageSize, int pageNo);
+        ListSeriesForListVM GetSeriesList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        SeriesVM GetForUpdateSeries(int id, int pageSize, int pageNo);
+        ListSeriesForBookVM GetSeriesListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+
+        PartialList<SeriesForListVM> GetSeriesPartialListForAuthor(int authorId, int pageSize, int pageNo);
+
+        PartialList<SeriesForListVM> GetSeriesPartialListForGenre(int genreId, int pageSize, int pageNo);
     }
 }

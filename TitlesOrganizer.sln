@@ -15,11 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E78FE5D1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{BF11EC6E-0375-451B-B7AA-3F445B4DB2C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TitlesOrganizer.Application", "TitlesOrganizer.Application\TitlesOrganizer.Application.csproj", "{399CA595-3712-4E60-B4D5-C79217A7F57F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TitlesOrganizer.Application", "TitlesOrganizer.Application\TitlesOrganizer.Application.csproj", "{399CA595-3712-4E60-B4D5-C79217A7F57F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TitlesOrganizer.Domain", "TitlesOrganizer.Domain\TitlesOrganizer.Domain.csproj", "{A54FF168-10EE-4082-A577-931ADFA2BA2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TitlesOrganizer.Domain", "TitlesOrganizer.Domain\TitlesOrganizer.Domain.csproj", "{A54FF168-10EE-4082-A577-931ADFA2BA2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TitlesOrganizer.Infrastructure", "TitlesOrganizer.Infrastructure\TitlesOrganizer.Infrastructure.csproj", "{FD508D3D-2F15-45FB-BFBC-125D07C366C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TitlesOrganizer.Infrastructure", "TitlesOrganizer.Infrastructure\TitlesOrganizer.Infrastructure.csproj", "{FD508D3D-2F15-45FB-BFBC-125D07C366C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TitlesOrganizer.Tests", "TitlesOrganizer.Tests\TitlesOrganizer.Tests.csproj", "{68598EE1-1989-4D06-A160-EC360DDBEB9B}"
 EndProject

@@ -83,19 +83,6 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ForListVMs
             };
         }
 
-        public static (List<GenreForListVM>, Paging) MapToList(this ListData<LiteratureGenre> genres)
-        {
-            genres.Paging.Count = genres.Values.Count();
-            var limitedList = genres.Values
-                .OrderBy(g => g.Name)
-                .Skip(genres.Paging.PageSize * (genres.Paging.CurrentPage - 1))
-                .Take(genres.Paging.PageSize)
-                .Map()
-                .ToList();
-
-            return (limitedList, genres.Paging);
-        }
-
         public static IQueryable<GenreForListVM> MapToList(this IQueryable<LiteratureGenre> genres, ref Paging paging)
         {
             paging.Count = genres.Count();

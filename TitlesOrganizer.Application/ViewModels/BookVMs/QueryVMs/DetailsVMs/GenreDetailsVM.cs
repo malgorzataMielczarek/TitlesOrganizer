@@ -31,20 +31,17 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
 
     public static partial class MappingExtensions
     {
-        public static GenreDetailsVM MapToDetails(this LiteratureGenre genre, ListData<Book> books, ListData<BookSeries> series, ListData<Author> authors)
+        public static GenreDetailsVM MapToDetails(this LiteratureGenre genre, IQueryable<Book> books, Paging booksPaging, IQueryable<BookSeries> series, Paging seriesPaging, IQueryable<Author> authors, Paging authorsPaging)
         {
-            var (booksList, booksPaging) = books.MapToList();
-            var (seriesList, seriesPaging) = series.MapToList();
-            var (authorsList, authorsPaging) = authors.MapToList();
             return new GenreDetailsVM()
             {
                 Id = genre.Id,
                 Name = genre.Name,
-                Books = booksList,
+                Books = books.MapToList(ref booksPaging).ToList(),
                 BooksPaging = booksPaging,
-                Series = seriesList,
+                Series = series.MapToList(ref seriesPaging).ToList(),
                 SeriesPaging = seriesPaging,
-                Author = authorsList,
+                Author = authors.MapToList(ref authorsPaging).ToList(),
                 AuthorsPaging = authorsPaging
             };
         }

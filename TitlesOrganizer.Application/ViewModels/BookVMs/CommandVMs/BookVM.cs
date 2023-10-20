@@ -46,13 +46,10 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
             RuleFor(b => b.Id).NotNull();
             RuleFor(b => b.Title).NotNull().NotEmpty().MaximumLength(225);
             RuleFor(b => b.OriginalTitle).MaximumLength(225);
-            RuleFor(b => b.OriginalLanguageCode).Length(3);
-            RuleForEach(b => b.OriginalLanguageCode)
-                .GreaterThanOrEqualTo('A')
-                .LessThanOrEqualTo('Z')
-                .Unless(x => x.OriginalLanguageCode is null);
+            RuleFor(b => b.OriginalLanguageCode).Length(3).Unless(b => string.IsNullOrEmpty(b.OriginalLanguageCode));
+            RuleForEach(b => b.OriginalLanguageCode).InclusiveBetween('A', 'Z');
             RuleFor(b => b.Year)
-                .GreaterThan(0)
+                .NotEqual(0)
                 .LessThanOrEqualTo(DateTime.Now.Year);
             RuleFor(b => b.Edition).MaximumLength(25);
             RuleFor(b => b.Description).MaximumLength(2000);
