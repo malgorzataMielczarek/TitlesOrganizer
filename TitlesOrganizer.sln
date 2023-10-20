@@ -21,7 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TitlesOrganizer.Domain", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TitlesOrganizer.Infrastructure", "TitlesOrganizer.Infrastructure\TitlesOrganizer.Infrastructure.csproj", "{FD508D3D-2F15-45FB-BFBC-125D07C366C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TitlesOrganizer.Tests", "TitlesOrganizer.Tests\TitlesOrganizer.Tests.csproj", "{68598EE1-1989-4D06-A160-EC360DDBEB9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TitlesOrganizer.Tests", "TitlesOrganizer.Tests\TitlesOrganizer.Tests.csproj", "{68598EE1-1989-4D06-A160-EC360DDBEB9B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{399CA595-3712-4E60-B4D5-C79217A7F57F} = {399CA595-3712-4E60-B4D5-C79217A7F57F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
