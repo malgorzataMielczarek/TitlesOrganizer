@@ -188,5 +188,71 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.CommandVMs
 
             result.ShouldNotHaveValidationErrorFor(b => b.Year);
         }
+
+        [Fact]
+        public void Validator_TooLongEdition_ShouldHaveError()
+        {
+            var validator = new BookValidator();
+            var model = new BookVM() { Edition = new string('a', 26) };
+
+            var result = validator.TestValidate(model);
+
+            result.ShouldHaveValidationErrorFor(b => b.Edition);
+        }
+
+        [Fact]
+        public void Validation_NullEdition_ShouldNotHaveError()
+        {
+            var validator = new BookValidator();
+            var model = new BookVM() { Edition = null };
+
+            var result = validator.TestValidate(model);
+
+            result.ShouldNotHaveValidationErrorFor(b => b.Edition);
+        }
+
+        [Fact]
+        public void Validation_ValidEdition_ShouldNotHaveError()
+        {
+            var validator = new BookValidator();
+            var model = new BookVM() { Edition = new string('a', 25) };
+
+            var result = validator.TestValidate(model);
+
+            result.ShouldNotHaveValidationErrorFor(b => b.Edition);
+        }
+
+        [Fact]
+        public void Validation_TooLongDescription_ShouldHaveError()
+        {
+            var validator = new BookValidator();
+            var model = new BookVM() { Description = new string('a', 2001) };
+
+            var result = validator.TestValidate(model);
+
+            result.ShouldHaveValidationErrorFor(b => b.Description);
+        }
+
+        [Fact]
+        public void Validator_NullDescription_ShouldNotHaveError()
+        {
+            var validator = new BookValidator();
+            var model = new BookVM() { Description = null };
+
+            var result = validator.TestValidate(model);
+
+            result.ShouldNotHaveValidationErrorFor(b => b.Description);
+        }
+
+        [Fact]
+        public void Validator_ValidDescription_ShouldNotHaveError()
+        {
+            var validator = new BookValidator();
+            var model = new BookVM() { Description = new string('a', 2000) };
+
+            var result = validator.TestValidate(model);
+
+            result.ShouldNotHaveValidationErrorFor(b => b.Description);
+        }
     }
 }

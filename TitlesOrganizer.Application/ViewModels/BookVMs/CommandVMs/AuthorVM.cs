@@ -62,13 +62,13 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         public static AuthorVM MapFromBase(this Author author, IMapper mapper, IQueryable<Book> books, Paging booksPaging)
         {
             var authorVM = mapper.Map<AuthorVM>(author);
-            booksPaging.Count = books.Count();
-            authorVM.Books = books
+            booksPaging.Count = books?.Count() ?? 0;
+            authorVM.Books = books?
                 .OrderBy(b => b.Title)
                 .Map()
                 .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
                 .Take(booksPaging.PageSize)
-                .ToList();
+                .ToList() ?? new List<BookForListVM>();
             authorVM.BooksPaging = booksPaging;
 
             return authorVM;
@@ -81,7 +81,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         {
             CreateMap<AuthorVM, Author>()
                 .ForMember(dest => dest.Books, opt => opt.Ignore())
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.Books, opt => opt.Ignore());
         }
     }
 }

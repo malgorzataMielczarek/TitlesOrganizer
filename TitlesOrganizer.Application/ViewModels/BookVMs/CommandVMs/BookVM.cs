@@ -33,7 +33,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         [DataType(DataType.MultilineText)]
         public string? Description { get; set; }
 
-        public string? Series { get; set; }
+        public SeriesForListVM? Series { get; set; }
 
         [DisplayName("Volume number")]
         public int? NumberInSeries { get; set; }
@@ -68,7 +68,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
             var bookVM = mapper.Map<BookVM>(bookWithAllRelatedObjects);
             bookVM.Authors = bookWithAllRelatedObjects.Authors.Map();
             bookVM.Genres = bookWithAllRelatedObjects.Genres.Map();
-            bookVM.Series = bookWithAllRelatedObjects.BookSeries?.Title;
+            bookVM.Series = bookWithAllRelatedObjects.BookSeries?.Map();
 
             return bookVM;
         }
@@ -76,9 +76,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         public static BookVM MapFromBase(this Book book, IMapper mapper, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series)
         {
             var bookVM = mapper.Map<BookVM>(book);
-            bookVM.Authors = authors.Map().ToList();
-            bookVM.Genres = genres.Map().ToList();
-            bookVM.Series = series?.Title;
+            bookVM.Authors = authors?.Map().ToList() ?? new List<AuthorForListVM>();
+            bookVM.Genres = genres?.Map().ToList() ?? new List<GenreForListVM>();
+            bookVM.Series = series?.Map();
 
             return bookVM;
         }
@@ -92,7 +92,10 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
                 .ForMember(dest => dest.Authors, opt => opt.Ignore())
                 .ForMember(dest => dest.BookSeries, opt => opt.Ignore())
                 .ForMember(dest => dest.Genres, opt => opt.Ignore())
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.Authors, opt => opt.Ignore())
+                .ForMember(dest => dest.Series, opt => opt.Ignore())
+                .ForMember(dest => dest.Genres, opt => opt.Ignore());
         }
     }
 }
