@@ -56,13 +56,13 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         public static GenreVM MapFromBase(this LiteratureGenre genre, IMapper mapper, IQueryable<Book> books, Paging booksPaging)
         {
             var genreVM = mapper.Map<GenreVM>(genre);
-            booksPaging.Count = books.Count();
-            genreVM.Books = books
+            booksPaging.Count = books?.Count() ?? 0;
+            genreVM.Books = books?
                 .OrderBy(b => b.Title)
                 .Map()
                 .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
                 .Take(booksPaging.PageSize)
-                .ToList();
+                .ToList() ?? new List<BookForListVM>();
             genreVM.BooksPaging = booksPaging;
 
             return genreVM;
@@ -75,7 +75,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         {
             CreateMap<GenreVM, LiteratureGenre>()
                 .ForMember(dest => dest.Books, opt => opt.Ignore())
-                .ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.Books, opt => opt.Ignore());
         }
     }
 }

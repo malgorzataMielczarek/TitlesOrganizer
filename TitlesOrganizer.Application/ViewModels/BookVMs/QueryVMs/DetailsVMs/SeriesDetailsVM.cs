@@ -56,8 +56,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
                 Description = seriesWithAllRelatedObjects.Description ?? string.Empty,
                 Books = seriesWithAllRelatedObjects.Books.AsQueryable().MapToList(ref booksPaging).ToList(),
                 BooksPaging = booksPaging,
-                Authors = seriesWithAllRelatedObjects.Books.SelectMany(b => b.Authors).Map(),
-                Genres = seriesWithAllRelatedObjects.Books.SelectMany(b => b.Genres).Map()
+                Authors = seriesWithAllRelatedObjects.Books.SelectMany(b => b.Authors).DistinctBy(a => a.Id).Map(),
+                Genres = seriesWithAllRelatedObjects.Books.SelectMany(b => b.Genres).DistinctBy(g => g.Id).Map()
             };
         }
     }

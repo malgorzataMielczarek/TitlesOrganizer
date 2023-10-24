@@ -18,10 +18,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
         public string InSeries { get; set; } = null!;
 
         [ScaffoldColumn(false)]
-        public string SeriesTitle { get; set; } = null!;
-
-        [ScaffoldColumn(false)]
-        public int? SeriesId { get; set; }
+        public SeriesForListVM? Series { get; set; }
 
         public List<AuthorForListVM> Authors { get; set; } = new List<AuthorForListVM>();
 
@@ -42,23 +39,50 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
 
     public static partial class MappingExtensions
     {
-        public static BookDetailsVM MapToDetails(this Book book)
+        public static BookDetailsVM MapToDetails(this Book bookWithAllRelatedObjects)
+        {
+            return new BookDetailsVM()
+            {
+                Id = bookWithAllRelatedObjects.Id,
+                Title = bookWithAllRelatedObjects.Title,
+                OriginalTitle = bookWithAllRelatedObjects.OriginalTitle ?? string.Empty,
+                OriginalLanguage = bookWithAllRelatedObjects.OriginalLanguage?.Name ?? string.Empty,
+                Authors = bookWithAllRelatedObjects.Authors.Map(),
+                Genres = bookWithAllRelatedObjects.Genres.Map(),
+                Description = bookWithAllRelatedObjects.Description ?? string.Empty,
+                Year = bookWithAllRelatedObjects.Year?.ToString() ?? string.Empty,
+                Edition = bookWithAllRelatedObjects.Edition ?? string.Empty,
+                Series = bookWithAllRelatedObjects.BookSeries?.Map(),
+                InSeries = InSeries(bookWithAllRelatedObjects.NumberInSeries, bookWithAllRelatedObjects.BookSeries)
+            };
+        }
+
+        public static BookDetailsVM MapToDetails(this Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? seriesWithBooks)
         {
             return new BookDetailsVM()
             {
                 Id = book.Id,
                 Title = book.Title,
                 OriginalTitle = book.OriginalTitle ?? string.Empty,
-                OriginalLanguage = book.OriginalLanguage?.Name ?? string.Empty,
-                Authors = book.Authors.Map(),
-                Genres = book.Genres.Map(),
+                OriginalLanguage = language?.Name ?? string.Empty,
+                Authors = authors.Map().ToList(),
+                Genres = genres.Map().ToList(),
                 Description = book.Description ?? string.Empty,
                 Year = book.Year?.ToString() ?? string.Empty,
                 Edition = book.Edition ?? string.Empty,
-                SeriesId = book.BookSeriesId,
-                SeriesTitle = book.BookSeries?.Title ?? string.Empty,
-                InSeries = InSeries(book.NumberInSeries, book.BookSeries)
+                Series = seriesWithBooks?.Map(),
+                InSeries = InSeries(book.NumberInSeries, seriesWithBooks)
             };
+        }
+
+        public static BookDetailsVM MapToDetails(this Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series, IQueryable<Book>? booksInSeries)
+        {
+            if (series != null && booksInSeries != null)
+            {
+                series.Books = booksInSeries.ToList();
+            }
+
+            return book.MapToDetails(language, authors, genres, series);
         }
 
         private static string InSeries(int? numberInSeries, BookSeries? bookSeries)

@@ -23,7 +23,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
         [ScaffoldColumn(false)]
         public Paging SeriesPaging { get; set; } = new Paging();
 
-        public List<AuthorForListVM> Author { get; set; } = new List<AuthorForListVM>();
+        public List<AuthorForListVM> Authors { get; set; } = new List<AuthorForListVM>();
 
         [ScaffoldColumn(false)]
         public Paging AuthorsPaging { get; set; } = new Paging();
@@ -41,7 +41,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
                 BooksPaging = booksPaging,
                 Series = series.MapToList(ref seriesPaging).ToList(),
                 SeriesPaging = seriesPaging,
-                Author = authors.MapToList(ref authorsPaging).ToList(),
+                Authors = authors.MapToList(ref authorsPaging).ToList(),
                 AuthorsPaging = authorsPaging
             };
         }
@@ -59,9 +59,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
             {
                 genre.Books = books.MapToList(ref booksPaging).ToList();
                 genre.BooksPaging = booksPaging;
-                genre.Series = books.Where(b => b.BookSeries != null).Select(b => b.BookSeries!).MapToList(ref seriesPaging).ToList();
+                genre.Series = books.Where(b => b.BookSeries != null).Select(b => b.BookSeries!).DistinctBy(s => s.Id).MapToList(ref seriesPaging).ToList();
                 genre.SeriesPaging = seriesPaging;
-                genre.Author = books.SelectMany(b => b.Authors).MapToList(ref authorsPaging).ToList();
+                genre.Authors = books.SelectMany(b => b.Authors).DistinctBy(a => a.Id).MapToList(ref authorsPaging).ToList();
                 genre.AuthorsPaging = authorsPaging;
             }
 
