@@ -38,9 +38,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.
 
     public static partial class MappingExtensions
     {
-        public static IQueryable<BookForSeriesVM> MapForSeries(this IQueryable<Book> booksWithSeries, int seriesId)
+        public static IQueryable<BookForSeriesVM> MapForSeries(this IQueryable<Book> books, int seriesId)
         {
-            return booksWithSeries.Select(b => new BookForSeriesVM
+            return books.Select(b => new BookForSeriesVM
             {
                 Id = b.Id,
                 Title = b.Title,
@@ -48,9 +48,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.
             });
         }
 
-        public static ListBookForSeriesVM MapForSeriesToList(this IQueryable<Book> booksWithSeries, BookSeries series, Paging paging, Filtering filtering)
+        public static ListBookForSeriesVM MapForSeriesToList(this IQueryable<Book> books, BookSeries series, Paging paging, Filtering filtering)
         {
-            var query = booksWithSeries
+            var query = books
                 .Sort(filtering.SortBy, b => b.Title)
                 .MapForSeries(series.Id);
             var selectedBooks = query.Where(b => b.IsForSeries).ToList();
