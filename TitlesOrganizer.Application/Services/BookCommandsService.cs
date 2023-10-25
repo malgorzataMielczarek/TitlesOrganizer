@@ -7,19 +7,24 @@ namespace TitlesOrganizer.Application.Services
 {
     public class BookCommandsService : IBookCommandsService
     {
-        private readonly IBookCommandsRepository _bookCommandsRepository;
+        private readonly IBookCommandsRepository _repository;
 
         private readonly IMapper _mapper;
 
         public BookCommandsService(IBookCommandsRepository bookCommandsRepository, IMapper mapper)
         {
-            _bookCommandsRepository = bookCommandsRepository;
+            _repository = bookCommandsRepository;
             _mapper = mapper;
         }
 
         public void DeleteAuthor(int id)
         {
-            throw new NotImplementedException();
+            var author = _repository.GetAuthor(id);
+
+            if (author != null)
+            {
+                _repository.Delete(author);
+            }
         }
 
         public void DeleteBook(int id)
