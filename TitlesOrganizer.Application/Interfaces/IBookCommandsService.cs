@@ -22,7 +22,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         void SelectGenresForBook(int bookId, List<int> genresIds);
 
-        void SelectSeriesForBook(int bookId, List<int> seriesIds);
+        void SelectSeriesForBook(int bookId, int? seriesIds);
 
         int UpsertAuthor(AuthorVM author);
 

@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿// Ignore Spelling: Upsert
+
+using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
 using TitlesOrganizer.Domain.Interfaces;
@@ -67,7 +69,7 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public void SelectSeriesForBook(int bookId, List<int> seriesIds)
+        public void SelectSeriesForBook(int bookId, int? seriesIds)
         {
             throw new NotImplementedException();
         }
