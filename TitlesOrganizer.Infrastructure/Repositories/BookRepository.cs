@@ -56,9 +56,9 @@ namespace TitlesOrganizer.Infrastructure.Repositories
                 var series = GetSeriesById(seriesId);
                 if (series != null)
                 {
-                    if (book.BookSeries != series)
+                    if (book.Series != series)
                     {
-                        book.BookSeries = series;
+                        book.Series = series;
 
                         _context.SaveChanges();
                     }
@@ -116,7 +116,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             var book = GetBookById(bookId);
             if (book != null)
             {
-                book.BookSeries = series;
+                book.Series = series;
             }
             _context.SaveChanges();
 
@@ -165,7 +165,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             .Include(b => b.OriginalLanguage)
             .Include(b => b.Genres)
             .Include(b => b.Authors)
-            .Include(b => b.BookSeries);
+            .Include(b => b.Series);
 
         public IQueryable<LiteratureGenre> GetAllGenres() => _context.LiteratureGenres;
 
@@ -185,7 +185,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             .Include(b => b.OriginalLanguage)
             .Include(b => b.Genres)
             .Include(b => b.Authors)
-            .Include(b => b.BookSeries)
+            .Include(b => b.Series)
             .FirstOrDefault(b => b.Id == bookId);
 
         public IQueryable<Book>? GetBooksByAuthor(int authorId) => GetAuthorById(authorId)?.Books.AsQueryable();
@@ -193,18 +193,18 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         public IQueryable<Book>? GetBooksByGenre(int genreId) => GetGenreById(genreId)?.Books?.AsQueryable();
 
         public IQueryable<Book>? GetBooksInSeries(int seriesId) => _context.Books
-            .Include(b => b.BookSeries)
-            .Where(b => b.BookSeriesId == seriesId);
+            .Include(b => b.Series)
+            .Where(b => b.SeriesId == seriesId);
 
         public LiteratureGenre? GetGenreById(int genreId) => _context.LiteratureGenres.Include(g => g.Books).FirstOrDefault(g => g.Id == genreId);
 
         public IQueryable<LiteratureGenre>? GetGenresOfSeries(int seriesId) => GetBooksInSeries(seriesId)?.SelectMany(b => b.Genres).AsQueryable();
 
-        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => GetBooksByAuthor(authorId)?.SkipWhile(b => b.BookSeries == null)
-            .Select(b => b.BookSeries!).AsQueryable();
+        public IQueryable<BookSeries>? GetSeriesByAuthor(int authorId) => GetBooksByAuthor(authorId)?.SkipWhile(b => b.Series == null)
+            .Select(b => b.Series!).AsQueryable();
 
-        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => GetBooksByGenre(genreId)?.SkipWhile(b => b.BookSeries == null)
-            .Select(b => b.BookSeries!).AsQueryable();
+        public IQueryable<BookSeries>? GetSeriesByGenre(int genreId) => GetBooksByGenre(genreId)?.SkipWhile(b => b.Series == null)
+            .Select(b => b.Series!).AsQueryable();
 
         public BookSeries? GetSeriesById(int seriesId) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == seriesId);
 

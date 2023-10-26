@@ -195,9 +195,9 @@ namespace TitlesOrganizer.Application.Services
         public BookDetailsVM GetBookDetails(int id)
         {
             var book = _bookRepository.GetBookById(id);
-            if (book?.BookSeries != null)
+            if (book?.Series != null)
             {
-                book.BookSeries = _bookRepository.GetSeriesById(book.BookSeries.Id);
+                book.Series = _bookRepository.GetSeriesById(book.Series.Id);
             }
 
             return book?.MapToDetails() ?? new BookDetailsVM();

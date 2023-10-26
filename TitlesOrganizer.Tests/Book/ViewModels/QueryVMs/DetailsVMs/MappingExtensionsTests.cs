@@ -21,15 +21,15 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.DetailsVMs
                 var book = booksList.ElementAtOrDefault(series.Id);
                 if (book != null)
                 {
-                    book.BookSeriesId = series.Id;
-                    book.BookSeries = series;
+                    book.SeriesId = series.Id;
+                    book.Series = series;
                 }
 
                 book = booksList.ElementAtOrDefault(series.Id + seriesCount);
                 if (book != null)
                 {
-                    book.BookSeriesId = series.Id;
-                    book.BookSeries = series;
+                    book.SeriesId = series.Id;
+                    book.Series = series;
                 }
             }
 
@@ -116,8 +116,8 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.DetailsVMs
                 OriginalTitle = "Book Original Title",
                 Authors = authorsList,
                 Genres = genresList,
-                BookSeries = new Domain.Models.BookSeries() { Id = 1, Title = "Series Title", Books = Helpers.GetBooksList(3) },
-                BookSeriesId = 1,
+                Series = new Domain.Models.BookSeries() { Id = 1, Title = "Series Title", Books = Helpers.GetBooksList(3) },
+                SeriesId = 1,
                 OriginalLanguageCode = lang.Code,
                 OriginalLanguage = lang,
                 Year = 2001,
@@ -125,8 +125,8 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.DetailsVMs
                 Edition = "I",
                 Description = "Description"
             };
-            book.BookSeries.Books.Remove(book.BookSeries.Books.First());
-            book.BookSeries.Books.Add(book);
+            book.Series.Books.Remove(book.Series.Books.First());
+            book.Series.Books.Add(book);
 
             // Act
             var result = book.MapToDetails();
@@ -160,7 +160,7 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.DetailsVMs
                 Id = 1,
                 Title = "Book Title",
                 OriginalTitle = "Book Original Title",
-                BookSeriesId = 1,
+                SeriesId = 1,
                 OriginalLanguageCode = lang.Code,
                 Year = 2001,
                 NumberInSeries = 1,
@@ -203,8 +203,8 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.DetailsVMs
             {
                 book.Genres = new List<LiteratureGenre>() { genre };
                 book.Authors = authorsList;
-                book.BookSeries = series;
-                book.BookSeriesId = series.Id;
+                book.Series = series;
+                book.SeriesId = series.Id;
             }
 
             genre.Books = booksList;
@@ -283,8 +283,8 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.DetailsVMs
             {
                 book.Genres = genresList;
                 book.Authors = authorsList;
-                book.BookSeries = series;
-                book.BookSeriesId = series.Id;
+                book.Series = series;
+                book.SeriesId = series.Id;
             }
 
             series.Books = booksList;

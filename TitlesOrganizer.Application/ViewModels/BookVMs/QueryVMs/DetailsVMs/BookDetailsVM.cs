@@ -52,8 +52,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
                 Description = bookWithAllRelatedObjects.Description ?? string.Empty,
                 Year = bookWithAllRelatedObjects.Year?.ToString() ?? string.Empty,
                 Edition = bookWithAllRelatedObjects.Edition ?? string.Empty,
-                Series = bookWithAllRelatedObjects.BookSeries?.Map(),
-                InSeries = InSeries(bookWithAllRelatedObjects.NumberInSeries, bookWithAllRelatedObjects.BookSeries)
+                Series = bookWithAllRelatedObjects.Series?.Map(),
+                InSeries = InSeries(bookWithAllRelatedObjects.NumberInSeries, bookWithAllRelatedObjects.Series)
             };
         }
 

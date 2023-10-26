@@ -44,7 +44,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.
             {
                 Id = b.Id,
                 Title = b.Title,
-                IsForSeries = b.BookSeriesId == seriesId
+                IsForSeries = b.SeriesId == seriesId
             });
         }
 

@@ -68,7 +68,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
             var bookVM = mapper.Map<BookVM>(bookWithAllRelatedObjects);
             bookVM.Authors = bookWithAllRelatedObjects.Authors.Map();
             bookVM.Genres = bookWithAllRelatedObjects.Genres.Map();
-            bookVM.Series = bookWithAllRelatedObjects.BookSeries?.Map();
+            bookVM.Series = bookWithAllRelatedObjects.Series?.Map();
 
             return bookVM;
         }
@@ -90,7 +90,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs
         {
             CreateMap<BookVM, Book>()
                 .ForMember(dest => dest.Authors, opt => opt.Ignore())
-                .ForMember(dest => dest.BookSeries, opt => opt.Ignore())
+                .ForMember(dest => dest.Series, opt => opt.Ignore())
                 .ForMember(dest => dest.Genres, opt => opt.Ignore())
                 .ReverseMap()
                 .ForMember(dest => dest.Authors, opt => opt.Ignore())

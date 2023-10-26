@@ -239,7 +239,7 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.CommandVMs
             result.Description.Should().Be(bookVM.Description);
             result.Authors.Should().BeNullOrEmpty();
             result.Genres.Should().BeNullOrEmpty();
-            result.BookSeries.Should().BeNull();
+            result.Series.Should().BeNull();
             result.NumberInSeries.Should().Be(bookVM.NumberInSeries);
         }
 
@@ -250,8 +250,8 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.CommandVMs
             var book = Helpers.GetBook();
             book.Authors = Helpers.GetAuthorsList(countOfAuthors);
             book.Genres = Helpers.GetGenresList(countOfGenres);
-            book.BookSeries = Helpers.GetSeries();
-            book.BookSeriesId = book.BookSeries.Id;
+            book.Series = Helpers.GetSeries();
+            book.SeriesId = book.Series.Id;
 
             var config = new MapperConfiguration(cfg => cfg.AddProfile<BookMappings>());
             IMapper mapper = config.CreateMapper();

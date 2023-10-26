@@ -54,7 +54,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
                 FullName = authorWithAllRelatedObjects.Name + " " + authorWithAllRelatedObjects.LastName,
                 Books = authorWithAllRelatedObjects.Books.AsQueryable().DistinctBy(b => b.Id).MapToList(ref booksPaging).ToList(),
                 BooksPaging = booksPaging,
-                Series = authorWithAllRelatedObjects.Books.AsQueryable().Where(b => b.BookSeries != null).Select(b => b.BookSeries!).DistinctBy(s => s.Id).MapToList(ref seriesPaging).ToList(),
+                Series = authorWithAllRelatedObjects.Books.AsQueryable().Where(b => b.Series != null).Select(b => b.Series!).DistinctBy(s => s.Id).MapToList(ref seriesPaging).ToList(),
                 SeriesPaging = seriesPaging,
                 Genres = authorWithAllRelatedObjects.Books.SelectMany(b => b.Genres).AsQueryable().DistinctBy(g => g.Id).MapToList(ref genresPaging).ToList(),
                 GenresPaging = genresPaging,

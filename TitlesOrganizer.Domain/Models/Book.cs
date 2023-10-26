@@ -9,12 +9,12 @@
         public int? Year { get; set; }
         public string? Edition { get; set; }
         public string? Description { get; set; }
-        public int? BookSeriesId { get; set; }
+        public int? SeriesId { get; set; }
         public int? NumberInSeries { get; set; }
 
         public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
         public virtual ICollection<LiteratureGenre> Genres { get; set; } = new List<LiteratureGenre>();
         public Language? OriginalLanguage { get; set; }
-        public BookSeries? BookSeries { get; set; }
+        public BookSeries? Series { get; set; }
     }
 }

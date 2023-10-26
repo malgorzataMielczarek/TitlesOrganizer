@@ -59,7 +59,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs
             {
                 genre.Books = books.MapToList(ref booksPaging).ToList();
                 genre.BooksPaging = booksPaging;
-                genre.Series = books.Where(b => b.BookSeries != null).Select(b => b.BookSeries!).DistinctBy(s => s.Id).MapToList(ref seriesPaging).ToList();
+                genre.Series = books.Where(b => b.Series != null).Select(b => b.Series!).DistinctBy(s => s.Id).MapToList(ref seriesPaging).ToList();
                 genre.SeriesPaging = seriesPaging;
                 genre.Authors = books.SelectMany(b => b.Authors).DistinctBy(a => a.Id).MapToList(ref authorsPaging).ToList();
                 genre.AuthorsPaging = authorsPaging;

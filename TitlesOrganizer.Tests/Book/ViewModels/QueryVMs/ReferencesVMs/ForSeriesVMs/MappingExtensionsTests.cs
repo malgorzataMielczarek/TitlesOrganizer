@@ -142,10 +142,10 @@ namespace TitlesOrganizer.Tests.Book.ViewModels.QueryVMs.ReferencesVMs.ForSeries
         {
             return new List<Domain.Models.Book>()
             {
-                new Domain.Models.Book(){ Id = 1, Title = "Title", BookSeriesId = 1 },
+                new Domain.Models.Book(){ Id = 1, Title = "Title", SeriesId = 1 },
                 new Domain.Models.Book(){ Id = 2, Title = "Example" },
-                new Domain.Models.Book(){ Id = 3, Title = "Test", BookSeriesId = 1 },
-                new Domain.Models.Book(){ Id = 4, Title = "Another Title", BookSeriesId = 1 }
+                new Domain.Models.Book(){ Id = 3, Title = "Test", SeriesId = 1 },
+                new Domain.Models.Book(){ Id = 4, Title = "Another Title", SeriesId = 1 }
             }.AsQueryable();
         }
     }
