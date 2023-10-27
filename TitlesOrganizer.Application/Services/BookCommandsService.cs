@@ -2,7 +2,7 @@
 
 using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
 using TitlesOrganizer.Domain.Interfaces;
 
 namespace TitlesOrganizer.Application.Services

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Services;
-using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
 
 namespace TitlesOrganizer.Application
 {

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ForListVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.ForAuthorVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.ForBookVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.ForGenreVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.ForSeriesVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.DetailsVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ForListVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ReferencesVMs.ForAuthorVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ReferencesVMs.ForBookVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ReferencesVMs.ForGenreVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.ReferencesVMs.ForSeriesVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
 

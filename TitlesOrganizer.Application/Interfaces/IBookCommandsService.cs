@@ -1,4 +1,4 @@
-﻿using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
+﻿using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
 
 namespace TitlesOrganizer.Application.Interfaces
 {

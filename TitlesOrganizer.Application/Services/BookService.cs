@@ -1,10 +1,10 @@
 ﻿// Ignore Spelling: Upsert
 
 using AutoMapper;
-using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs;
 using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.DetailsVMs;
 using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ForListVMs;
 using TitlesOrganizer.Application.ViewModels.BookVMs.QueryVMs.ReferencesVMs.ForBookVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;

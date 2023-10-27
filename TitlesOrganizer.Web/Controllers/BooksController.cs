@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.CommandVMs.UpsertModelVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs.UpsertModelVMs;
 using TitlesOrganizer.Application.ViewModels.BookVMs.DetailsVMs;
 using TitlesOrganizer.Application.ViewModels.BookVMs.ForListVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
