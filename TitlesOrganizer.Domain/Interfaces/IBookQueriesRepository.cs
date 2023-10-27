@@ -18,20 +18,20 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<LiteratureGenre> GetAllLiteratureGenresWithBooks();
 
-        Author GetAuthor(int id);
+        Author? GetAuthor(int id);
 
-        Author GetAuthorWithBooks(int id);
+        Author? GetAuthorWithBooks(int id);
 
-        Book GetBook(int id);
+        Book? GetBook(int id);
 
-        BookSeries GetBookSeries(int id);
+        BookSeries? GetBookSeries(int id);
 
-        BookSeries GetBookSeriesWithBooks(int id);
+        BookSeries? GetBookSeriesWithBooks(int id);
 
-        Book GetBookWithAllRelatedObjects(int id);
+        Book? GetBookWithAllRelatedObjects(int id);
 
-        LiteratureGenre GetLiteratureGenre(int id);
+        LiteratureGenre? GetLiteratureGenre(int id);
 
-        LiteratureGenre GetLiteratureGenreWithBooks(int id);
+        LiteratureGenre? GetLiteratureGenreWithBooks(int id);
     }
 }

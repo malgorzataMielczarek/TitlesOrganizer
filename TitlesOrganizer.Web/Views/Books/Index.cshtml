@@ -1,4 +1,4 @@
-﻿@model ListBookForListVM
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListBookForListVM
 
 @{
     ViewData["Title"] = "Books";
@@ -25,14 +25,22 @@
             <div class="offcanvas-body">
                 <div class="container list-group list-group-horizontal-md">
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
+                        <select class="form-select" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Helpers.PageSize.List, TitlesOrganizer.Application.ViewModels.Helpers.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Helpers.PageSize.DataTextField)" onchange="javascript:Submit();" action="/Books/Index"></select>
+                        <select class="form-select" asp-for="Paging.PageSize" onchange="javascript:Submit();" action="/Books/Index">
+                            <option value="3">3 books on page</option>
+                            <option value="5">5 books on page</option>
+                            <option value="10">10 books on page</option>
+                            <option value="15">15 books on page</option>
+                            <option value="20">20 books on page</option>
+                            <option value="50">50 books on page</option>
+                            <option value="100">100 books on page</option>
+                        </select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
                         <div class="input-group">
-                            <input class="form-control" type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
+                            <input class="form-control" type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
                             <input type="submit" class="btn btn-outline-secondary float-start" value="Search" />
                         </div>
                     </div>
@@ -49,7 +57,7 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var book in Model.List) {
+            @foreach (var book in Model.Books) {
                 <tr>
                     <td>@Html.DisplayFor(modelItem => book.Title)</td>
                     <td>
@@ -64,40 +72,40 @@
     </div>
     <div class="row justify-content-center">
         @{
-            var pages = Math.Ceiling(Model.Count / (double)Model.PageSize);
+            var pages = Math.Ceiling(Model.Paging.Count / (double)Model.Paging.PageSize);
             int numbersNextTo = 2;
         }
         <nav aria-label="...">
             <ul class="pagination">
-                @if (Model.CurrentPage > numbersNextTo + 1)
+                @if (Model.Paging.CurrentPage > numbersNextTo + 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 }
                 @for (int i = numbersNextTo; i >= 1; i--)
                 {
-                    if (i < Model.CurrentPage)
+                    if (i < Model.Paging.CurrentPage)
                     {
-                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - i))">@(Model.CurrentPage - i)</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage - i))">@(Model.Paging.CurrentPage - i)</a></li>
                     }
                 }
                 @if (pages > 1)
                 {
                     <li class="page-item active" aria-current="page">
-                        <span class="page-link">@Model.CurrentPage</span>
+                        <span class="page-link">@Model.Paging.CurrentPage</span>
                     </li>
                 }
-                @for (int i = 1; i <= numbersNextTo && Model.CurrentPage + i <= pages; i++)
+                @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                 {
-                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + i))">@(Model.CurrentPage + i)</a></li>
+                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage + i))">@(Model.Paging.CurrentPage + i)</a></li>
                 }
-                @if (Model.CurrentPage + numbersNextTo + 1 <= pages)
+                @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

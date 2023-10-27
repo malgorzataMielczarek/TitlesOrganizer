@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.Services;
-using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs;
 
 namespace TitlesOrganizer.Application
 {
@@ -12,19 +12,19 @@ namespace TitlesOrganizer.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             // Services
-            services//.AddTransient<IBookService, BookService>()
-                .AddTransient<ICountryService, CountryService>()
-                .AddTransient<ILanguageService, LanguageService>()
-                .AddTransient<IMovieService, MovieService>()
-                .AddTransient<ITvSeriesService, TvSeriesService>();
+            services.AddTransient<IAuthorService, AuthorService>()
+                .AddTransient<IBookCommandsService, BookCommandsService>()
+                .AddTransient<IBookSeriesService, BookSeriesService>()
+                .AddTransient<ILiteratureGenreService, LiteratureGenreService>()
+                .AddTransient<ILanguageService, LanguageService>();
             // Mapping
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             // Validation
-            services.AddTransient<IValidator<AuthorVM>, AuthorValidator>()
-                .AddTransient<IValidator<BookVM>, BookValidator>()
-                .AddTransient<IValidator<GenreVM>, GenreValidator>()
-                .AddTransient<IValidator<SeriesVM>, SeriesValidator>();
+            services.AddTransient<IValidator<AuthorVM>, AuthorVMValidator>()
+                .AddTransient<IValidator<BookVM>, BookVMValidator>()
+                .AddTransient<IValidator<GenreVM>, GenreVMValidator>()
+                .AddTransient<IValidator<SeriesVM>, SeriesVMValidator>();
 
             return services;
         }

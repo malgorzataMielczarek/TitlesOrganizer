@@ -1,4 +1,4 @@
-﻿@model ListAuthorForListVM
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForListVM
 
 @{
     ViewData["Title"] = "Authors";
@@ -7,7 +7,7 @@
 <h1>Authors</h1>
 <div class="container">
     <div class="row row-cols-2 row-cols-lg-4 row-cols-md-3 g-2 g-lg-3">
-    @foreach (var author in Model.List)
+    @foreach (var author in Model.Authors)
     {
         <div class="col-6 card p-3 border-0">
             <button class="card-body btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target=@("#modalDetails_" + author.Id)>
@@ -21,7 +21,7 @@
                             <h1 class="modal-title fs-5" id=@("modalDetailsLabel_" + author.Id)>@author.FullName</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                       @* <div class="modal-body">
                             <h5>Books</h5>
                             <ul class="list-group list-group-flash" style="text-align:left;">
                                 @foreach (var book in author.Books)
@@ -31,7 +31,7 @@
                                     </li>
                                 }
                             </ul>
-                        </div>
+                        </div>*@
                     </div>
                 </div>
             </div>

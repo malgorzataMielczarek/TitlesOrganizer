@@ -2,94 +2,87 @@
 
 using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
+using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
 
 namespace TitlesOrganizer.Application.Services
 {
     public class BookCommandsService : IBookCommandsService
     {
-        private readonly IBookCommandsRepository _repository;
+        private readonly IBookCommandsRepository _commandsRepository;
+        private readonly IBookQueriesRepository _queriesRepository;
 
         private readonly IMapper _mapper;
 
-        public BookCommandsService(IBookCommandsRepository bookCommandsRepository, IMapper mapper)
+        public BookCommandsService(IBookCommandsRepository bookCommandsRepository, IBookQueriesRepository bookQueriesRepository, IMapper mapper)
         {
-            _repository = bookCommandsRepository;
+            _commandsRepository = bookCommandsRepository;
+            _queriesRepository = bookQueriesRepository;
             _mapper = mapper;
         }
 
-        public void DeleteAuthor(int id)
-        {
-            var author = _repository.GetAuthor(id);
-
-            if (author != null)
-            {
-                _repository.Delete(author);
-            }
-        }
-
-        public void DeleteBook(int id)
+        public void Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteGenre(int id)
+        public BookVM Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteSeries(int id)
+        public BookDetailsVM GetDetails(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectAuthorsForBook(int bookId, List<int> authorsIds)
+        public ListBookForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectBooksForAuthor(int authorId, List<int> booksIds)
+        public ListBookForAuthorVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectBooksForGenre(int genreId, List<int> booksIds)
+        public ListBookForGenreVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectBooksForSeries(int seriesId, List<int> booksIds)
+        public ListBookForSeriesVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectGenresForBook(int bookId, List<int> genresIds)
+        public PartialList<BookForListVM> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectSeriesForBook(int bookId, int? seriesIds)
+        public PartialList<BookForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
         {
             throw new NotImplementedException();
         }
 
-        public int UpsertAuthor(AuthorVM author)
+        public void SelectForAuthor(int authorId, List<int> booksIds)
         {
             throw new NotImplementedException();
         }
 
-        public int UpsertBook(BookVM book)
+        public void SelectForGenre(int genreId, List<int> booksIds)
         {
             throw new NotImplementedException();
         }
 
-        public int UpsertGenre(GenreVM genre)
+        public void SelectForSeries(int seriesId, List<int> booksIds)
         {
             throw new NotImplementedException();
         }
 
-        public int UpsertSeries(SeriesVM series)
+        public int Upsert(BookVM book)
         {
             throw new NotImplementedException();
         }

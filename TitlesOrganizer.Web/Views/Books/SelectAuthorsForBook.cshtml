@@ -1,21 +1,19 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
 @{
-    ViewData["Title"] = "Select authors of \"" + Model.BookTitle + "\"";
+    ViewData["Title"] = "Select authors of \"" + Model.Book.Title + "\"";
 }
 <h1>@ViewData["Title"]</h1>
 
 <form enctype="multipart/form-data" method="post">
-    <input type="hidden" asp-for="BookId" />
-    <input type="hidden" asp-for="BookTitle" />
+    <input type="hidden" asp-for="Book.Id" />
+    <input type="hidden" asp-for="Book.Title" />
     <div class="row">
         <table class="table table-success table-sm" id="selectedAuthors">
             <thead class="table-dark">
                 <tr>
+                    <th></th>
                     <th scope="col">
                         Selected author
-                    </th>
-                    <th scope="col">
-                        Books
                     </th>
                 </tr>
             </thead>
@@ -23,12 +21,11 @@
                 @for (var i = 0; i < Model.SelectedAuthors.Count; i++)
                 {
                     <tr>
-                        @Html.HiddenFor(model => model.SelectedAuthors[i].Id)
                         <td>
-                            @Html.DisplayTextFor(model => model.SelectedAuthors[i].FullName)
+                            @Html.DisplayFor(model => model.SelectedAuthors[i].Id)
                         </td>
                         <td>
-                            @Html.DisplayTextFor(model => model.SelectedAuthors[i].Books)
+                            @Html.DisplayTextFor(model => model.SelectedAuthors[i].FullName)
                         </td>
                     </tr>
                 }
@@ -36,9 +33,17 @@
         </table>
     </div>
     <div class="row">
-        <select asp-for="SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
-        <select asp-for="PageSize" asp-items="new SelectList(TitlesOrganizer.Application.ViewModels.Helpers.PageSize.List, TitlesOrganizer.Application.ViewModels.Helpers.PageSize.DataValueField, TitlesOrganizer.Application.ViewModels.Helpers.PageSize.DataTextField)" onchange="javascript:Submit();"></select>
-        <input type="search" asp-for="SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
+        <select asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
+        <select asp-for="Paging.PageSize" onchange="javascript:Submit();">
+            <option value="3">3 authors on page</option>
+            <option value="5">5 authors on page</option>
+            <option value="10">10 authors on page</option>
+            <option value="15">15 authors on page</option>
+            <option value="20">20 authors on page</option>
+            <option value="50">50 authors on page</option>
+            <option value="100">100 authors on page</option>
+        </select>
+        <input type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:Submit();" />
         <input type="submit" value="Search" asp-action="SelectAuthorsForBook" />
     </div>
     <div class="row">
@@ -51,13 +56,10 @@
                     <th>
                         Author
                     </th>
-                    <th>
-                        Other books
-                    </th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var author in Model.List)
+                @foreach (var author in Model.NotSelectedAuthors)
                 {
                     <tr>
                         <input type="hidden" name="List.Index" value="@author.Id" />
@@ -78,9 +80,6 @@
                         <td>
                             @author.FullName
                         </td>
-                        <td>
-                            @author.OtherBooks
-                        </td>
                     </tr>
                 }
                 <tr>
@@ -98,40 +97,40 @@
     </div>
     <div class="row justify-content-center">
         @{
-            var pages = Math.Ceiling(Model.Count / (double)Model.PageSize);
+            var pages = Math.Ceiling(Model.Paging.Count / (double)Model.Paging.PageSize);
             int numbersNextTo = 2;
         }
         <nav aria-label="...">
             <ul class="pagination">
-                @if (Model.CurrentPage > numbersNextTo + 1)
+                @if (Model.Paging.CurrentPage > numbersNextTo + 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 }
                 @for (int i = numbersNextTo; i >= 1; i--)
                 {
-                    if (i < Model.CurrentPage)
+                    if (i < Model.Paging.CurrentPage)
                     {
-                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage - i))">@(Model.CurrentPage - i)</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage - i))">@(Model.Paging.CurrentPage - i)</a></li>
                     }
                 }
                 @if (pages > 1)
                 {
                     <li class="page-item active" aria-current="page">
-                        <span class="page-link">@Model.CurrentPage</span>
+                        <span class="page-link">@Model.Paging.CurrentPage</span>
                     </li>
                 }
-                @for (int i = 1; i <= numbersNextTo && Model.CurrentPage + i <= pages; i++)
+                @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                 {
-                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + i))">@(Model.CurrentPage + i)</a></li>
+                    <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage + i))">@(Model.Paging.CurrentPage + i)</a></li>
                 }
-                @if (Model.CurrentPage + numbersNextTo + 1 <= pages)
+                @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="javascript:PagerClick(@(Model.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                        <a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>

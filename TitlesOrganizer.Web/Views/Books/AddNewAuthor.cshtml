@@ -1,14 +1,14 @@
-﻿@model AuthorVM
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.AuthorVM
 
 @{
-    if (string.IsNullOrWhiteSpace(Model.BookTitle))
-    {
-        ViewData["Title"] = "Add new author";
-    }
-    else
-    {
-        ViewData["Title"] = "Add new author for \"" + Model.BookTitle + "\"";
-    }
+    //if (string.IsNullOrWhiteSpace(Model.Book.Title))
+    //{
+    //    ViewData["Title"] = "Add new author";
+    //}
+    //else
+    //{
+    //    ViewData["Title"] = "Add new author for \"" + Model.BookTitle + "\"";
+    //}
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -28,8 +28,8 @@
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-            <input asp-for="BookId" type="hidden" />
-            <input asp-for="BookTitle" type="hidden" />
+            @*<input asp-for="BookId" type="hidden" />
+            <input asp-for="BookTitle" type="hidden" />*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -46,7 +46,7 @@
 else
 {
     <div>
-        <a asp-action="SelectAuthorsForBook" asp-route-id="@Model.BookId">Back to selecting authors</a>
+        <a asp-action="SelectAuthorsForBook">Back to selecting authors</a> @*asp-route-id="@Model.BookId"*@
     </div>
 }
 

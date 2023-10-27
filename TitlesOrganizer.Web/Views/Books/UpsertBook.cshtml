@@ -1,4 +1,4 @@
-﻿@model BookVM
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.BookVM
 
 <h1>@ViewData["Title"]</h1>
 <hr />
@@ -15,12 +15,16 @@
     <div class="form-group row">
         <label asp-for="Authors" class="col-sm-3 col-form-label"></label>
         <input asp-for="Authors" type="hidden" />
-        @if (!string.IsNullOrWhiteSpace(Model.Authors))
+
+        @{
+            var authors = string.Join(", ", @Model.Authors.Select(a => a.FullName));
+            if (!string.IsNullOrWhiteSpace(authors))
         {
             <div class="col-sm-auto col-auto">
-                @Model.Authors
+                @authors
                 <span asp-validation-for="Authors" class="text-danger"></span>
             </div>
+        }
         }
         <div class="col-auto">
             <button type="submit" asp-action="SelectAuthors" id="ModifyAuthors" name="ModifyAuthors" class="btn btn-outline-primary btn-lg d-inline" title="Select authors">
@@ -63,12 +67,15 @@
     <div class="form-group row">
         <label asp-for="Genres" class="col-sm-3 col-form-label"></label>
         <input asp-for="Genres" type="hidden" />
-        @if (!string.IsNullOrWhiteSpace(Model.Genres))
+        @{
+            var genres = string.Join(", ", Model.Genres.Select(g => g.Name));
+            if (!string.IsNullOrWhiteSpace(genres))
         {
             <div class="col-sm-auto col-auto">
-                @Model.Genres
+                @genres
                 <span asp-validation-for="Genres" class="text-danger"></span>
             </div>
+        }
         }
         <div class="col-auto">
             <button type="submit" id="ModifyGenres" name="ModifyGenres" class="btn button btn-outline-primary btn-lg">
@@ -89,10 +96,10 @@
     <div class="form-group row">
         <label asp-for="Series" class="col-sm-3 col-form-label"></label>
         <input asp-for="Series" type="hidden" />
-        @if (!string.IsNullOrWhiteSpace(Model.Series))
+        @if (!string.IsNullOrWhiteSpace(Model.Series?.Title))
         {
             <div class="col-sm-auto col-auto">
-                @Model.Series
+                @Model.Series.Title
             </div>
         }
         <div class="col-auto">

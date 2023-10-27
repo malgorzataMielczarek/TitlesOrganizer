@@ -1,35 +1,34 @@
-﻿using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs;
+﻿using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.Interfaces
 {
     public interface IBookCommandsService
     {
-        void DeleteAuthor(int id);
+        void Delete(int id);
 
-        void DeleteBook(int id);
+        BookVM Get(int id);
 
-        void DeleteGenre(int id);
+        BookDetailsVM GetDetails(int id);
 
-        void DeleteSeries(int id);
+        ListBookForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        void SelectAuthorsForBook(int bookId, List<int> authorsIds);
+        ListBookForAuthorVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        void SelectBooksForAuthor(int authorId, List<int> booksIds);
+        ListBookForGenreVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        void SelectBooksForGenre(int genreId, List<int> booksIds);
+        ListBookForSeriesVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        void SelectBooksForSeries(int seriesId, List<int> booksIds);
+        PartialList<BookForListVM> GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
 
-        void SelectGenresForBook(int bookId, List<int> genresIds);
+        PartialList<BookForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
 
-        void SelectSeriesForBook(int bookId, int? seriesIds);
+        void SelectForAuthor(int authorId, List<int> selectedIds);
 
-        int UpsertAuthor(AuthorVM author);
+        void SelectForGenre(int genreId, List<int> selectedIds);
 
-        int UpsertBook(BookVM book);
+        void SelectForSeries(int seriesId, List<int> selectedIds);
 
-        int UpsertGenre(GenreVM genre);
-
-        int UpsertSeries(SeriesVM series);
+        int Upsert(BookVM book);
     }
 }

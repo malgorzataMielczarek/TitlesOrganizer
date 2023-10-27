@@ -4,11 +4,9 @@ using FluentValidation;
 using FormHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.UpdateVMs.UpsertModelVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.DetailsVMs;
-using TitlesOrganizer.Application.ViewModels.BookVMs.ForListVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Web.Controllers
@@ -17,15 +15,21 @@ namespace TitlesOrganizer.Web.Controllers
     {
         private const int PAGE_SIZE = 10;
         private const int SMALL_PAGE_SIZE = 5;
-        private readonly IBookService _bookService;
+        private readonly IAuthorService _authorService;
+        private readonly IBookCommandsService _bookService;
+        private readonly IBookSeriesService _seriesService;
+        private readonly ILiteratureGenreService _genreService;
         private readonly IValidator<BookVM> _bookValidator;
         private readonly ILanguageService _languageService;
         private readonly ILogger<BooksController> _logger;
 
-        public BooksController(ILogger<BooksController> logger, IBookService bookService, ILanguageService languageService, IValidator<BookVM> bookValidator)
+        public BooksController(ILogger<BooksController> logger, IAuthorService authorService, IBookCommandsService bookService, IBookSeriesService bookSeriesService, ILiteratureGenreService literatureGenreService, ILanguageService languageService, IValidator<BookVM> bookValidator)
         {
             _logger = logger;
+            _authorService = authorService;
             _bookService = bookService;
+            _seriesService = bookSeriesService;
+            _genreService = literatureGenreService;
             _languageService = languageService;
             _bookValidator = bookValidator;
         }
@@ -33,7 +37,7 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet]
         public ActionResult AddGenresForBook(int id)
         {
-            ListGenreForBookVM genres = _bookService.GetAllGenresForBookList(id, SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            ListGenreForBookVM genres = _genreService.GetListForBook(id, SortByEnum.Ascending, PAGE_SIZE, 1, "");
             return View(genres);
         }
 
@@ -41,7 +45,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddGenresForBook(int bookId, List<int> genresIds)
         {
-            _bookService.AddGenresForBook(bookId, genresIds);
+            _genreService.SelectForBook(bookId, genresIds);
             return View(bookId);
         }
 
@@ -62,19 +66,19 @@ namespace TitlesOrganizer.Web.Controllers
                     return FormResult.CreateErrorResult("Enter name or/and last name of the author.");
                 }
 
-                int id = _bookService.AddAuthor(author);
+                int id = _authorService.Upsert(author);
 
                 if (id > 0)
                 {
                     string? redirectUri;
-                    if (author.BookId == default)
-                    {
-                        redirectUri = Url.Action(nameof(Authors));
-                    }
-                    else
-                    {
-                        redirectUri = Url.Action(nameof(SelectAuthorsForBook), new { id = author.BookId });
-                    }
+                    //if (author.BookId == default)
+                    //{
+                    redirectUri = Url.Action(nameof(Authors));
+                    //}
+                    //else
+                    //{
+                    //  redirectUri = Url.Action(nameof(SelectAuthorsForBook), new { id = author.BookId });
+                    //}
 
                     return FormResult.CreateSuccessResult("New author added.", redirectUri);
                 }
@@ -93,29 +97,29 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddNewGenre(GenreVM genre)
         {
-            int id = _bookService.AddGenre(genre);
+            int id = _genreService.Upsert(genre);
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult AddNewGenre(int bookId, GenreVM genre)
-        {
-            int id = _bookService.AddGenre(bookId, genre);
-            return View();
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult AddNewGenre(int bookId, GenreVM genre)
+        //{
+        //    int id = _genreService.Upsert(bookId, genre);
+        //    return View();
+        //}
 
         [HttpGet("/Books/Authors/Details/{id}")]
         public ActionResult AuthorDetails(int id)
         {
-            AuthorDetailsVM author = _bookService.GetAuthorDetails(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, "");
+            AuthorDetailsVM author = _authorService.GetDetails(id, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
             return View(author);
         }
 
         [HttpGet]
         public ActionResult Authors()
         {
-            ListAuthorForListVM authors = _bookService.GetAllAuthorsForList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            ListAuthorForListVM authors = _authorService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
             return View(authors);
         }
 
@@ -127,21 +131,21 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListAuthorForListVM authors = _bookService.GetAllAuthorsForList(sortBy, pageSize, (int)pageNo, searchString);
+            ListAuthorForListVM authors = _authorService.GetList(sortBy, pageSize, (int)pageNo, searchString);
             return View(authors);
         }
 
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            _bookService.DeleteBook(id);
+            _bookService.Delete(id);
             return RedirectToAction("Index");
         }
 
         [HttpGet("/Books/Details/{id?}")]
         public ActionResult Details(int id)
         {
-            BookDetailsVM book = _bookService.GetBookDetails(id);
+            BookDetailsVM book = _bookService.GetDetails(id);
             if (book == null)
             {
                 return BadRequest($"No book with id {id}");
@@ -153,14 +157,14 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet("/Books/Genres/Details/{id}")]
         public ActionResult GenreDetails(int id)
         {
-            GenreDetailsVM genre = _bookService.GetGenreDetails(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, "");
+            GenreDetailsVM genre = _genreService.GetDetails(id, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
             return View(genre);
         }
 
         [HttpGet]
         public ActionResult Genres()
         {
-            ListGenreVM genres = _bookService.GetAllGenres(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            ListGenreForListVM genres = _genreService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
             return View(genres);
         }
 
@@ -172,14 +176,14 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListGenreVM genres = _bookService.GetAllGenres(sortBy, pageSize, (int)pageNo, searchString);
+            ListGenreForListVM genres = _genreService.GetList(sortBy, pageSize, (int)pageNo, searchString);
             return View(genres);
         }
 
         [HttpGet]
         public ActionResult Index()
         {
-            ListBookForListVM list = _bookService.GetAllBooksForList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            ListBookForListVM list = _bookService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
             return View(list);
         }
 
@@ -191,14 +195,14 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListBookForListVM list = _bookService.GetAllBooksForList(sortBy, pageSize, (int)pageNo, searchString);
+            ListBookForListVM list = _bookService.GetList(sortBy, pageSize, (int)pageNo, searchString);
             return View(list);
         }
 
         [HttpGet]
         public ActionResult Series()
         {
-            ListSeriesForListVM series = _bookService.GetAllSeriesForList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            ListSeriesForListVM series = _seriesService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
             return View(series);
         }
 
@@ -210,14 +214,14 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListSeriesForListVM series = _bookService.GetAllSeriesForList(sortBy, pageSize, (int)pageNo, searchString);
+            ListSeriesForListVM series = _seriesService.GetList(sortBy, pageSize, (int)pageNo, searchString);
             return View(series);
         }
 
         [HttpGet("/Books/Series/Details/{id}")]
         public ActionResult SeriesDetails(int id)
         {
-            SeriesDetailsVM genre = _bookService.GetSeriesDetails(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, "");
+            SeriesDetailsVM genre = _seriesService.GetDetails(id, SMALL_PAGE_SIZE, 1);
             return View(genre);
         }
 
@@ -232,7 +236,7 @@ namespace TitlesOrganizer.Web.Controllers
             if (id.HasValue)
             {
                 ViewData["Title"] = "Update Book";
-                book = _bookService.GetBook(id.Value);
+                book = _bookService.Get(id.Value);
             }
             else
             {
@@ -277,7 +281,7 @@ namespace TitlesOrganizer.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _bookService.UpsertBook(book);
+                int id = _bookService.Upsert(book);
 
                 if (id > 0)
                 {
@@ -297,17 +301,17 @@ namespace TitlesOrganizer.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _bookService.UpsertBook(book);
+                int id = _bookService.Upsert(book);
 
                 if (id > 0)
                 {
-                    if (string.IsNullOrEmpty(book.Authors))
+                    if (book.Authors.IsNullOrEmpty())
                     {
                         ViewData["Title"] = "Update Book";
                         return FormResult.CreateErrorResult("Specify the author of the book.");
                     }
 
-                    if (string.IsNullOrEmpty(book.Genres))
+                    if (book.Genres.IsNullOrEmpty())
                     {
                         ViewData["Title"] = "Update Book";
                         return FormResult.CreateErrorResult("Specify the genre of the book.");
@@ -324,7 +328,7 @@ namespace TitlesOrganizer.Web.Controllers
         [HttpGet]
         public ActionResult SelectAuthorsForBook(int id)
         {
-            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
+            ListAuthorForBookVM authors = _authorService.GetListForBook(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
 
             return View(authors);
         }
@@ -333,10 +337,10 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook, int? pageNo)
         {
-            listAuthorForBook.CurrentPage = pageNo.HasValue ? pageNo.Value : 1;
+            listAuthorForBook.Paging.CurrentPage = pageNo.HasValue ? pageNo.Value : 1;
 
-            _bookService.SelectAuthorsForBook(listAuthorForBook);
-            ListAuthorForBookVM authors = _bookService.GetAllAuthorsForBookList(listAuthorForBook);
+            //_authorService.SelectForBook(listAuthorForBook);
+            ListAuthorForBookVM authors = _authorService.GetListForBook(listAuthorForBook.Book.Id, listAuthorForBook.Filtering.SortBy, listAuthorForBook.Paging.PageSize, listAuthorForBook.Paging.CurrentPage, listAuthorForBook.Filtering.SearchString);
 
             return View(authors);
         }
@@ -345,17 +349,17 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult FinalizeSelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
         {
-            _bookService.SelectAuthorsForBook(listAuthorForBook);
+            //_authorService.SelectForBook(listAuthorForBook);
 
-            return RedirectToAction(nameof(GetUpsertBook), new { id = listAuthorForBook.BookId });
+            return RedirectToAction(nameof(GetUpsertBook), new { id = listAuthorForBook.Book.Id });
         }
 
         [HttpPost("/Books/Update/AddAuthor")]
         [ValidateAntiForgeryToken]
         public ActionResult AddNewAuthorForBook(ListAuthorForBookVM listAuthorForBook)
         {
-            _bookService.SelectAuthorsForBook(listAuthorForBook);
-            var author = new AuthorVM() { BookId = listAuthorForBook.BookId, BookTitle = listAuthorForBook.BookTitle };
+            //_authorService.SelectForBook(listAuthorForBook);
+            var author = new AuthorVM(); //{ BookId = listAuthorForBook.BookId, BookTitle = listAuthorForBook.BookTitle };
 
             return View("AddNewAuthor", author);
         }
