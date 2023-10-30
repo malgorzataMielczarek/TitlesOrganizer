@@ -12,27 +12,17 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             _context = context;
         }
 
-        public void Delete(Author author)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Delete(Book book)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(BookSeries series)
+        public int Insert(Book book)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(LiteratureGenre genre)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateAuthorBooksRelation(Author author)
+        public void Update(Book book)
         {
             throw new NotImplementedException();
         }
@@ -47,17 +37,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public void UpdateBookSeriesBooksRelation(BookSeries series)
-        {
-            throw new NotImplementedException();
-        }
-
         public void UpdateBookSeriesRelation(Book book)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateLiteratureGenreBooksRelation(LiteratureGenre genre)
         {
             throw new NotImplementedException();
         }

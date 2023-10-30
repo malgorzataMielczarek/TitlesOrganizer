@@ -15,8 +15,8 @@ namespace TitlesOrganizer.Tests.Services
         public void Delete_ExistingBookSeriesId()
         {
             BookSeries series = new BookSeries() { Id = 1, Title = "Title" };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
+            var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeries(series.Id)).Returns(series);
             commandsRepo.Setup(r => r.Delete(series));
             IMapper mapper = new Mock<IMapper>().Object;
@@ -34,8 +34,8 @@ namespace TitlesOrganizer.Tests.Services
         public void Delete_NotExistingBookSeriesId()
         {
             BookSeries series = new BookSeries() { Id = 1, Title = "Title" };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
+            var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeries(series.Id)).Returns((BookSeries?)null);
             commandsRepo.Setup(r => r.Delete(series));
             IMapper mapper = new Mock<IMapper>().Object;
@@ -50,133 +50,133 @@ namespace TitlesOrganizer.Tests.Services
         }
 
         [Fact]
-        public void SelectForBook_ExistingBookIdAndExistingBookSeriesId()
+        public void SelectBooks_ExistingBookSeriesIdAndExistingBooksIds()
         {
-            var series1 = new BookSeries() { Id = 1, Title = "Title1" };
-            var series2 = new BookSeries() { Id = 2, Title = "Title2" };
-            var book = new Book()
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            var book2 = new Book() { Id = 2, Title = "Title2" };
+            var book3 = new Book() { Id = 3, Title = "Title3" };
+            var series = new BookSeries()
             {
                 Id = 1,
                 Title = "Title",
-                Series = series1,
-                SeriesId = series1.Id
+                Books = new List<Book>() { book1 }
             };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetBookSeries(series2.Id)).Returns(series2);
-            commandsRepo.Setup(r => r.UpdateBookSeriesRelation(book));
+            List<int> booksIds = new List<int>() { book2.Id, book3.Id };
+            var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetBookSeries(series.Id)).Returns(series);
+            queriesRepo.Setup(r => r.GetBook(book2.Id)).Returns(book2);
+            queriesRepo.Setup(r => r.GetBook(book3.Id)).Returns(book3);
+            commandsRepo.Setup(r => r.UpdateBookSeriesBooksRelation(series));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new BookSeriesService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(book.Id, series2.Id);
+            service.SelectBooks(series.Id, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetBookSeries(series2.Id), Times.Once());
-            book.Series.Should().Be(series2);
-            book.SeriesId.Should().Be(series2.Id);
-            commandsRepo.Verify(r => r.UpdateBookSeriesRelation
+            queriesRepo.Verify(r => r.GetBookSeries(series.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(book2.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(book3.Id), Times.Once());
+            series.Books.Should().HaveCount(booksIds.Count).And.Contain(book2).And.Contain(book3).And.NotContain(book1);
+            commandsRepo.Verify(r => r.UpdateBookSeriesBooksRelation
             (
-                It.Is<Book>(b =>
-                    b.Equals(book) &&
-                    b.Series == series2 &&
-                    b.SeriesId == series2.Id)
+                It.Is<BookSeries>(s =>
+                    s.Equals(series) &&
+                    s.Books != null && s.Books.Count == booksIds.Count &&
+                    s.Books.Contains(book2) && s.Books.Contains(book3) && !s.Books.Contains(book1))
             ), Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void SelectForBook_ExistingBookIdAndNotExistingBookSeriesId()
+        public void SelectBooks_ExistingBookSeriesIdAndNotExistingBooksIds()
         {
-            var series1 = new BookSeries() { Id = 1, Title = "Title1" };
-            var book = new Book()
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            var series = new BookSeries()
             {
                 Id = 1,
                 Title = "Title",
-                Series = series1,
-                SeriesId = series1.Id
+                Books = new List<Book>() { book1 }
             };
-            int newSeriesId = 2;
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetBookSeries(newSeriesId)).Returns((BookSeries?)null);
-            commandsRepo.Setup(r => r.UpdateBookSeriesRelation(book));
+            List<int> booksIds = new List<int>() { 2, 3 };
+            var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetBookSeries(series.Id)).Returns(series);
+            queriesRepo.Setup(r => r.GetBook(2)).Returns((Book?)null);
+            queriesRepo.Setup(r => r.GetBook(3)).Returns((Book?)null);
+            commandsRepo.Setup(r => r.UpdateBookSeriesBooksRelation(series));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new BookSeriesService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(book.Id, newSeriesId);
+            service.SelectBooks(series.Id, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetBookSeries(newSeriesId), Times.Once());
-            book.Series.Should().BeNull();
-            book.SeriesId.Should().BeNull();
-            commandsRepo.Verify(r => r.UpdateBookSeriesRelation
+            queriesRepo.Verify(r => r.GetBookSeries(series.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(2), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(3), Times.Once());
+            series.Books.Should().NotBeNull().And.BeEmpty();
+            commandsRepo.Verify(r => r.UpdateBookSeriesBooksRelation
             (
-                It.Is<Book>(b =>
-                    b.Equals(book) &&
-                    b.Series == null &&
-                    b.SeriesId == null)
+                It.Is<BookSeries>(s =>
+                    s.Equals(series) &&
+                    s.Books != null && s.Books.Count == 0)
             ), Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void SelectForBook_ExistingBookIdAndNull()
+        public void SelectBooks_ExistingBookSeriesIdAndEmptyList()
         {
-            var series1 = new BookSeries() { Id = 1, Title = "Title1" };
-            var book = new Book()
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            var series = new BookSeries()
             {
                 Id = 1,
                 Title = "Title",
-                Series = series1,
-                SeriesId = series1.Id
+                Books = new List<Book>() { book1 }
             };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetBookSeries(It.IsAny<int>()));
-            commandsRepo.Setup(r => r.UpdateBookSeriesRelation(book));
+            List<int> booksIds = new List<int>();
+            var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetBookSeries(series.Id)).Returns(series);
+            queriesRepo.Setup(r => r.GetBook(It.IsAny<int>()));
+            commandsRepo.Setup(r => r.UpdateBookSeriesBooksRelation(series));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new BookSeriesService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(book.Id, null);
+            service.SelectBooks(series.Id, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetBookSeries(It.IsAny<int>()), Times.Never());
-            book.Series.Should().BeNull();
-            book.SeriesId.Should().BeNull();
-            commandsRepo.Verify(r => r.UpdateBookSeriesRelation
+            queriesRepo.Verify(r => r.GetBookSeries(series.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(It.IsAny<int>()), Times.Never());
+            series.Books.Should().NotBeNull().And.BeEmpty();
+            commandsRepo.Verify(r => r.UpdateBookSeriesBooksRelation
             (
-                It.Is<Book>(b =>
-                    b.Equals(book) &&
-                    b.Series == null &&
-                    b.SeriesId == null)
+                It.Is<BookSeries>(s =>
+                    s.Equals(series) &&
+                    s.Books != null && s.Books.Count == 0)
             ), Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void SelectForBook_NotExistingBookIdAndBookSeriesId()
+        public void SelectBooks_NotExistingBookSeriesIdAndBooksIds()
         {
-            int bookId = 1;
-            var series1 = new BookSeries() { Id = 1, Title = "Title1" };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(bookId)).Returns((Book?)null);
-            queriesRepo.Setup(r => r.GetBookSeries(series1.Id)).Returns(series1);
-            commandsRepo.Setup(r => r.UpdateBookSeriesRelation(It.IsAny<Book>()));
+            int seriesId = 1;
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            List<int> booksIds = new List<int>() { book1.Id };
+            var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetBookSeries(seriesId)).Returns((BookSeries?)null);
+            queriesRepo.Setup(r => r.GetBook(book1.Id)).Returns(book1);
+            commandsRepo.Setup(r => r.UpdateBookSeriesBooksRelation(It.IsAny<BookSeries>()));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new BookSeriesService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(bookId, series1.Id);
+            service.SelectBooks(seriesId, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(bookId), Times.Once());
-            queriesRepo.Verify(r => r.GetBookSeries(series1.Id), Times.Never());
-            commandsRepo.Verify(r => r.UpdateBookSeriesRelation(It.IsAny<Book>()), Times.Never());
+            queriesRepo.Verify(r => r.GetBookSeries(seriesId), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(book1.Id), Times.Never());
+            commandsRepo.Verify(r => r.UpdateBookSeriesBooksRelation(It.IsAny<BookSeries>()), Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }

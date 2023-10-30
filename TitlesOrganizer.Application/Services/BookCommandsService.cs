@@ -5,20 +5,21 @@ using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
+using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
     public class BookCommandsService : IBookCommandsService
     {
-        private readonly IBookCommandsRepository _commandsRepository;
-        private readonly IBookQueriesRepository _queriesRepository;
+        private readonly IBookCommandsRepository _commands;
+        private readonly IBookModuleQueriesRepository _queries;
 
         private readonly IMapper _mapper;
 
-        public BookCommandsService(IBookCommandsRepository bookCommandsRepository, IBookQueriesRepository bookQueriesRepository, IMapper mapper)
+        public BookCommandsService(IBookCommandsRepository bookCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper)
         {
-            _commandsRepository = bookCommandsRepository;
-            _queriesRepository = bookQueriesRepository;
+            _commands = bookCommandsRepository;
+            _queries = bookModuleQueriesRepository;
             _mapper = mapper;
         }
 
@@ -67,17 +68,17 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public void SelectForAuthor(int authorId, List<int> booksIds)
+        public void SelectAuthors(int bookId, List<int> selectedIds)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectForGenre(int genreId, List<int> booksIds)
+        public void SelectGenres(int bookId, List<int> selectedIds)
         {
             throw new NotImplementedException();
         }
 
-        public void SelectForSeries(int seriesId, List<int> booksIds)
+        public void SelectSeries(int bookId, int? selectedId)
         {
             throw new NotImplementedException();
         }
@@ -85,6 +86,11 @@ namespace TitlesOrganizer.Application.Services
         public int Upsert(BookVM book)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual Book Map(BookVM book)
+        {
+            return book.MapToBase(_mapper);
         }
     }
 }

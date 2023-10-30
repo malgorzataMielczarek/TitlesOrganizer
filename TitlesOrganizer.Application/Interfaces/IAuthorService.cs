@@ -9,7 +9,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         AuthorVM Get(int id, int booksPageSize, int booksPageNo);
 
-        AuthorDetailsVM GetDetails(int id, int booksPageSize, int booksPageNo, int authorsPageSize, int authorsPageNo, int seriesPageSize, int seriesPageNo);
+        AuthorDetailsVM GetDetails(int id, int booksPageSize, int booksPageNo, int seriesPageSize, int seriesPageNo, int genresPageSize, int genresPageNo);
 
         ListAuthorForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
@@ -17,7 +17,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         PartialList<AuthorForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
 
-        void SelectForBook(int bookId, List<int> selectedIds);
+        void SelectBooks(int authorId, List<int> selectedIds);
 
         int Upsert(AuthorVM author);
     }

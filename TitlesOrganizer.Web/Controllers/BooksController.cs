@@ -45,7 +45,7 @@ namespace TitlesOrganizer.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddGenresForBook(int bookId, List<int> genresIds)
         {
-            _genreService.SelectForBook(bookId, genresIds);
+            _bookService.SelectGenres(bookId, genresIds);
             return View(bookId);
         }
 

@@ -8,8 +8,11 @@ namespace TitlesOrganizer.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            services.AddTransient<IBookCommandsRepository, BookCommandsRepository>()
-                .AddTransient<IBookQueriesRepository, BookQueriesRepository>()
+            services.AddTransient<IAuthorCommandsRepository, AuthorCommandsRepository>()
+                .AddTransient<IBookCommandsRepository, BookCommandsRepository>()
+                .AddTransient<IBookSeriesCommandsRepository, BookSeriesCommandsRepository>()
+                .AddTransient<ILiteratureGenreCommandsRepository, LiteratureGenreCommandsRepository>()
+                .AddTransient<IBookModuleQueriesRepository, BookModuleQueriesRepository>()
                 .AddTransient<ILanguageRepository, LanguageRepository>();
             //.AddTransient<IBookRepository, BookRepository>()
             //.AddTransient<ICountryRepository, CountryRepository>()

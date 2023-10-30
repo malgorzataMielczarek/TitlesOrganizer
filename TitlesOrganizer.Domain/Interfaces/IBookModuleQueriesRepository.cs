@@ -2,13 +2,15 @@
 
 namespace TitlesOrganizer.Domain.Interfaces
 {
-    public interface IBookQueriesRepository
+    public interface IBookModuleQueriesRepository
     {
         IQueryable<Author> GetAllAuthors();
 
         IQueryable<Author> GetAllAuthorsWithBooks();
 
         IQueryable<Book> GetAllBooks();
+
+        IQueryable<Book> GetAllBooksWithAllRelatedObjects();
 
         IQueryable<BookSeries> GetAllBookSeries();
 

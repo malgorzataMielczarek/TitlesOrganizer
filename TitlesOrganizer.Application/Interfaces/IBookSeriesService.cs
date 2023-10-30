@@ -19,7 +19,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         PartialList<SeriesForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
 
-        void SelectForBook(int bookId, int? selectedIds);
+        void SelectBooks(int seriesId, List<int> selectedIds);
 
         int Upsert(SeriesVM series);
     }

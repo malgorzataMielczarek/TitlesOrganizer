@@ -3,11 +3,11 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Infrastructure.Repositories
 {
-    public class BookQueriesRepository : IBookQueriesRepository
+    public class BookModuleQueriesRepository : IBookModuleQueriesRepository
     {
         private readonly Context _context;
 
-        public BookQueriesRepository(Context context)
+        public BookModuleQueriesRepository(Context context)
         {
             _context = context;
         }
@@ -33,6 +33,11 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         }
 
         public IQueryable<BookSeries> GetAllBookSeriesWithBooks()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Book> GetAllBooksWithAllRelatedObjects()
         {
             throw new NotImplementedException();
         }

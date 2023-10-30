@@ -1,6 +1,8 @@
-﻿namespace TitlesOrganizer.Domain.Models
+﻿using TitlesOrganizer.Domain.Models.Abstract;
+
+namespace TitlesOrganizer.Domain.Models
 {
-    public class Movie
+    public class Movie : IBaseModel
     {
         public int Id { get; set; }
         public required string Title { get; set; }

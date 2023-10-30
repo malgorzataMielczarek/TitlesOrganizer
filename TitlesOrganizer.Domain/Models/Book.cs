@@ -1,6 +1,8 @@
-﻿namespace TitlesOrganizer.Domain.Models
+﻿using TitlesOrganizer.Domain.Models.Abstract;
+
+namespace TitlesOrganizer.Domain.Models
 {
-    public class Book
+    public class Book : IBaseModel
     {
         public int Id { get; set; }
         public required string Title { get; set; }

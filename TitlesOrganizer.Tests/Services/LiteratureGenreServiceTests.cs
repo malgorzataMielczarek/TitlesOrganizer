@@ -15,8 +15,8 @@ namespace TitlesOrganizer.Tests.Services
         public void Delete_ExistingLiteratureGenreId()
         {
             LiteratureGenre genre = new LiteratureGenre() { Id = 1, Name = "Name" };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
+            var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id)).Returns(genre);
             commandsRepo.Setup(r => r.Delete(genre));
             IMapper mapper = new Mock<IMapper>().Object;
@@ -34,8 +34,8 @@ namespace TitlesOrganizer.Tests.Services
         public void Delete_NotExistingLiteratureGenreId()
         {
             LiteratureGenre genre = new LiteratureGenre() { Id = 1, Name = "Name" };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
+            var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id)).Returns((LiteratureGenre?)null);
             commandsRepo.Setup(r => r.Delete(genre));
             IMapper mapper = new Mock<IMapper>().Object;
@@ -50,133 +50,133 @@ namespace TitlesOrganizer.Tests.Services
         }
 
         [Fact]
-        public void SelectForBook_ExistingBookIdAndExistingLiteratureGenresIds()
+        public void SelectBooks_ExistingLiteratureGenreIdAndExistingBooksIds()
         {
-            var genre1 = new LiteratureGenre() { Id = 1, Name = "Name1" };
-            var genre2 = new LiteratureGenre() { Id = 2, Name = "Name2" };
-            var genre3 = new LiteratureGenre() { Id = 3, Name = "Name3" };
-            var book = new Book()
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            var book2 = new Book() { Id = 2, Title = "Title2" };
+            var book3 = new Book() { Id = 3, Title = "Title3" };
+            var genre = new LiteratureGenre()
             {
                 Id = 1,
-                Title = "Title",
-                Genres = new List<LiteratureGenre>() { genre1 }
+                Name = "Name",
+                Books = new List<Book>() { book1 }
             };
-            List<int> genresIds = new List<int>() { genre2.Id, genre3.Id };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetLiteratureGenre(genre2.Id)).Returns(genre2);
-            queriesRepo.Setup(r => r.GetLiteratureGenre(genre3.Id)).Returns(genre3);
-            commandsRepo.Setup(r => r.UpdateBookGenresRelation(book));
+            List<int> booksIds = new List<int>() { book2.Id, book3.Id };
+            var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id)).Returns(genre);
+            queriesRepo.Setup(r => r.GetBook(book2.Id)).Returns(book2);
+            queriesRepo.Setup(r => r.GetBook(book3.Id)).Returns(book3);
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(genre));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(book.Id, genresIds);
+            service.SelectBooks(genre.Id, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetLiteratureGenre(genre2.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetLiteratureGenre(genre3.Id), Times.Once());
-            book.Genres.Should().HaveCount(genresIds.Count).And.Contain(genre2).And.Contain(genre3).And.NotContain(genre1);
-            commandsRepo.Verify(r => r.UpdateBookGenresRelation
+            queriesRepo.Verify(r => r.GetLiteratureGenre(genre.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(book2.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(book3.Id), Times.Once());
+            genre.Books.Should().HaveCount(booksIds.Count).And.Contain(book2).And.Contain(book3).And.NotContain(book1);
+            commandsRepo.Verify(r => r.UpdateLiteratureGenreBooksRelation
             (
-                It.Is<Book>(b =>
-                    b.Equals(book) &&
-                    b.Genres != null && b.Genres.Count == genresIds.Count &&
-                    b.Genres.Contains(genre2) && b.Genres.Contains(genre3) && !b.Genres.Contains(genre1))
+                It.Is<LiteratureGenre>(g =>
+                    g.Equals(genre) &&
+                    g.Books != null && g.Books.Count == booksIds.Count &&
+                    g.Books.Contains(book2) && g.Books.Contains(book3) && !g.Books.Contains(book1))
             ), Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void SelectForBook_ExistingBookIdAndNotExistingLiteratureGenresIds()
+        public void SelectBooks_ExistingLiteratureGenreIdAndNotExistingBooksIds()
         {
-            var genre1 = new LiteratureGenre() { Id = 1, Name = "Name1" };
-            var book = new Book()
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            var genre = new LiteratureGenre()
             {
                 Id = 1,
-                Title = "Title",
-                Genres = new List<LiteratureGenre>() { genre1 }
+                Name = "Name",
+                Books = new List<Book>() { book1 }
             };
-            List<int> genresIds = new List<int>() { 2, 3 };
-            var commendsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetLiteratureGenre(2)).Returns((LiteratureGenre?)null);
-            queriesRepo.Setup(r => r.GetLiteratureGenre(3)).Returns((LiteratureGenre?)null);
-            commendsRepo.Setup(r => r.UpdateBookGenresRelation(book));
-            IMapper mapper = new Mock<IMapper>().Object;
-
-            var service = new LiteratureGenreService(commendsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(book.Id, genresIds);
-
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetLiteratureGenre(2), Times.Once());
-            queriesRepo.Verify(r => r.GetLiteratureGenre(3), Times.Once());
-            book.Genres.Should().NotBeNull().And.BeEmpty();
-            commendsRepo.Verify(r => r.UpdateBookGenresRelation
-            (
-                It.Is<Book>(b =>
-                    b.Equals(book) &&
-                    b.Genres != null && b.Genres.Count == 0)
-            ), Times.Once());
-            commendsRepo.VerifyNoOtherCalls();
-            queriesRepo.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public void SelectForBook_ExistingBookIdAndEmptyList()
-        {
-            var genre1 = new LiteratureGenre() { Id = 1, Name = "Name1" };
-            var book = new Book()
-            {
-                Id = 1,
-                Title = "Title",
-                Genres = new List<LiteratureGenre>() { genre1 }
-            };
-            List<int> genresIds = new List<int>();
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetLiteratureGenre(It.IsAny<int>()));
-            commandsRepo.Setup(r => r.UpdateBookGenresRelation(book));
+            List<int> booksIds = new List<int>() { 2, 3 };
+            var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id)).Returns(genre);
+            queriesRepo.Setup(r => r.GetBook(2)).Returns((Book?)null);
+            queriesRepo.Setup(r => r.GetBook(3)).Returns((Book?)null);
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(genre));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(book.Id, genresIds);
+            service.SelectBooks(genre.Id, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetLiteratureGenre(It.IsAny<int>()), Times.Never());
-            book.Genres.Should().NotBeNull().And.BeEmpty();
-            commandsRepo.Verify(r => r.UpdateBookGenresRelation
+            queriesRepo.Verify(r => r.GetLiteratureGenre(genre.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(2), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(3), Times.Once());
+            genre.Books.Should().NotBeNull().And.BeEmpty();
+            commandsRepo.Verify(r => r.UpdateLiteratureGenreBooksRelation
             (
-                It.Is<Book>(b =>
-                    b.Equals(book) &&
-                    b.Genres != null && b.Genres.Count == 0)
+                It.Is<LiteratureGenre>(g =>
+                    g.Equals(genre) &&
+                    g.Books != null && g.Books.Count == 0)
             ), Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void SelectForBook_NotExistingBookIdAndLiteratureGenresIds()
+        public void SelectBooks_ExistingLiteratureGenreIdAndEmptyList()
         {
-            int bookId = 1;
-            var genre1 = new LiteratureGenre() { Id = 1, Name = "Name1" };
-            List<int> genresIds = new List<int>() { genre1.Id };
-            var commandsRepo = new Mock<IBookCommandsRepository>();
-            var queriesRepo = new Mock<IBookQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(bookId)).Returns((Book?)null);
-            queriesRepo.Setup(r => r.GetLiteratureGenre(genre1.Id)).Returns(genre1);
-            commandsRepo.Setup(r => r.UpdateBookGenresRelation(It.IsAny<Book>()));
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            var genre = new LiteratureGenre()
+            {
+                Id = 1,
+                Name = "Name",
+                Books = new List<Book>() { book1 }
+            };
+            List<int> booksIds = new List<int>();
+            var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id)).Returns(genre);
+            queriesRepo.Setup(r => r.GetBook(It.IsAny<int>()));
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(genre));
             IMapper mapper = new Mock<IMapper>().Object;
 
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mapper);
-            service.SelectForBook(bookId, genresIds);
+            service.SelectBooks(genre.Id, booksIds);
 
-            queriesRepo.Verify(r => r.GetBook(bookId), Times.Once());
-            queriesRepo.Verify(r => r.GetLiteratureGenre(genre1.Id), Times.Never());
-            commandsRepo.Verify(r => r.UpdateBookGenresRelation(It.IsAny<Book>()), Times.Never());
+            queriesRepo.Verify(r => r.GetLiteratureGenre(genre.Id), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(It.IsAny<int>()), Times.Never());
+            genre.Books.Should().NotBeNull().And.BeEmpty();
+            commandsRepo.Verify(r => r.UpdateLiteratureGenreBooksRelation
+            (
+                It.Is<LiteratureGenre>(g =>
+                    g.Equals(genre) &&
+                    g.Books != null && g.Books.Count == 0)
+            ), Times.Once());
+            commandsRepo.VerifyNoOtherCalls();
+            queriesRepo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void SelectBooks_NotExistingLiteratureGenreIdAndBooksIds()
+        {
+            int genreId = 1;
+            var book1 = new Book() { Id = 1, Title = "Title1" };
+            List<int> booksIds = new List<int>() { book1.Id };
+            var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetLiteratureGenre(genreId)).Returns((LiteratureGenre?)null);
+            queriesRepo.Setup(r => r.GetBook(book1.Id)).Returns(book1);
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()));
+            IMapper mapper = new Mock<IMapper>().Object;
+
+            var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mapper);
+            service.SelectBooks(genreId, booksIds);
+
+            queriesRepo.Verify(r => r.GetLiteratureGenre(genreId), Times.Once());
+            queriesRepo.Verify(r => r.GetBook(book1.Id), Times.Never());
+            commandsRepo.Verify(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()), Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
         }

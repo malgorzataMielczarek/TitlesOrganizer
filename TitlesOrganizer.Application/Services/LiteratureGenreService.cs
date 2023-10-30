@@ -5,20 +5,21 @@ using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
+using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
     public class LiteratureGenreService : ILiteratureGenreService
     {
-        private readonly IBookCommandsRepository _commandsRepository;
-        private readonly IBookQueriesRepository _queriesRepository;
+        private readonly ILiteratureGenreCommandsRepository _commands;
+        private readonly IBookModuleQueriesRepository _queries;
 
         private readonly IMapper _mapper;
 
-        public LiteratureGenreService(IBookCommandsRepository bookCommandsRepository, IBookQueriesRepository bookQueriesRepository, IMapper mapper)
+        public LiteratureGenreService(ILiteratureGenreCommandsRepository literatureGenreCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper)
         {
-            _commandsRepository = bookCommandsRepository;
-            _queriesRepository = bookQueriesRepository;
+            _commands = literatureGenreCommandsRepository;
+            _queries = bookModuleQueriesRepository;
             _mapper = mapper;
         }
 
@@ -52,7 +53,7 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public void SelectForBook(int bookId, List<int> selectedIds)
+        public void SelectBooks(int genreId, List<int> booksIds)
         {
             throw new NotImplementedException();
         }
@@ -60,6 +61,11 @@ namespace TitlesOrganizer.Application.Services
         public int Upsert(GenreVM genre)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual LiteratureGenre Map(GenreVM genre)
+        {
+            return genre.MapToBase(_mapper);
         }
     }
 }

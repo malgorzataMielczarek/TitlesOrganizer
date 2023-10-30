@@ -1,6 +1,8 @@
-﻿namespace TitlesOrganizer.Domain.Models
+﻿using TitlesOrganizer.Domain.Models.Abstract;
+
+namespace TitlesOrganizer.Domain.Models
 {
-    public class Season
+    public class Season : IBaseModel
     {
         public int Id { get; set; }
         public int No { get; set; }

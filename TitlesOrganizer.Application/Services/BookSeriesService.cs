@@ -5,20 +5,21 @@ using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
+using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
     public class BookSeriesService : IBookSeriesService
     {
-        private readonly IBookCommandsRepository _commandsRepository;
-        private readonly IBookQueriesRepository _queriesRepository;
+        private readonly IBookSeriesCommandsRepository _commands;
+        private readonly IBookModuleQueriesRepository _queries;
 
         private readonly IMapper _mapper;
 
-        public BookSeriesService(IBookCommandsRepository bookCommandsRepository, IBookQueriesRepository bookQueriesRepository, IMapper mapper)
+        public BookSeriesService(IBookSeriesCommandsRepository bookSeriesCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper)
         {
-            _commandsRepository = bookCommandsRepository;
-            _queriesRepository = bookQueriesRepository;
+            _commands = bookSeriesCommandsRepository;
+            _queries = bookModuleQueriesRepository;
             _mapper = mapper;
         }
 
@@ -57,7 +58,7 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public void SelectForBook(int bookId, int? selectedIds)
+        public void SelectBooks(int seriesId, List<int> booksIds)
         {
             throw new NotImplementedException();
         }
@@ -65,6 +66,11 @@ namespace TitlesOrganizer.Application.Services
         public int Upsert(SeriesVM series)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual BookSeries Map(SeriesVM series)
+        {
+            return series.MapToBase(_mapper);
         }
     }
 }
