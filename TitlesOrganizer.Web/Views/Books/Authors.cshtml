@@ -7,18 +7,18 @@
 <h1>Authors</h1>
 <div class="container">
     <div class="row row-cols-2 row-cols-lg-4 row-cols-md-3 g-2 g-lg-3">
-    @foreach (var author in Model.Authors)
+    @foreach (var author in Model.Values)
     {
         <div class="col-6 card p-3 border-0">
             <button class="card-body btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target=@("#modalDetails_" + author.Id)>
-                <h5 class="card-title">@author.FullName</h5>
+                <h5 class="card-title">@author.Description</h5>
             </button>
 
             <div class="modal fade" id=@("modalDetails_" + author.Id) tabindex="-1" aria-labelledby="@("modalDetailsLabel_" + author.Id)" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id=@("modalDetailsLabel_" + author.Id)>@author.FullName</h1>
+                            <h1 class="modal-title fs-5" id=@("modalDetailsLabel_" + author.Id)>@author.Description</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                        @* <div class="modal-body">

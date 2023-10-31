@@ -340,7 +340,7 @@ namespace TitlesOrganizer.Web.Controllers
             listAuthorForBook.Paging.CurrentPage = pageNo.HasValue ? pageNo.Value : 1;
 
             //_authorService.SelectForBook(listAuthorForBook);
-            ListAuthorForBookVM authors = _authorService.GetListForBook(listAuthorForBook.Book.Id, listAuthorForBook.Filtering.SortBy, listAuthorForBook.Paging.PageSize, listAuthorForBook.Paging.CurrentPage, listAuthorForBook.Filtering.SearchString);
+            ListAuthorForBookVM authors = _authorService.GetListForBook(listAuthorForBook.Item.Id, listAuthorForBook.Filtering.SortBy, listAuthorForBook.Paging.PageSize, listAuthorForBook.Paging.CurrentPage, listAuthorForBook.Filtering.SearchString);
 
             return View(authors);
         }
@@ -351,7 +351,7 @@ namespace TitlesOrganizer.Web.Controllers
         {
             //_authorService.SelectForBook(listAuthorForBook);
 
-            return RedirectToAction(nameof(GetUpsertBook), new { id = listAuthorForBook.Book.Id });
+            return RedirectToAction(nameof(GetUpsertBook), new { id = listAuthorForBook.Item.Id });
         }
 
         [HttpPost("/Books/Update/AddAuthor")]

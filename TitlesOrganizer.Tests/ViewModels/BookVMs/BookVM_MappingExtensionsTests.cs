@@ -15,12 +15,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 new AuthorForListVM()
                 {
                     Id = 1,
-                    FullName = "Author1"
+                    Description = "Author1"
                 },
                 new AuthorForListVM()
                 {
                     Id = 2,
-                    FullName = "Author2"
+                    Description = "Author2"
                 }
             };
             var genres = new List<GenreForListVM>()
@@ -28,12 +28,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 new GenreForListVM()
                 {
                     Id = 1,
-                    Name = "Genre1"
+                    Description = "Genre1"
                 },
                 new GenreForListVM()
                 {
                     Id = 2,
-                    Name = "Genre2"
+                    Description = "Genre2"
                 }
             };
             var bookVM = new BookVM()
@@ -47,7 +47,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 NumberInSeries = 1,
                 OriginalLanguageCode = "ENG",
                 OriginalTitle = "Book Original Title",
-                Series = new SeriesForListVM() { Id = 1, Title = "Series1" },
+                Series = new SeriesForListVM() { Id = 1, Description = "Series1" },
                 Year = 2001
             };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<BookMappings>());

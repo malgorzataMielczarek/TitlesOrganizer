@@ -4,14 +4,14 @@ using AutoMapper;
 using FluentValidation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class AuthorVM
+    public class AuthorVM : IUpdateVM<Author>
     {
-        [ScaffoldColumn(false)]
         public int Id { get; set; }
 
         public string? Name { get; set; }
@@ -19,6 +19,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         [DisplayName("Last name")]
         public string? LastName { get; set; }
 
+        public IPartialList<Book> partialList { get; set; } = new PartialList<Book>();
         public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
 
         [ScaffoldColumn(false)]
@@ -48,7 +49,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         {
             var authorVM = mapper.Map<AuthorVM>(authorWithBooks);
             booksPaging.Count = authorWithBooks.Books.Count;
-            authorVM.Books = authorWithBooks.Books
+            authorVM.partialList.Values = authorWithBooks.Books
                 .OrderBy(b => b.Title)
                 .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
                 .Take(booksPaging.PageSize)

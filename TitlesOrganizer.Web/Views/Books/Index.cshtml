@@ -57,9 +57,9 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach (var book in Model.Books) {
+            @foreach (var book in Model.Values) {
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => book.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => book.Description)</td>
                     <td>
                         <a href=@($"/Books/Update/{book.Id}")>Edit</a> |
                         @Html.ActionLink("Details", "Details", new { id = book.Id }) |

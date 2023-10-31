@@ -21,22 +21,22 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddAuthor(AuthorVM author)
         {
-            return _bookRepository.AddNewAuthor(author.Books.FirstOrDefault()?.Id ?? 0, author.MapToBase(_mapper));
+            return _bookRepository.AddNewAuthor(author.partialList.Values.FirstOrDefault()?.Id ?? 0, author.MapToBase(_mapper));
         }
 
         public void SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
         {
-            Book? book = _bookRepository.GetBookById(listAuthorForBook.Book.Id);
+            Book? book = _bookRepository.GetBookById(listAuthorForBook.Item.Id);
             if (book == null)
             {
                 return;
             }
 
-            var selectedIds = listAuthorForBook.SelectedAuthors.Select(a => a.Id).ToList();
+            var selectedIds = listAuthorForBook.SelectedValues.Select(a => a.Id).ToList();
             // Compare lists in case JavaScript function didn't work
-            foreach (var author in listAuthorForBook.NotSelectedAuthors)
+            foreach (var author in listAuthorForBook.Values)
             {
-                if (author.IsForBook)
+                if (author.IsForItem)
                 {
                     if (!selectedIds.Contains(author.Id))
                     {

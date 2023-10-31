@@ -1,37 +1,31 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class AuthorForBookVM
+    public class AuthorForBookVM : IForItemVM<Author, Book>
     {
-        [ScaffoldColumn(false)]
+        public bool IsForItem { get; set; }
         public int Id { get; set; }
 
-        [ScaffoldColumn(false)]
-        public bool IsForBook { get; set; }
-
         [DisplayName("Author")]
-        public string FullName { get; set; } = null!;
+        public string Description { get; set; } = null!;
     }
 
-    public class ListAuthorForBookVM
+    public class ListAuthorForBookVM : IDoubleListForItemVM<Author, Book>
     {
-        [ScaffoldColumn(false)]
-        public BookForListVM Book { get; set; } = new BookForListVM();
+        [DisplayName("Book")]
+        public IForListVM<Book> Item { get; set; } = new BookForListVM();
 
         [DisplayName("Previously selected authors")]
-        public List<AuthorForBookVM> SelectedAuthors { get; set; } = new List<AuthorForBookVM>();
+        public List<AuthorForBookVM> SelectedValues { get; set; } = new List<AuthorForBookVM>();
 
         [DisplayName("Other authors")]
-        public List<AuthorForBookVM> NotSelectedAuthors { get; set; } = new List<AuthorForBookVM>();
+        public List<AuthorForBookVM> Values { get; set; } = new List<AuthorForBookVM>();
 
-        [ScaffoldColumn(false)]
         public Paging Paging { get; set; } = new Paging();
-
-        [ScaffoldColumn(false)]
         public Filtering Filtering { get; set; } = new Filtering();
     }
 
@@ -42,8 +36,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return authorsWithBooks.Select(a => new AuthorForBookVM()
             {
                 Id = a.Id,
-                FullName = a.Name + " " + a.LastName,
-                IsForBook = a.Books.Any(b => b.Id == bookId)
+                Description = a.Name + " " + a.LastName,
+                IsForItem = a.Books.Any(b => b.Id == bookId)
             });
         }
 
@@ -52,8 +46,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             var query = authorsWithBooks
                 .Sort(filtering.SortBy, a => a.LastName, a => a.Name)
                 .MapForBook(book.Id);
-            var selectedAuthors = query.Where(a => a.IsForBook).ToList();
-            var notSelectedAuthors = query.Where(a => !a.IsForBook && a.FullName.Contains(filtering.SearchString));
+            var selectedAuthors = query.Where(a => a.IsForItem).ToList();
+            var notSelectedAuthors = query.Where(a => !a.IsForItem && a.Description.Contains(filtering.SearchString));
             paging.Count = notSelectedAuthors.Count();
             var limitedList = notSelectedAuthors
                 .Skip(paging.PageSize * (paging.CurrentPage - 1))
@@ -62,9 +56,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
             return new ListAuthorForBookVM()
             {
-                Book = book.Map(),
-                SelectedAuthors = selectedAuthors,
-                NotSelectedAuthors = limitedList,
+                Item = book.Map(),
+                SelectedValues = selectedAuthors,
+                Values = limitedList,
                 Paging = paging,
                 Filtering = filtering
             };

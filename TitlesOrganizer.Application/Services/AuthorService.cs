@@ -2,6 +2,7 @@
 
 using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
@@ -53,7 +54,7 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public PartialList<AuthorForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
+        public PartialList<Author> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
         {
             throw new NotImplementedException();
         }
@@ -84,6 +85,21 @@ namespace TitlesOrganizer.Application.Services
                 books, new Paging() { CurrentPage = bookPageNo, PageSize = bookPageSize },
                 series, new Paging() { CurrentPage = seriesPageNo, PageSize = seriesPageSize },
                 genres, new Paging() { CurrentPage = genrePageNo, PageSize = genrePageSize });
+        }
+
+        protected virtual ListAuthorForListVM MapToList(IQueryable<Author> authorList, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        {
+            return authorList.MapToList(
+                new Paging()
+                {
+                    PageSize = pageSize,
+                    CurrentPage = pageNo
+                },
+                new Filtering()
+                {
+                    SortBy = sortBy,
+                    SearchString = searchString ?? string.Empty
+                });
         }
     }
 }

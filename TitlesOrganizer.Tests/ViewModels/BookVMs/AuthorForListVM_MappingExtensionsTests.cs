@@ -18,7 +18,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             result.Should().NotBeNull().And.BeOfType<AuthorForListVM>();
             result.Id.Should().Be(author.Id);
-            result.FullName.Should().NotBeNullOrWhiteSpace().And.Be(author.Name + " " + author.LastName);
+            result.Description.Should().NotBeNullOrWhiteSpace().And.Be(author.Name + " " + author.LastName);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 var authorForList = result.ElementAt(i);
                 var author = authors.ElementAt(i);
                 authorForList.Id.Should().Be(author.Id);
-                authorForList.FullName.Should().Be(author.Name + " " + author.LastName);
+                authorForList.Description.Should().Be(author.Name + " " + author.LastName);
             }
         }
 
@@ -53,7 +53,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 var authorForList = result.ElementAt(i);
                 var author = authors.ElementAt(i);
                 authorForList.Id.Should().Be(author.Id);
-                authorForList.FullName.Should().Be(author.Name + " " + author.LastName);
+                authorForList.Description.Should().Be(author.Name + " " + author.LastName);
             }
         }
 
@@ -71,7 +71,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 var authorForList = result.ElementAt(i);
                 var author = authors.ElementAt(i);
                 authorForList.Id.Should().Be(author.Id);
-                authorForList.FullName.Should().Be(author.Name + " " + author.LastName);
+                authorForList.Description.Should().Be(author.Name + " " + author.LastName);
             }
         }
 
@@ -89,7 +89,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 var authorForList = result.ElementAt(i);
                 var author = authors.ElementAt(i);
                 authorForList.Id.Should().Be(author.Id);
-                authorForList.FullName.Should().Be(author.Name + " " + author.LastName);
+                authorForList.Description.Should().Be(author.Name + " " + author.LastName);
             }
         }
 
@@ -129,11 +129,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             result.ElementAt(2).Id.Should().Be(1);
             result.ElementAt(3).Id.Should().Be(3);
             result.ElementAt(4).Id.Should().Be(4);
-            result.ElementAt(0).FullName.Should().Be("Amanda Adamska");
-            result.ElementAt(1).FullName.Should().Be("Piotr Krasowski");
-            result.ElementAt(2).FullName.Should().Be("Amanda Popiołek");
-            result.ElementAt(3).FullName.Should().Be("Michał Popiołek");
-            result.ElementAt(4).FullName.Should().Be("Jerzy Szczur");
+            result.ElementAt(0).Description.Should().Be("Amanda Adamska");
+            result.ElementAt(1).Description.Should().Be("Piotr Krasowski");
+            result.ElementAt(2).Description.Should().Be("Amanda Popiołek");
+            result.ElementAt(3).Description.Should().Be("Michał Popiołek");
+            result.ElementAt(4).Description.Should().Be("Jerzy Szczur");
         }
 
         [Theory]
@@ -148,7 +148,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var result = authors.MapToList(paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListAuthorForListVM>();
-            result.Authors.Should().HaveCount(pageCount);
+            result.Values.Should().HaveCount(pageCount);
             result.Paging.Should().Be(paging);
             result.Paging.CurrentPage.Should().Be(pageNo);
             result.Paging.PageSize.Should().Be(pageSize);
@@ -173,16 +173,16 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = authors.MapToList(paging, new Filtering());
 
-            result.Authors.ElementAt(0).Id.Should().Be(2);
-            result.Authors.ElementAt(1).Id.Should().Be(5);
-            result.Authors.ElementAt(2).Id.Should().Be(1);
-            result.Authors.ElementAt(3).Id.Should().Be(3);
-            result.Authors.ElementAt(4).Id.Should().Be(4);
-            result.Authors.ElementAt(0).FullName.Should().Be("Amanda Adamska");
-            result.Authors.ElementAt(1).FullName.Should().Be("Piotr Krasowski");
-            result.Authors.ElementAt(2).FullName.Should().Be("Amanda Popiołek");
-            result.Authors.ElementAt(3).FullName.Should().Be("Michał Popiołek");
-            result.Authors.ElementAt(4).FullName.Should().Be("Jerzy Szczur");
+            result.Values.ElementAt(0).Id.Should().Be(2);
+            result.Values.ElementAt(1).Id.Should().Be(5);
+            result.Values.ElementAt(2).Id.Should().Be(1);
+            result.Values.ElementAt(3).Id.Should().Be(3);
+            result.Values.ElementAt(4).Id.Should().Be(4);
+            result.Values.ElementAt(0).Description.Should().Be("Amanda Adamska");
+            result.Values.ElementAt(1).Description.Should().Be("Piotr Krasowski");
+            result.Values.ElementAt(2).Description.Should().Be("Amanda Popiołek");
+            result.Values.ElementAt(3).Description.Should().Be("Michał Popiołek");
+            result.Values.ElementAt(4).Description.Should().Be("Jerzy Szczur");
         }
 
         [Fact]
@@ -202,11 +202,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var result = authors.MapToList(paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListAuthorForListVM>();
-            result.Authors.Should().NotBeNull().And.HaveCount(2);
-            result.Authors.ElementAt(0).Id.Should().Be(1);
-            result.Authors.ElementAt(1).Id.Should().Be(3);
-            result.Authors.ElementAt(0).FullName.Should().Be("Amanda Popiołek");
-            result.Authors.ElementAt(1).FullName.Should().Be("Michał Popiołek");
+            result.Values.Should().NotBeNull().And.HaveCount(2);
+            result.Values.ElementAt(0).Id.Should().Be(1);
+            result.Values.ElementAt(1).Id.Should().Be(3);
+            result.Values.ElementAt(0).Description.Should().Be("Amanda Popiołek");
+            result.Values.ElementAt(1).Description.Should().Be("Michał Popiołek");
             result.Paging.Should().NotBeNull();
             result.Paging.CurrentPage.Should().Be(paging.CurrentPage);
             result.Paging.PageSize.Should().Be(paging.PageSize);
@@ -229,16 +229,16 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = authors.MapToList(paging, filtering);
 
-            result.Authors.ElementAt(0).Id.Should().Be(4);
-            result.Authors.ElementAt(1).Id.Should().Be(3);
-            result.Authors.ElementAt(2).Id.Should().Be(1);
-            result.Authors.ElementAt(3).Id.Should().Be(5);
-            result.Authors.ElementAt(4).Id.Should().Be(2);
-            result.Authors.ElementAt(0).FullName.Should().Be("Jerzy Szczur");
-            result.Authors.ElementAt(1).FullName.Should().Be("Michał Popiołek");
-            result.Authors.ElementAt(2).FullName.Should().Be("Amanda Popiołek");
-            result.Authors.ElementAt(3).FullName.Should().Be("Piotr Krasowski");
-            result.Authors.ElementAt(4).FullName.Should().Be("Amanda Adamska");
+            result.Values.ElementAt(0).Id.Should().Be(4);
+            result.Values.ElementAt(1).Id.Should().Be(3);
+            result.Values.ElementAt(2).Id.Should().Be(1);
+            result.Values.ElementAt(3).Id.Should().Be(5);
+            result.Values.ElementAt(4).Id.Should().Be(2);
+            result.Values.ElementAt(0).Description.Should().Be("Jerzy Szczur");
+            result.Values.ElementAt(1).Description.Should().Be("Michał Popiołek");
+            result.Values.ElementAt(2).Description.Should().Be("Amanda Popiołek");
+            result.Values.ElementAt(3).Description.Should().Be("Piotr Krasowski");
+            result.Values.ElementAt(4).Description.Should().Be("Amanda Adamska");
         }
     }
 }

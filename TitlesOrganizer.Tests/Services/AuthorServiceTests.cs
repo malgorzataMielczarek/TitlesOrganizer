@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using TitlesOrganizer.Application.Services;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
@@ -151,12 +152,12 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.VerifyNoOtherCalls();
             result.Should().NotBeNull().And.BeOfType<AuthorDetailsVM>();
             result.Id.Should().Be(author.Id);
-            result.BooksPaging.PageSize.Should().Be(booksPageSize);
-            result.BooksPaging.CurrentPage.Should().Be(booksPageNo);
-            result.SeriesPaging.PageSize.Should().Be(seriesPageSize);
-            result.SeriesPaging.CurrentPage.Should().Be(seriesPageNo);
-            result.GenresPaging.PageSize.Should().Be(genrePageSize);
-            result.GenresPaging.CurrentPage.Should().Be(genrePageNo);
+            result.Books.Paging.PageSize.Should().Be(booksPageSize);
+            result.Books.Paging.CurrentPage.Should().Be(booksPageNo);
+            result.Series.Paging.PageSize.Should().Be(seriesPageSize);
+            result.Series.Paging.CurrentPage.Should().Be(seriesPageNo);
+            result.Genres.Paging.PageSize.Should().Be(genrePageSize);
+            result.Genres.Paging.CurrentPage.Should().Be(genrePageNo);
             service.Books.Should().NotBeNull().And.HaveCount(7).And
                 .Contain(books[0]).And
                 .Contain(books[1]).And
@@ -203,15 +204,15 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.VerifyNoOtherCalls();
             result.Should().NotBeNull().And.BeOfType<AuthorDetailsVM>();
             result.Id.Should().Be(default);
-            result.BooksPaging.PageSize.Should().Be(booksPageSize);
-            result.BooksPaging.CurrentPage.Should().Be(1);
-            result.BooksPaging.Count.Should().Be(0);
-            result.SeriesPaging.PageSize.Should().Be(seriesPageSize);
-            result.SeriesPaging.CurrentPage.Should().Be(1);
-            result.SeriesPaging.Count.Should().Be(0);
-            result.GenresPaging.PageSize.Should().Be(genrePageSize);
-            result.GenresPaging.CurrentPage.Should().Be(1);
-            result.GenresPaging.Count.Should().Be(0);
+            result.Books.Paging.PageSize.Should().Be(booksPageSize);
+            result.Books.Paging.CurrentPage.Should().Be(1);
+            result.Books.Paging.Count.Should().Be(0);
+            result.Series.Paging.PageSize.Should().Be(seriesPageSize);
+            result.Series.Paging.CurrentPage.Should().Be(1);
+            result.Series.Paging.Count.Should().Be(0);
+            result.Genres.Paging.PageSize.Should().Be(genrePageSize);
+            result.Genres.Paging.CurrentPage.Should().Be(1);
+            result.Genres.Paging.Count.Should().Be(0);
             service.Books.Should().BeNull();
             service.Series.Should().BeNull();
             service.Genres.Should().BeNull();
@@ -423,23 +424,32 @@ namespace TitlesOrganizer.Tests.Services
                 return new AuthorDetailsVM()
                 {
                     Id = author.Id,
-                    BooksPaging = new Paging()
+                    Books = new PartialList<Book>()
                     {
-                        PageSize = bookPageSize,
-                        CurrentPage = bookPageNo,
-                        Count = books.Count()
+                        Paging = new Paging()
+                        {
+                            PageSize = bookPageSize,
+                            CurrentPage = bookPageNo,
+                            Count = books.Count()
+                        }
                     },
-                    SeriesPaging = new Paging()
+                    Series = new PartialList<BookSeries>()
                     {
-                        CurrentPage = seriesPageNo,
-                        PageSize = seriesPageSize,
-                        Count = series.Count()
+                        Paging = new Paging()
+                        {
+                            CurrentPage = seriesPageNo,
+                            PageSize = seriesPageSize,
+                            Count = series.Count()
+                        }
                     },
-                    GenresPaging = new Paging()
+                    Genres = new PartialList<LiteratureGenre>()
                     {
-                        PageSize = genrePageSize,
-                        CurrentPage = genrePageNo,
-                        Count = genres.Count()
+                        Paging = new Paging()
+                        {
+                            PageSize = genrePageSize,
+                            CurrentPage = genrePageNo,
+                            Count = genres.Count()
+                        }
                     }
                 };
             }

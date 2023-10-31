@@ -1,28 +1,21 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class GenreForListVM
+    public class GenreForListVM : BaseForListVM<LiteratureGenre>, IForListVM<LiteratureGenre>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
         [DisplayName("Genre")]
-        public string Name { get; set; } = null!;
+        public override string Description { get; set; } = null!;
     }
 
-    public class ListGenreForListVM
+    public class ListGenreForListVM : BaseListVM<LiteratureGenre>, IListVM<LiteratureGenre>
     {
-        public List<GenreForListVM> Genres { get; set; } = new List<GenreForListVM>();
-
-        [ScaffoldColumn(false)]
-        public Paging Paging { get; set; } = new Paging();
-
-        [ScaffoldColumn(false)]
-        public Filtering Filtering { get; set; } = new Filtering();
+        [DisplayName("Genres")]
+        public override List<IForListVM<LiteratureGenre>> Values { get; set; } = new List<IForListVM<LiteratureGenre>>();
     }
 
     public static partial class MappingExtensions
@@ -32,67 +25,28 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return new GenreForListVM()
             {
                 Id = genre.Id,
-                Name = genre.Name
+                Description = genre.Name
             };
         }
 
-        public static IQueryable<GenreForListVM> Map(this IQueryable<LiteratureGenre> genres)
+        public static IForListVM<T> Map<T>(this LiteratureGenre genre)
+            where T : LiteratureGenre
         {
-            return genres.Select(g => new GenreForListVM()
-            {
-                Id = g.Id,
-                Name = g.Name
-            });
-        }
-
-        public static List<GenreForListVM> Map(this ICollection<LiteratureGenre> genres)
-        {
-            return genres.Select(g => new GenreForListVM()
-            {
-                Id = g.Id,
-                Name = g.Name
-            }).ToList();
-        }
-
-        public static List<GenreForListVM> Map(this IEnumerable<LiteratureGenre> genres)
-        {
-            return genres.Select(g => new GenreForListVM()
-            {
-                Id = g.Id,
-                Name = g.Name
-            }).ToList();
+            return (IForListVM<T>)genre.Map();
         }
 
         public static ListGenreForListVM MapToList(this IQueryable<LiteratureGenre> genres, Paging paging, Filtering filtering)
         {
-            var queryable = genres
+            return (ListGenreForListVM)genres
                 .Sort(filtering.SortBy, g => g.Name)
-                .Where(g => g.Name.Contains(filtering.SearchString))
-                .Map();
-            paging.Count = queryable.Count();
-            var limitedList = queryable
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
-
-            return new ListGenreForListVM()
-            {
-                Genres = limitedList,
-                Paging = paging,
-                Filtering = filtering
-            };
+                .MapToList<LiteratureGenre>(paging, filtering);
         }
 
-        public static IQueryable<GenreForListVM> MapToList(this IQueryable<LiteratureGenre> genres, ref Paging paging)
+        public static IQueryable<IForListVM<LiteratureGenre>> MapToList(this IQueryable<LiteratureGenre> genres, ref Paging paging)
         {
-            paging.Count = genres.Count();
-            var limitedList = genres
+            return genres
                 .OrderBy(g => g.Name)
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .Map();
-
-            return limitedList;
+                .MapToList<LiteratureGenre>(ref paging);
         }
     }
 }

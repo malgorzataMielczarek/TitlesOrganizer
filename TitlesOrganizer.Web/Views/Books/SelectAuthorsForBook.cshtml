@@ -1,12 +1,12 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
 @{
-    ViewData["Title"] = "Select authors of \"" + Model.Book.Title + "\"";
+    ViewData["Title"] = "Select authors of \"" + Model.Item.Description + "\"";
 }
 <h1>@ViewData["Title"]</h1>
 
 <form enctype="multipart/form-data" method="post">
-    <input type="hidden" asp-for="Book.Id" />
-    <input type="hidden" asp-for="Book.Title" />
+    <input type="hidden" asp-for="Item.Id" />
+    <input type="hidden" asp-for="Item.Description" />
     <div class="row">
         <table class="table table-success table-sm" id="selectedAuthors">
             <thead class="table-dark">
@@ -18,14 +18,14 @@
                 </tr>
             </thead>
             <tbody class="table-group-divider">
-                @for (var i = 0; i < Model.SelectedAuthors.Count; i++)
+                @for (var i = 0; i < Model.SelectedValues.Count; i++)
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(model => model.SelectedAuthors[i].Id)
+                            @Html.DisplayFor(model => model.SelectedValues[i].Id)
                         </td>
                         <td>
-                            @Html.DisplayTextFor(model => model.SelectedAuthors[i].FullName)
+                            @Html.DisplayTextFor(model => model.SelectedValues[i].Description)
                         </td>
                     </tr>
                 }
@@ -59,14 +59,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var author in Model.NotSelectedAuthors)
+                @foreach (var author in Model.Values)
                 {
                     <tr>
                         <input type="hidden" name="List.Index" value="@author.Id" />
                         <input type="hidden" name="List[@author.Id].Id" value="@author.Id" />
                         <td class="text-center">
                             <div class="form-check-inline">
-                                @if (author.IsForBook)
+                                @if (author.IsForItem)
                                 {
                                     <input type="checkbox" class="form-check-input" name="List[@author.Id].IsForBook" value="true" aria-label="Author selected" onchange="javascript:AuthorSelectionChanged(this)" checked />
                                 }
@@ -78,7 +78,7 @@
                             </div>
                         </td>
                         <td>
-                            @author.FullName
+                            @author.Description
                         </td>
                     </tr>
                 }

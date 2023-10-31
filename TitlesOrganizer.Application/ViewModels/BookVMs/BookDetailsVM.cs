@@ -1,25 +1,21 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class BookDetailsVM
+    public class BookDetailsVM : BaseDetailsVM<Book>, IDetailsVM<Book>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
-        [ScaffoldColumn(false)]
-        public string Title { get; set; } = null!;
-
         [ScaffoldColumn(false)]
         public string InSeries { get; set; } = null!;
 
         [ScaffoldColumn(false)]
         public SeriesForListVM? Series { get; set; }
 
-        public List<AuthorForListVM> Authors { get; set; } = new List<AuthorForListVM>();
+        public List<IForListVM<Author>> Authors { get; set; } = new List<IForListVM<Author>>();
 
         public string Description { get; set; } = null!;
 
@@ -33,7 +29,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public string Edition { get; set; } = null!;
 
-        public List<GenreForListVM> Genres { get; set; } = new List<GenreForListVM>();
+        public List<IForListVM<LiteratureGenre>> Genres { get; set; } = new List<IForListVM<LiteratureGenre>>();
     }
 
     public static partial class MappingExtensions

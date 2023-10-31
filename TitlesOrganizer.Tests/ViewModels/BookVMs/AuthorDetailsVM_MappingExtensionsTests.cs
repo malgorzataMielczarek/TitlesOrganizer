@@ -82,22 +82,22 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             // Assert
             result.Should().NotBeNull().And.BeOfType<AuthorDetailsVM>();
             result.Id.Should().Be(author.Id);
-            result.FullName.Should().Be(author.Name + " " + author.LastName);
-            result.Books.Should().NotBeNull().And.HaveCount(booksCount);
-            result.BooksPaging.Should().Be(booksPaging);
-            result.BooksPaging.CurrentPage.Should().Be(1);
-            result.BooksPaging.PageSize.Should().Be(booksCount);
-            result.BooksPaging.Count.Should().Be(booksCount);
-            result.Series.Should().NotBeNull().And.HaveCount(seriesCount);
-            result.SeriesPaging.Should().Be(seriesPaging);
-            result.SeriesPaging.CurrentPage.Should().Be(1);
-            result.SeriesPaging.PageSize.Should().Be(seriesCount);
-            result.SeriesPaging.Count.Should().Be(seriesCount);
-            result.Genres.Should().NotBeNull().And.HaveCount(genresCount);
-            result.GenresPaging.Should().Be(genresPaging);
-            result.GenresPaging.CurrentPage.Should().Be(1);
-            result.GenresPaging.PageSize.Should().Be(genresCount);
-            result.GenresPaging.Count.Should().Be(genresCount);
+            result.Title.Should().Be(author.Name + " " + author.LastName);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(booksCount);
+            result.Books.Paging.Should().Be(booksPaging);
+            result.Books.Paging.CurrentPage.Should().Be(1);
+            result.Books.Paging.PageSize.Should().Be(booksCount);
+            result.Books.Paging.Count.Should().Be(booksCount);
+            result.Series.Values.Should().NotBeNull().And.HaveCount(seriesCount);
+            result.Series.Paging.Should().Be(seriesPaging);
+            result.Series.Paging.CurrentPage.Should().Be(1);
+            result.Series.Paging.PageSize.Should().Be(seriesCount);
+            result.Series.Paging.Count.Should().Be(seriesCount);
+            result.Genres.Values.Should().NotBeNull().And.HaveCount(genresCount);
+            result.Genres.Paging.Should().Be(genresPaging);
+            result.Genres.Paging.CurrentPage.Should().Be(1);
+            result.Genres.Paging.PageSize.Should().Be(genresCount);
+            result.Genres.Paging.Count.Should().Be(genresCount);
         }
     }
 }

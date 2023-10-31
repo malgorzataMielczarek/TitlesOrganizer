@@ -34,7 +34,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             // Assert
             result.Should().NotBeNull().And.BeOfType<GenreDetailsVM>();
             result.Id.Should().Be(genre.Id);
-            result.Name.Should().Be(genre.Name);
+            result.Title.Should().Be(genre.Name);
             result.Books.Should().NotBeNull().And.HaveCount(booksCount);
             result.BooksPaging.Should().Be(booksPaging);
             result.BooksPaging.CurrentPage.Should().Be(1);
@@ -69,7 +69,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             // Assert
             result.Should().NotBeNull().And.BeOfType<GenreDetailsVM>();
             result.Id.Should().Be(genre.Id);
-            result.Name.Should().Be(genre.Name);
+            result.Title.Should().Be(genre.Name);
             result.Books.Should().NotBeNull().And.HaveCount(booksCount);
             result.BooksPaging.Should().Be(booksPaging);
             result.BooksPaging.CurrentPage.Should().Be(1);

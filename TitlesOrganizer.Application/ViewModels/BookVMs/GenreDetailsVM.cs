@@ -1,17 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class GenreDetailsVM
+    public class GenreDetailsVM : BaseDetailsVM<LiteratureGenre>, IDetailsVM<LiteratureGenre>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
-        [ScaffoldColumn(false)]
-        public string Name { get; set; } = null!;
-
         public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
 
         [ScaffoldColumn(false)]
@@ -35,7 +31,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return new GenreDetailsVM()
             {
                 Id = genre.Id,
-                Name = genre.Name,
+                Title = genre.Name,
                 Books = books.MapToList(ref booksPaging).ToList(),
                 BooksPaging = booksPaging,
                 Series = series.MapToList(ref seriesPaging).ToList(),
@@ -50,7 +46,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             var genre = new GenreDetailsVM()
             {
                 Id = genreWithAllRelatedObjects.Id,
-                Name = genreWithAllRelatedObjects.Name
+                Title = genreWithAllRelatedObjects.Name
             };
 
             var books = genreWithAllRelatedObjects.Books?.AsQueryable();

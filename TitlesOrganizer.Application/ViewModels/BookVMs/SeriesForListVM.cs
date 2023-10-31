@@ -1,28 +1,21 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class SeriesForListVM
+    public class SeriesForListVM : BaseForListVM<BookSeries>, IForListVM<BookSeries>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
         [DisplayName("Series")]
-        public string Title { get; set; } = null!;
+        public override string Description { get; set; } = null!;
     }
 
-    public class ListSeriesForListVM
+    public class ListSeriesForListVM : BaseListVM<BookSeries>, IListVM<BookSeries>
     {
-        public List<SeriesForListVM> Series { get; set; } = new List<SeriesForListVM>();
-
-        [ScaffoldColumn(false)]
-        public Paging Paging { get; set; } = new Paging();
-
-        [ScaffoldColumn(false)]
-        public Filtering Filtering { get; set; } = new Filtering();
+        [DisplayName("Series")]
+        public override List<IForListVM<BookSeries>> Values { get; set; } = new List<IForListVM<BookSeries>>();
     }
 
     public static partial class MappingExtensions
@@ -32,67 +25,28 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return new SeriesForListVM()
             {
                 Id = series.Id,
-                Title = series.Title
+                Description = series.Title
             };
         }
 
-        public static IQueryable<SeriesForListVM> Map(this IQueryable<BookSeries> series)
+        public static IForListVM<T> Map<T>(this BookSeries series)
+            where T : BookSeries
         {
-            return series.Select(s => new SeriesForListVM()
-            {
-                Id = s.Id,
-                Title = s.Title
-            });
-        }
-
-        public static List<SeriesForListVM> Map(this ICollection<BookSeries> series)
-        {
-            return series.Select(s => new SeriesForListVM()
-            {
-                Id = s.Id,
-                Title = s.Title
-            }).ToList();
-        }
-
-        public static List<SeriesForListVM> Map(this IEnumerable<BookSeries> series)
-        {
-            return series.Select(s => new SeriesForListVM()
-            {
-                Id = s.Id,
-                Title = s.Title
-            }).ToList();
+            return (IForListVM<T>)series.Map();
         }
 
         public static ListSeriesForListVM MapToList(this IQueryable<BookSeries> series, Paging paging, Filtering filtering)
         {
-            var queryable = series
-                .Where(s => s.Title.Contains(filtering.SearchString))
+            return (ListSeriesForListVM)series
                 .Sort(filtering.SortBy, s => s.Title)
-                .Map();
-            paging.Count = queryable.Count();
-            var limitedList = queryable
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
-
-            return new ListSeriesForListVM()
-            {
-                Series = limitedList,
-                Paging = paging,
-                Filtering = filtering
-            };
+                .MapToList<BookSeries>(paging, filtering);
         }
 
-        public static IQueryable<SeriesForListVM> MapToList(this IQueryable<BookSeries> series, ref Paging paging)
+        public static IQueryable<IForListVM<BookSeries>> MapToList(this IQueryable<BookSeries> series, ref Paging paging)
         {
-            paging.Count = series.Count();
-            var limitedList = series
+            return series
                 .OrderBy(s => s.Title)
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .Map();
-
-            return limitedList;
+                .MapToList<BookSeries>(ref paging);
         }
     }
 }

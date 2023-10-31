@@ -4,13 +4,13 @@ using AutoMapper;
 using FluentValidation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class BookVM
+    public class BookVM : IUpdateVM<Book>
     {
-        [ScaffoldColumn(false)]
         public int Id { get; set; }
 
         public string Title { get; set; } = string.Empty;

@@ -1,4 +1,5 @@
-﻿using TitlesOrganizer.Application.ViewModels.BookVMs;
+﻿using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.Interfaces

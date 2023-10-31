@@ -17,7 +17,7 @@
         <input asp-for="Authors" type="hidden" />
 
         @{
-            var authors = string.Join(", ", @Model.Authors.Select(a => a.FullName));
+            var authors = string.Join(", ", @Model.Authors.Select(a => a.Description));
             if (!string.IsNullOrWhiteSpace(authors))
         {
             <div class="col-sm-auto col-auto">
@@ -68,7 +68,7 @@
         <label asp-for="Genres" class="col-sm-3 col-form-label"></label>
         <input asp-for="Genres" type="hidden" />
         @{
-            var genres = string.Join(", ", Model.Genres.Select(g => g.Name));
+            var genres = string.Join(", ", Model.Genres.Select(g => g.Description));
             if (!string.IsNullOrWhiteSpace(genres))
         {
             <div class="col-sm-auto col-auto">
@@ -96,10 +96,10 @@
     <div class="form-group row">
         <label asp-for="Series" class="col-sm-3 col-form-label"></label>
         <input asp-for="Series" type="hidden" />
-        @if (!string.IsNullOrWhiteSpace(Model.Series?.Title))
+        @if (!string.IsNullOrWhiteSpace(Model.Series?.Description))
         {
             <div class="col-sm-auto col-auto">
-                @Model.Series.Title
+                @Model.Series.Description
             </div>
         }
         <div class="col-auto">

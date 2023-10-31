@@ -15,12 +15,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 new BookForListVM()
                 {
                     Id = 1,
-                    Title = "Title1"
+                    Description = "Title1"
                 },
                 new BookForListVM()
                 {
                     Id = 2,
-                    Title = "Title2"
+                    Description = "Title2"
                 }
             };
             var seriesVM = new SeriesVM()

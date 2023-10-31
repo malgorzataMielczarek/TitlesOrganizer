@@ -11,7 +11,7 @@
         <div class="pt-0 text-right align-top">
             @if (!string.IsNullOrEmpty(Model.InSeries))
             {
-                <span>@Model.InSeries <a asp-action="SeriesDetails" asp-route-id="@Model.Series?.Id">@Model.Series?.Title</a> series</span>
+                <span>@Model.InSeries <a asp-action="SeriesDetails" asp-route-id="@Model.Series?.Id">@Model.Series?.Description</a> series</span>
             }
         </div>
     </div>
@@ -19,7 +19,7 @@
         <nav class="nav">
             @foreach (var author in Model.Authors)
             {
-                <h3 class="px-0"><a asp-action="AuthorDetails" , asp-route-id="@author.Id" class="nav-link px-2">@author.FullName</a></h3>
+                <h3 class="px-0"><a asp-action="AuthorDetails" , asp-route-id="@author.Id" class="nav-link px-2">@author.Description</a></h3>
             }
         </nav>
     </div>
@@ -82,7 +82,7 @@
     <div class="p-4">
             @foreach (var genre in Model.Genres)
             {
-                <a type="button" asp-action="GenreDetails" asp-route-id="@genre.Id" class="btn btn-outline-primary m-1">@genre.Name</a>
+                <a type="button" asp-action="GenreDetails" asp-route-id="@genre.Id" class="btn btn-outline-primary m-1">@genre.Description</a>
             }
     </div>
     <div>
