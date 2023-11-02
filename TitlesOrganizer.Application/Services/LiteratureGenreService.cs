@@ -49,7 +49,7 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public PartialList<GenreForListVM> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
+        public PartialList<LiteratureGenre> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
         {
             throw new NotImplementedException();
         }

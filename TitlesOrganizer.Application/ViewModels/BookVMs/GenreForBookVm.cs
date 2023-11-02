@@ -1,73 +1,49 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class GenreForBookVM
+    public class GenreForBookVM : BaseForItemVM<LiteratureGenre, Book>, IForItemVM<LiteratureGenre, Book>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
-        [ScaffoldColumn(false)]
-        public bool IsForBook { get; set; }
-
         [DisplayName("Genre")]
-        public string Name { get; set; } = null!;
+        public override string Description { get; set; } = null!;
     }
 
-    public class ListGenreForBookVM
+    public class ListGenreForBookVM : IDoubleListForItemVM<LiteratureGenre, Book>
     {
-        [ScaffoldColumn(false)]
-        public BookForListVM Book { get; set; } = new BookForListVM();
+        [DisplayName("Book")]
+        public IForListVM<Book> Item { get; set; } = new BookForListVM();
 
         [DisplayName("Previously selected genres")]
-        public List<GenreForBookVM> SelectedGenres { get; set; } = new List<GenreForBookVM>();
+        public List<IForItemVM<LiteratureGenre, Book>> SelectedValues { get; set; } = new List<IForItemVM<LiteratureGenre, Book>>();
 
         [DisplayName("Other genres")]
-        public List<GenreForBookVM> NotSelectedGenres { get; set; } = new List<GenreForBookVM>();
+        public List<IForItemVM<LiteratureGenre, Book>> Values { get; set; } = new List<IForItemVM<LiteratureGenre, Book>>();
 
-        [ScaffoldColumn(false)]
         public Paging Paging { get; set; } = new Paging();
-
-        [ScaffoldColumn(false)]
         public Filtering Filtering { get; set; } = new Filtering();
     }
 
     public static partial class MappingExtensions
     {
-        public static IQueryable<GenreForBookVM> MapForBook(this IQueryable<LiteratureGenre> genresWithBooks, int bookId)
+        public static IForItemVM<LiteratureGenre, Book> MapForItem(this LiteratureGenre genreWithBooks, Book book)
         {
-            return genresWithBooks.Select(g => new GenreForBookVM
+            return new GenreForBookVM
             {
-                Id = g.Id,
-                Name = g.Name,
-                IsForBook = g.Books != null && g.Books.Any(b => b.Id == bookId)
-            });
+                Id = genreWithBooks.Id,
+                Description = genreWithBooks.Name,
+                IsForItem = genreWithBooks.Books != null && genreWithBooks.Books.Any(b => b.Id == book.Id)
+            };
         }
 
         public static ListGenreForBookVM MapForBookToList(this IQueryable<LiteratureGenre> genresWithBooks, Book book, Paging paging, Filtering filtering)
         {
-            var query = genresWithBooks
+            return genresWithBooks
                 .Sort(filtering.SortBy, g => g.Name)
-                .MapForBook(book.Id);
-            var selectedGenres = query.Where(g => g.IsForBook).ToList();
-            var notSelectedGenres = query.Where(g => !g.IsForBook && g.Name.Contains(filtering.SearchString));
-            paging.Count = notSelectedGenres.Count();
-            var limitedList = notSelectedGenres
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
-
-            return new ListGenreForBookVM()
-            {
-                Book = book.Map(),
-                SelectedGenres = selectedGenres,
-                NotSelectedGenres = limitedList,
-                Paging = paging,
-                Filtering = filtering
-            };
+                .MapForItemToDoubleList<LiteratureGenre, Book, ListGenreForBookVM>(book, paging, filtering);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Models;
 
@@ -10,7 +12,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapToBase_SeriesVM_BookSeries()
         {
-            var books = new List<BookForListVM>()
+            var books = new List<IForListVM<Book>>()
             {
                 new BookForListVM()
                 {
@@ -29,8 +31,16 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 Title = "Series Title",
                 OriginalTitle = "Original Title",
                 Description = "Description",
-                Books = books,
-                BooksPaging = new Application.ViewModels.Helpers.Paging() { Count = 2, CurrentPage = 1, PageSize = 1 }
+                Books = new PartialList<Book>()
+                {
+                    Values = books,
+                    Paging = new Application.ViewModels.Helpers.Paging()
+                    {
+                        Count = 2,
+                        CurrentPage = 1,
+                        PageSize = 1
+                    }
+                }
             };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
@@ -62,11 +72,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             result.Title.Should().Be(series.Title);
             result.OriginalTitle.Should().Be(series.OriginalTitle);
             result.Description.Should().Be(series.Description);
-            result.BooksPaging.Should().Be(paging);
-            result.BooksPaging.CurrentPage.Should().Be(currentPage);
-            result.BooksPaging.PageSize.Should().Be(pageSize);
-            result.BooksPaging.Count.Should().Be(count);
-            result.Books.Should().NotBeNull().And.HaveCount(pageCount);
+            result.Books.Paging.Should().Be(paging);
+            result.Books.Paging.CurrentPage.Should().Be(currentPage);
+            result.Books.Paging.PageSize.Should().Be(pageSize);
+            result.Books.Paging.Count.Should().Be(count);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
         }
 
         [Theory]
@@ -83,11 +93,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = series.MapFromBase(mapper, paging);
 
-            result.Books.Should().NotBeNull().And.HaveCount(pageCount);
-            result.Books[0].Id.Should().Be(firstBookId);
-            result.Books[0].Title.Should().Be(firstBookTitle);
-            result.Books[1].Id.Should().Be(secondBookId);
-            result.Books[1].Title.Should().Be(secondBookTitle);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
+            result.Books.Values[0].Id.Should().Be(firstBookId);
+            result.Books.Values[0].Description.Should().Be(firstBookTitle);
+            result.Books.Values[1].Id.Should().Be(secondBookId);
+            result.Books.Values[1].Description.Should().Be(secondBookTitle);
         }
 
         [Fact]
@@ -102,7 +112,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = series.MapFromBase(mapper, paging);
 
-            result.Books.Should().NotBeNull().And.HaveCount(pageCount);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
         }
 
         [Fact]
@@ -121,11 +131,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             result.Title.Should().Be(series.Title);
             result.OriginalTitle.Should().Be(series.OriginalTitle);
             result.Description.Should().Be(series.Description);
-            result.BooksPaging.Should().Be(paging);
-            result.BooksPaging.CurrentPage.Should().Be(currentPage);
-            result.BooksPaging.PageSize.Should().Be(pageSize);
-            result.BooksPaging.Count.Should().Be(count);
-            result.Books.Should().NotBeNull().And.HaveCount(pageCount);
+            result.Books.Paging.Should().Be(paging);
+            result.Books.Paging.CurrentPage.Should().Be(currentPage);
+            result.Books.Paging.PageSize.Should().Be(pageSize);
+            result.Books.Paging.Count.Should().Be(count);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
         }
 
         [Fact]
@@ -144,11 +154,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             result.Title.Should().Be(series.Title);
             result.OriginalTitle.Should().Be(series.OriginalTitle);
             result.Description.Should().Be(series.Description);
-            result.BooksPaging.Should().Be(paging);
-            result.BooksPaging.CurrentPage.Should().Be(currentPage);
-            result.BooksPaging.PageSize.Should().Be(pageSize);
-            result.BooksPaging.Count.Should().Be(0);
-            result.Books.Should().NotBeNull().And.BeEmpty();
+            result.Books.Paging.Should().Be(paging);
+            result.Books.Paging.CurrentPage.Should().Be(currentPage);
+            result.Books.Paging.PageSize.Should().Be(pageSize);
+            result.Books.Paging.Count.Should().Be(0);
+            result.Books.Values.Should().NotBeNull().And.BeEmpty();
         }
 
         [Theory]
@@ -164,11 +174,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = series.MapFromBase(mapper, Helpers.GetBooksList(count).AsQueryable(), paging);
 
-            result.Books.Should().NotBeNull().And.HaveCount(pageCount);
-            result.Books[0].Id.Should().Be(firstBookId);
-            result.Books[0].Title.Should().Be(firstBookTitle);
-            result.Books[1].Id.Should().Be(secondBookId);
-            result.Books[1].Title.Should().Be(secondBookTitle);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
+            result.Books.Values[0].Id.Should().Be(firstBookId);
+            result.Books.Values[0].Description.Should().Be(firstBookTitle);
+            result.Books.Values[1].Id.Should().Be(secondBookId);
+            result.Books.Values[1].Description.Should().Be(secondBookTitle);
         }
 
         [Fact]
@@ -182,7 +192,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = series.MapFromBase(mapper, Helpers.GetBooksList(count).AsQueryable(), paging);
 
-            result.Books.Should().NotBeNull().And.HaveCount(pageCount);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
         }
     }
 }

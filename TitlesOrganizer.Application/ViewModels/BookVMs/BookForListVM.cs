@@ -51,5 +51,12 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
                 .OrderBy(b => b.Title)
                 .MapToList<Book>(ref paging);
         }
+
+        public static List<IForListVM<Book>> MapToList(this IEnumerable<Book> books, ref Paging paging)
+        {
+            return books
+                .OrderBy(b => b.Title)
+                .MapToList<Book>(ref paging);
+        }
     }
 }

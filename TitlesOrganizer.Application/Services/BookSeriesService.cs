@@ -49,12 +49,12 @@ namespace TitlesOrganizer.Application.Services
             throw new NotImplementedException();
         }
 
-        public PartialList<SeriesForListVM> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
+        public PartialList<BookSeries> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
         {
             throw new NotImplementedException();
         }
 
-        public PartialList<SeriesForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
+        public PartialList<BookSeries> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
         {
             throw new NotImplementedException();
         }

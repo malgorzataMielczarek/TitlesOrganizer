@@ -2,7 +2,7 @@
 
 namespace TitlesOrganizer.Application.ViewModels.Abstract
 {
-    public interface IDoubleListForItemVM<T, TItem> where T : class, IBaseModel where TItem : class, IBaseModel
+    public interface IDoubleListForItemVM<T, TItem> : IListForItemVM<T, TItem> where T : class, IBaseModel where TItem : class, IBaseModel
     {
         List<IForItemVM<T, TItem>> SelectedValues { get; set; }
     }

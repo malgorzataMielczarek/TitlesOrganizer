@@ -14,21 +14,21 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var books = GetBooksWithSeriesId();
             int seriesId = 1;
 
-            var result = books.MapForSeries(seriesId);
+            var result = books.MapForItem(seriesId);
 
             result.Should().NotBeNull().And.BeAssignableTo<IQueryable<BookForSeriesVM>>().And.AllBeOfType<BookForSeriesVM>().And.HaveCount(books.Count());
             result.ElementAt(0).Id.Should().Be(1);
             result.ElementAt(1).Id.Should().Be(2);
             result.ElementAt(2).Id.Should().Be(3);
             result.ElementAt(3).Id.Should().Be(4);
-            result.ElementAt(0).Title.Should().Be("Title");
-            result.ElementAt(1).Title.Should().Be("Example");
-            result.ElementAt(2).Title.Should().Be("Test");
-            result.ElementAt(3).Title.Should().Be("Another Title");
-            result.ElementAt(0).IsForSeries.Should().BeTrue();
-            result.ElementAt(1).IsForSeries.Should().BeFalse();
-            result.ElementAt(2).IsForSeries.Should().BeTrue();
-            result.ElementAt(3).IsForSeries.Should().BeTrue();
+            result.ElementAt(0).Description.Should().Be("Title");
+            result.ElementAt(1).Description.Should().Be("Example");
+            result.ElementAt(2).Description.Should().Be("Test");
+            result.ElementAt(3).Description.Should().Be("Another Title");
+            result.ElementAt(0).IsForItem.Should().BeTrue();
+            result.ElementAt(1).IsForItem.Should().BeFalse();
+            result.ElementAt(2).IsForItem.Should().BeTrue();
+            result.ElementAt(3).IsForItem.Should().BeTrue();
         }
 
         [Theory]
@@ -42,12 +42,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             var filtering = new Filtering();
 
-            var result = books.MapForSeriesToList(series, paging, filtering);
+            var result = books.MapForItemToList(series, paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListBookForSeriesVM>();
-            result.Series.Should().NotBeNull().And.BeOfType<SeriesForListVM>();
-            result.SelectedBooks.Should().NotBeNull().And.BeOfType<List<BookForSeriesVM>>().And.HaveCount(selectedCount);
-            result.NotSelectedBooks.Should().NotBeNull().And.BeOfType<List<BookForSeriesVM>>().And.HaveCount(pageCount);
+            result.Item.Should().NotBeNull().And.BeOfType<SeriesForListVM>();
+            result.SelectedValues.Should().NotBeNull().And.BeOfType<List<BookForSeriesVM>>().And.HaveCount(selectedCount);
+            result.Values.Should().NotBeNull().And.BeOfType<List<BookForSeriesVM>>().And.HaveCount(pageCount);
             result.Paging.Should().Be(paging);
             result.Paging.CurrentPage.Should().Be(pageNo);
             result.Paging.PageSize.Should().Be(pageSize);
@@ -65,14 +65,14 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = 1, PageSize = books.Count() };
             var filtering = new Filtering();
 
-            var result = books.MapForSeriesToList(series, paging, filtering);
+            var result = books.MapForItemToList(series, paging, filtering);
 
-            result.SelectedBooks.ElementAt(0).Id.Should().Be(4);
-            result.SelectedBooks.ElementAt(1).Id.Should().Be(3);
-            result.SelectedBooks.ElementAt(2).Id.Should().Be(1);
-            result.SelectedBooks.ElementAt(0).Title.Should().Be("Another Title");
-            result.SelectedBooks.ElementAt(1).Title.Should().Be("Test");
-            result.SelectedBooks.ElementAt(2).Title.Should().Be("Title");
+            result.SelectedValues.ElementAt(0).Id.Should().Be(4);
+            result.SelectedValues.ElementAt(1).Id.Should().Be(3);
+            result.SelectedValues.ElementAt(2).Id.Should().Be(1);
+            result.SelectedValues.ElementAt(0).Description.Should().Be("Another Title");
+            result.SelectedValues.ElementAt(1).Description.Should().Be("Test");
+            result.SelectedValues.ElementAt(2).Description.Should().Be("Title");
         }
 
         [Fact]
@@ -83,16 +83,16 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = 1, PageSize = books.Count() };
             var filtering = new Filtering();
 
-            var result = books.MapForSeriesToList(series, paging, filtering);
+            var result = books.MapForItemToList(series, paging, filtering);
 
-            result.NotSelectedBooks.ElementAt(0).Id.Should().Be(4);
-            result.NotSelectedBooks.ElementAt(1).Id.Should().Be(2);
-            result.NotSelectedBooks.ElementAt(2).Id.Should().Be(3);
-            result.NotSelectedBooks.ElementAt(3).Id.Should().Be(1);
-            result.NotSelectedBooks.ElementAt(0).Title.Should().Be("Another Title");
-            result.NotSelectedBooks.ElementAt(1).Title.Should().Be("Example");
-            result.NotSelectedBooks.ElementAt(2).Title.Should().Be("Test");
-            result.NotSelectedBooks.ElementAt(3).Title.Should().Be("Title");
+            result.Values.ElementAt(0).Id.Should().Be(4);
+            result.Values.ElementAt(1).Id.Should().Be(2);
+            result.Values.ElementAt(2).Id.Should().Be(3);
+            result.Values.ElementAt(3).Id.Should().Be(1);
+            result.Values.ElementAt(0).Description.Should().Be("Another Title");
+            result.Values.ElementAt(1).Description.Should().Be("Example");
+            result.Values.ElementAt(2).Description.Should().Be("Test");
+            result.Values.ElementAt(3).Description.Should().Be("Title");
         }
 
         [Fact]
@@ -103,14 +103,14 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = 1, PageSize = books.Count() };
             var filtering = new Filtering() { SearchString = "Title" };
 
-            var result = books.MapForSeriesToList(series, paging, filtering);
+            var result = books.MapForItemToList(series, paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListBookForSeriesVM>();
-            result.NotSelectedBooks.Should().NotBeNull().And.HaveCount(2);
-            result.NotSelectedBooks.ElementAt(0).Id.Should().Be(4);
-            result.NotSelectedBooks.ElementAt(1).Id.Should().Be(1);
-            result.NotSelectedBooks.ElementAt(0).Title.Should().Be("Another Title");
-            result.NotSelectedBooks.ElementAt(1).Title.Should().Be("Title");
+            result.Values.Should().NotBeNull().And.HaveCount(2);
+            result.Values.ElementAt(0).Id.Should().Be(4);
+            result.Values.ElementAt(1).Id.Should().Be(1);
+            result.Values.ElementAt(0).Description.Should().Be("Another Title");
+            result.Values.ElementAt(1).Description.Should().Be("Title");
             result.Paging.Should().NotBeNull();
             result.Paging.CurrentPage.Should().Be(paging.CurrentPage);
             result.Paging.PageSize.Should().Be(paging.PageSize);
@@ -125,16 +125,16 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = 1, PageSize = books.Count() };
             var filtering = new Filtering() { SortBy = SortByEnum.Descending };
 
-            var result = books.MapForSeriesToList(series, paging, filtering);
+            var result = books.MapForItemToList(series, paging, filtering);
 
-            result.NotSelectedBooks.ElementAt(0).Id.Should().Be(1);
-            result.NotSelectedBooks.ElementAt(1).Id.Should().Be(3);
-            result.NotSelectedBooks.ElementAt(2).Id.Should().Be(2);
-            result.NotSelectedBooks.ElementAt(3).Id.Should().Be(4);
-            result.NotSelectedBooks.ElementAt(0).Title.Should().Be("Title");
-            result.NotSelectedBooks.ElementAt(1).Title.Should().Be("Test");
-            result.NotSelectedBooks.ElementAt(2).Title.Should().Be("Example");
-            result.NotSelectedBooks.ElementAt(3).Title.Should().Be("Another Title");
+            result.Values.ElementAt(0).Id.Should().Be(1);
+            result.Values.ElementAt(1).Id.Should().Be(3);
+            result.Values.ElementAt(2).Id.Should().Be(2);
+            result.Values.ElementAt(3).Id.Should().Be(4);
+            result.Values.ElementAt(0).Description.Should().Be("Title");
+            result.Values.ElementAt(1).Description.Should().Be("Test");
+            result.Values.ElementAt(2).Description.Should().Be("Example");
+            result.Values.ElementAt(3).Description.Should().Be("Another Title");
         }
 
         private IQueryable<Domain.Models.Book> GetBooksWithSeriesId()

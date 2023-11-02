@@ -1,29 +1,27 @@
 ﻿using System.ComponentModel;
 using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class BookForAuthorVM : IForItemVM
+    public class BookForAuthorVM : BaseForItemVM<Book, Author>, IForItemVM<Book, Author>
     {
-        public bool IsForItem { get; set; }
-        public int Id { get; set; }
-
         [DisplayName("Book")]
-        public string Description { get; set; } = null!;
+        public override string Description { get; set; } = null!;
     }
 
-    public class ListBookForAuthorVM : IDoubleListForItemVM<BookForAuthorVM, AuthorForListVM>
+    public class ListBookForAuthorVM : IDoubleListForItemVM<Book, Author>
     {
         [DisplayName("Author")]
-        public AuthorForListVM Item { get; set; } = new AuthorForListVM();
+        public IForListVM<Author> Item { get; set; } = new AuthorForListVM();
 
         [DisplayName("Previously selected books")]
-        public List<BookForAuthorVM> SelectedValues { get; set; } = new List<BookForAuthorVM>();
+        public List<IForItemVM<Book, Author>> SelectedValues { get; set; } = new List<IForItemVM<Book, Author>>();
 
         [DisplayName("Other books")]
-        public List<BookForAuthorVM> Values { get; set; } = new List<BookForAuthorVM>();
+        public List<IForItemVM<Book, Author>> Values { get; set; } = new List<IForItemVM<Book, Author>>();
 
         public Paging Paging { get; set; } = new Paging();
         public Filtering Filtering { get; set; } = new Filtering();
@@ -31,37 +29,21 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
     public static partial class MappingExtensions
     {
-        public static IQueryable<BookForAuthorVM> MapForAuthor(this IQueryable<Book> booksWithAuthors, int authorId)
+        public static IForItemVM<Book, Author> MapForItem(this Book bookWithAuthors, Author author)
         {
-            return booksWithAuthors.Select(b => new BookForAuthorVM
+            return new BookForAuthorVM
             {
-                Id = b.Id,
-                Description = b.Title,
-                IsForItem = b.Authors.Any(a => a.Id == authorId)
-            });
+                Id = bookWithAuthors.Id,
+                Description = bookWithAuthors.Title,
+                IsForItem = bookWithAuthors.Authors.Any(a => a.Id == author.Id)
+            };
         }
 
-        public static ListBookForAuthorVM MapForAuthorToList(this IQueryable<Book> booksWithAuthors, Author author, Paging paging, Filtering filtering)
+        public static ListBookForAuthorVM MapForItemToList(this IQueryable<Book> booksWithAuthors, Author author, Paging paging, Filtering filtering)
         {
-            var query = booksWithAuthors
+            return booksWithAuthors
                 .Sort(filtering.SortBy, b => b.Title)
-                .MapForAuthor(author.Id);
-            var selectedBooks = query.Where(b => b.IsForItem).ToList();
-            var notSelectedBooks = query.Where(b => !b.IsForItem && b.Description.Contains(filtering.SearchString));
-            paging.Count = notSelectedBooks.Count();
-            var limitedList = notSelectedBooks
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
-
-            return new ListBookForAuthorVM()
-            {
-                Item = author.Map(),
-                SelectedValues = selectedBooks,
-                Values = limitedList,
-                Paging = paging,
-                Filtering = filtering
-            };
+                .MapForItemToDoubleList<Book, Author, ListBookForAuthorVM>(author, paging, filtering);
         }
     }
 }

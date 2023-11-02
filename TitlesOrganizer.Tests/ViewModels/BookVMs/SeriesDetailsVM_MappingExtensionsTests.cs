@@ -7,45 +7,6 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
     public class SeriesDetailsVM_MappingExtensionsTests
     {
         [Fact]
-        public void MapToDetails_BookSeriesWithAllRelatedObjects_SeriesDetailsVM()
-        {
-            // Arrange
-            int booksCount = 5, genresCount = 2, authorsCount = 3;
-            Paging booksPaging = new Paging() { CurrentPage = 1, PageSize = booksCount };
-            var series = Helpers.GetSeries();
-            var booksList = Helpers.GetBooksList(booksCount);
-            var authorsList = Helpers.GetAuthorsList(authorsCount);
-            var genresList = Helpers.GetGenresList(genresCount);
-
-            foreach (var book in booksList)
-            {
-                book.Genres = genresList;
-                book.Authors = authorsList;
-                book.Series = series;
-                book.SeriesId = series.Id;
-            }
-
-            series.Books = booksList;
-
-            // Act
-            var result = series.MapToDetails(booksPaging);
-
-            // Assert
-            result.Should().NotBeNull().And.BeOfType<SeriesDetailsVM>();
-            result.Id.Should().Be(series.Id);
-            result.Title.Should().Be(series.Title);
-            result.OriginalTitle.Should().Be(series.OriginalTitle);
-            result.Description.Should().Be(series.Description);
-            result.Books.Should().NotBeNull().And.HaveCount(booksCount);
-            result.BooksPaging.Should().Be(booksPaging);
-            result.BooksPaging.CurrentPage.Should().Be(1);
-            result.BooksPaging.PageSize.Should().Be(booksCount);
-            result.BooksPaging.Count.Should().Be(booksCount);
-            result.Authors.Should().NotBeNull().And.HaveCount(authorsCount);
-            result.Genres.Should().NotBeNull().And.HaveCount(genresCount);
-        }
-
-        [Fact]
         public void MapToDetails_BookSeriesAndBooksAndAuthorsAndGenres_SeriesDetailsVM()
         {
             // Arrange
@@ -65,11 +26,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             result.Title.Should().Be(series.Title);
             result.OriginalTitle.Should().Be(series.OriginalTitle);
             result.Description.Should().Be(series.Description);
-            result.Books.Should().NotBeNull().And.HaveCount(booksCount);
-            result.BooksPaging.Should().Be(booksPaging);
-            result.BooksPaging.CurrentPage.Should().Be(1);
-            result.BooksPaging.PageSize.Should().Be(booksCount);
-            result.BooksPaging.Count.Should().Be(booksCount);
+            result.Books.Values.Should().NotBeNull().And.HaveCount(booksCount);
+            result.Books.Paging.Should().Be(booksPaging);
+            result.Books.Paging.CurrentPage.Should().Be(1);
+            result.Books.Paging.PageSize.Should().Be(booksCount);
+            result.Books.Paging.Count.Should().Be(booksCount);
             result.Authors.Should().NotBeNull().And.HaveCount(authorsCount);
             result.Genres.Should().NotBeNull().And.HaveCount(genresCount);
         }

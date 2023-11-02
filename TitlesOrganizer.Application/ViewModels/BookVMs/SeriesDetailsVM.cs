@@ -1,31 +1,20 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class SeriesDetailsVM
+    public class SeriesDetailsVM : BaseDetailsVM<BookSeries>, IDetailsVM<BookSeries>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
-        [ScaffoldColumn(false)]
-        public string Title { get; set; } = string.Empty;
-
         [DisplayName("Original title")]
         public string OriginalTitle { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
-
-        public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
-
-        [ScaffoldColumn(false)]
-        public Paging BooksPaging { get; set; } = new Paging();
-
-        public List<AuthorForListVM> Authors { get; set; } = new List<AuthorForListVM>();
-
-        public List<GenreForListVM> Genres { get; set; } = new List<GenreForListVM>();
+        public PartialList<Book> Books { get; set; } = new PartialList<Book>();
+        public List<IForListVM<Author>> Authors { get; set; } = new List<IForListVM<Author>>();
+        public List<IForListVM<LiteratureGenre>> Genres { get; set; } = new List<IForListVM<LiteratureGenre>>();
     }
 
     public static partial class MappingExtensions
@@ -38,25 +27,13 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
                 Title = series.Title,
                 OriginalTitle = series.OriginalTitle ?? string.Empty,
                 Description = series.Description ?? string.Empty,
-                Books = books.MapToList(ref booksPaging).ToList(),
-                BooksPaging = booksPaging,
+                Books = new PartialList<Book>()
+                {
+                    Values = books.MapToList(ref booksPaging).ToList(),
+                    Paging = booksPaging
+                },
                 Authors = authors.Map().ToList(),
                 Genres = genres.Map().ToList()
-            };
-        }
-
-        public static SeriesDetailsVM MapToDetails(this BookSeries seriesWithAllRelatedObjects, Paging booksPaging)
-        {
-            return new SeriesDetailsVM()
-            {
-                Id = seriesWithAllRelatedObjects.Id,
-                Title = seriesWithAllRelatedObjects.Title,
-                OriginalTitle = seriesWithAllRelatedObjects.OriginalTitle ?? string.Empty,
-                Description = seriesWithAllRelatedObjects.Description ?? string.Empty,
-                Books = seriesWithAllRelatedObjects.Books.AsQueryable().MapToList(ref booksPaging).ToList(),
-                BooksPaging = booksPaging,
-                Authors = seriesWithAllRelatedObjects.Books.SelectMany(b => b.Authors).DistinctBy(a => a.Id).Map(),
-                Genres = seriesWithAllRelatedObjects.Books.SelectMany(b => b.Genres).DistinctBy(g => g.Id).Map()
             };
         }
     }

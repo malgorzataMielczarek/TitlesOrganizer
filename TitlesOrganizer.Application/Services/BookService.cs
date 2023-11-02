@@ -21,7 +21,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddAuthor(AuthorVM author)
         {
-            return _bookRepository.AddNewAuthor(author.partialList.Values.FirstOrDefault()?.Id ?? 0, author.MapToBase(_mapper));
+            return _bookRepository.AddNewAuthor(author.Books.Values.FirstOrDefault()?.Id ?? 0, author.MapToBase(_mapper));
         }
 
         public void SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
@@ -116,7 +116,7 @@ namespace TitlesOrganizer.Application.Services
 
         public int AddNewSeries(SeriesVM newSeries)
         {
-            return _bookRepository.AddNewSeries(newSeries.Books.FirstOrDefault()?.Id ?? 0, newSeries.MapToBase(_mapper));
+            return _bookRepository.AddNewSeries(newSeries.Books.Values.FirstOrDefault()?.Id ?? 0, newSeries.MapToBase(_mapper));
         }
 
         public void AddSeriesForBook(int bookId, int seriesId)
@@ -141,7 +141,7 @@ namespace TitlesOrganizer.Application.Services
             Paging paging = new Paging() { PageSize = pageSize, CurrentPage = pageNo };
             Filtering filtering = new Filtering() { SearchString = searchString, SortBy = sortBy };
 
-            return _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapForBookToList(book, paging, filtering);
+            return _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapForItemToList(book, paging, filtering);
         }
 
         public ListAuthorForListVM GetAllAuthorsForList(SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList(new Paging() { PageSize = pageSize, CurrentPage = pageNo }, new Filtering() { SearchString = searchString, SortBy = sortBy });
@@ -180,7 +180,7 @@ namespace TitlesOrganizer.Application.Services
 
             Paging paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             Filtering filtering = new Filtering() { SortBy = sortBy, SearchString = searchString };
-            return _bookRepository.GetAllSeriesWithBooks().MapForBookToList(book, paging, filtering);
+            return _bookRepository.GetAllSeriesWithBooks().MapForItemToList(book, paging, filtering);
         }
 
         public ListSeriesForListVM GetAllSeriesForList(SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllSeriesWithBooks().MapToList(new Paging() { PageSize = pageSize, CurrentPage = pageNo }, new Filtering() { SearchString = searchString, SortBy = sortBy });

@@ -1,67 +1,44 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class SeriesForBookVM
+    public class SeriesForBookVM : BaseForItemVM<BookSeries, Book>, IForItemVM<BookSeries, Book>
     {
-        [ScaffoldColumn(false)]
-        public int Id { get; set; }
-
-        [ScaffoldColumn(false)]
-        public bool IsForBook { get; set; }
-
         [DisplayName("Series")]
-        public string Title { get; set; } = string.Empty;
+        public override string Description { get; set; } = string.Empty;
     }
 
-    public class ListSeriesForBookVM
+    public class ListSeriesForBookVM : IListForItemVM<BookSeries, Book>
     {
-        [ScaffoldColumn(false)]
-        public BookForListVM Book { get; set; } = new BookForListVM();
+        [DisplayName("Book")]
+        public IForListVM<Book> Item { get; set; } = new BookForListVM();
 
-        public List<SeriesForBookVM> Series { get; set; } = new List<SeriesForBookVM>();
+        [DisplayName("Series")]
+        public List<IForItemVM<BookSeries, Book>> Values { get; set; } = new List<IForItemVM<BookSeries, Book>>();
 
-        [ScaffoldColumn(false)]
         public Paging Paging { get; set; } = new Paging();
-
-        [ScaffoldColumn(false)]
         public Filtering Filtering { get; set; } = new Filtering();
     }
 
     public static partial class MappingExtensions
     {
-        public static IQueryable<SeriesForBookVM> MapForBook(this IQueryable<BookSeries> series, int bookId)
+        public static IForItemVM<BookSeries, Book> MapForItem(this BookSeries series, Book book)
         {
-            return series.Select(s => new SeriesForBookVM()
+            return new SeriesForBookVM()
             {
-                Id = s.Id,
-                Title = s.Title,
-                IsForBook = s.Books.Any(b => b.Id == bookId)
-            });
+                Id = series.Id,
+                Description = series.Title,
+                IsForItem = series.Books.Any(b => b.Id == book.Id)
+            };
         }
 
-        public static ListSeriesForBookVM MapForBookToList(this IQueryable<BookSeries> series, Book book, Paging paging, Filtering filtering)
+        public static ListSeriesForBookVM MapForItemToList(this IQueryable<BookSeries> series, Book book, Paging paging, Filtering filtering)
         {
-            var query = series
-                .MapForBook(book.Id)
-                .Where(s => s.IsForBook || s.Title.Contains(filtering.SearchString))
-                .Sort(SortByEnum.Descending, s => s.IsForBook, (SortBy: filtering.SortBy, Selector: s => s.Title));
-            paging.Count = query.Count();
-            var limitedList = query
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
-
-            return new ListSeriesForBookVM()
-            {
-                Book = book.Map(),
-                Series = limitedList,
-                Paging = paging,
-                Filtering = filtering
-            };
+            return series.Sort(filtering.SortBy, s => s.Title).MapForItemToList<BookSeries, Book, ListSeriesForBookVM>(book, paging, filtering);
         }
     }
 }

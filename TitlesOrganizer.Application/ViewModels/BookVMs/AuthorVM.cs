@@ -3,8 +3,8 @@
 using AutoMapper;
 using FluentValidation;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
@@ -19,11 +19,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         [DisplayName("Last name")]
         public string? LastName { get; set; }
 
-        public IPartialList<Book> partialList { get; set; } = new PartialList<Book>();
-        public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
-
-        [ScaffoldColumn(false)]
-        public Paging BooksPaging { get; set; } = new Paging();
+        public IPartialList<Book> Books { get; set; } = new PartialList<Book>();
     }
 
     public class AuthorVMValidator : AbstractValidator<AuthorVM>
@@ -49,12 +45,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         {
             var authorVM = mapper.Map<AuthorVM>(authorWithBooks);
             booksPaging.Count = authorWithBooks.Books.Count;
-            authorVM.partialList.Values = authorWithBooks.Books
-                .OrderBy(b => b.Title)
-                .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
-                .Take(booksPaging.PageSize)
-                .Map();
-            authorVM.BooksPaging = booksPaging;
+            authorVM.Books.Values = authorWithBooks.Books.MapToList<Book>(ref booksPaging);
+            authorVM.Books.Paging = booksPaging;
 
             return authorVM;
         }
@@ -62,14 +54,17 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static AuthorVM MapFromBase(this Author author, IMapper mapper, IQueryable<Book> books, Paging booksPaging)
         {
             var authorVM = mapper.Map<AuthorVM>(author);
-            booksPaging.Count = books?.Count() ?? 0;
-            authorVM.Books = books?
-                .OrderBy(b => b.Title)
-                .Map()
-                .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
-                .Take(booksPaging.PageSize)
-                .ToList() ?? new List<BookForListVM>();
-            authorVM.BooksPaging = booksPaging;
+            if (books == null)
+            {
+                booksPaging.Count = 0;
+                booksPaging.CurrentPage = 1;
+            }
+            else
+            {
+                authorVM.Books.Values = books.MapToList(ref booksPaging).ToList();
+            }
+
+            authorVM.Books.Paging = booksPaging;
 
             return authorVM;
         }

@@ -15,21 +15,21 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var genres = GetGenresWithBooks();
             int bookId = 1;
 
-            var result = genres.MapForBook(bookId);
+            var result = genres.MapForItem(bookId);
 
             result.Should().NotBeNull().And.BeAssignableTo<IQueryable<GenreForBookVM>>().And.AllBeOfType<GenreForBookVM>().And.HaveCount(genres.Count());
             result.ElementAt(0).Id.Should().Be(1);
             result.ElementAt(1).Id.Should().Be(2);
             result.ElementAt(2).Id.Should().Be(3);
             result.ElementAt(3).Id.Should().Be(4);
-            result.ElementAt(0).Name.Should().Be("Crime Comedy");
-            result.ElementAt(1).Name.Should().Be("Romantic Comedy");
-            result.ElementAt(2).Name.Should().Be("Comedy");
-            result.ElementAt(3).Name.Should().Be("Crime Story");
-            result.ElementAt(0).IsForBook.Should().BeTrue();
-            result.ElementAt(1).IsForBook.Should().BeFalse();
-            result.ElementAt(2).IsForBook.Should().BeTrue();
-            result.ElementAt(3).IsForBook.Should().BeTrue();
+            result.ElementAt(0).Description.Should().Be("Crime Comedy");
+            result.ElementAt(1).Description.Should().Be("Romantic Comedy");
+            result.ElementAt(2).Description.Should().Be("Comedy");
+            result.ElementAt(3).Description.Should().Be("Crime Story");
+            result.ElementAt(0).IsForItem.Should().BeTrue();
+            result.ElementAt(1).IsForItem.Should().BeFalse();
+            result.ElementAt(2).IsForItem.Should().BeTrue();
+            result.ElementAt(3).IsForItem.Should().BeTrue();
         }
 
         [Theory]
@@ -46,9 +46,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var result = genres.MapForBookToList(book, paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListGenreForBookVM>();
-            result.Book.Should().NotBeNull().And.BeOfType<BookForListVM>();
-            result.SelectedGenres.Should().NotBeNull().And.BeOfType<List<GenreForBookVM>>().And.HaveCount(selectedCount);
-            result.NotSelectedGenres.Should().NotBeNull().And.BeOfType<List<GenreForBookVM>>().And.HaveCount(pageCount);
+            result.Item.Should().NotBeNull().And.BeOfType<BookForListVM>();
+            result.SelectedValues.Should().NotBeNull().And.BeOfType<List<GenreForBookVM>>().And.HaveCount(selectedCount);
+            result.Values.Should().NotBeNull().And.BeOfType<List<GenreForBookVM>>().And.HaveCount(pageCount);
             result.Paging.Should().Be(paging);
             result.Paging.CurrentPage.Should().Be(pageNo);
             result.Paging.PageSize.Should().Be(pageSize);
@@ -68,12 +68,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = genres.MapForBookToList(book, paging, filtering);
 
-            result.SelectedGenres.ElementAt(0).Id.Should().Be(3);
-            result.SelectedGenres.ElementAt(1).Id.Should().Be(1);
-            result.SelectedGenres.ElementAt(2).Id.Should().Be(4);
-            result.SelectedGenres.ElementAt(0).Name.Should().Be("Comedy");
-            result.SelectedGenres.ElementAt(1).Name.Should().Be("Crime Comedy");
-            result.SelectedGenres.ElementAt(2).Name.Should().Be("Crime Story");
+            result.SelectedValues.ElementAt(0).Id.Should().Be(3);
+            result.SelectedValues.ElementAt(1).Id.Should().Be(1);
+            result.SelectedValues.ElementAt(2).Id.Should().Be(4);
+            result.SelectedValues.ElementAt(0).Description.Should().Be("Comedy");
+            result.SelectedValues.ElementAt(1).Description.Should().Be("Crime Comedy");
+            result.SelectedValues.ElementAt(2).Description.Should().Be("Crime Story");
         }
 
         [Fact]
@@ -86,14 +86,14 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = genres.MapForBookToList(book, paging, filtering);
 
-            result.NotSelectedGenres.ElementAt(0).Id.Should().Be(3);
-            result.NotSelectedGenres.ElementAt(1).Id.Should().Be(1);
-            result.NotSelectedGenres.ElementAt(2).Id.Should().Be(4);
-            result.NotSelectedGenres.ElementAt(3).Id.Should().Be(2);
-            result.NotSelectedGenres.ElementAt(0).Name.Should().Be("Comedy");
-            result.NotSelectedGenres.ElementAt(1).Name.Should().Be("Crime Comedy");
-            result.NotSelectedGenres.ElementAt(2).Name.Should().Be("Crime Story");
-            result.NotSelectedGenres.ElementAt(3).Name.Should().Be("Romantic Comedy");
+            result.Values.ElementAt(0).Id.Should().Be(3);
+            result.Values.ElementAt(1).Id.Should().Be(1);
+            result.Values.ElementAt(2).Id.Should().Be(4);
+            result.Values.ElementAt(3).Id.Should().Be(2);
+            result.Values.ElementAt(0).Description.Should().Be("Comedy");
+            result.Values.ElementAt(1).Description.Should().Be("Crime Comedy");
+            result.Values.ElementAt(2).Description.Should().Be("Crime Story");
+            result.Values.ElementAt(3).Description.Should().Be("Romantic Comedy");
         }
 
         [Fact]
@@ -107,11 +107,11 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var result = genres.MapForBookToList(book, paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListGenreForBookVM>();
-            result.NotSelectedGenres.Should().NotBeNull().And.HaveCount(2);
-            result.NotSelectedGenres.ElementAt(0).Id.Should().Be(1);
-            result.NotSelectedGenres.ElementAt(1).Id.Should().Be(4);
-            result.NotSelectedGenres.ElementAt(0).Name.Should().Be("Crime Comedy");
-            result.NotSelectedGenres.ElementAt(1).Name.Should().Be("Crime Story");
+            result.Values.Should().NotBeNull().And.HaveCount(2);
+            result.Values.ElementAt(0).Id.Should().Be(1);
+            result.Values.ElementAt(1).Id.Should().Be(4);
+            result.Values.ElementAt(0).Description.Should().Be("Crime Comedy");
+            result.Values.ElementAt(1).Description.Should().Be("Crime Story");
             result.Paging.Should().NotBeNull();
             result.Paging.CurrentPage.Should().Be(paging.CurrentPage);
             result.Paging.PageSize.Should().Be(paging.PageSize);
@@ -128,14 +128,14 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 
             var result = genres.MapForBookToList(book, paging, filtering);
 
-            result.NotSelectedGenres.ElementAt(0).Id.Should().Be(2);
-            result.NotSelectedGenres.ElementAt(1).Id.Should().Be(4);
-            result.NotSelectedGenres.ElementAt(2).Id.Should().Be(1);
-            result.NotSelectedGenres.ElementAt(3).Id.Should().Be(3);
-            result.NotSelectedGenres.ElementAt(0).Name.Should().Be("Romantic Comedy");
-            result.NotSelectedGenres.ElementAt(1).Name.Should().Be("Crime Story");
-            result.NotSelectedGenres.ElementAt(2).Name.Should().Be("Crime Comedy");
-            result.NotSelectedGenres.ElementAt(3).Name.Should().Be("Comedy");
+            result.Values.ElementAt(0).Id.Should().Be(2);
+            result.Values.ElementAt(1).Id.Should().Be(4);
+            result.Values.ElementAt(2).Id.Should().Be(1);
+            result.Values.ElementAt(3).Id.Should().Be(3);
+            result.Values.ElementAt(0).Description.Should().Be("Romantic Comedy");
+            result.Values.ElementAt(1).Description.Should().Be("Crime Story");
+            result.Values.ElementAt(2).Description.Should().Be("Crime Comedy");
+            result.Values.ElementAt(3).Description.Should().Be("Comedy");
         }
 
         private IQueryable<LiteratureGenre> GetGenresWithBooks()

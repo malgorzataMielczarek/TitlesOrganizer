@@ -71,8 +71,8 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.VerifyNoOtherCalls();
             result.Should().NotBeNull().And.BeOfType<AuthorVM>();
             result.Id.Should().Be(author.Id);
-            result.BooksPaging.PageSize.Should().Be(pageSize);
-            result.BooksPaging.CurrentPage.Should().Be(pageNo);
+            result.Books.Paging.PageSize.Should().Be(pageSize);
+            result.Books.Paging.CurrentPage.Should().Be(pageNo);
         }
 
         [Fact]
@@ -93,9 +93,9 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.VerifyNoOtherCalls();
             result.Should().NotBeNull().And.BeOfType<AuthorVM>();
             result.Id.Should().Be(default);
-            result.BooksPaging.PageSize.Should().Be(pageSize);
-            result.BooksPaging.CurrentPage.Should().Be(1);
-            result.BooksPaging.Count.Should().Be(0);
+            result.Books.Paging.PageSize.Should().Be(pageSize);
+            result.Books.Paging.CurrentPage.Should().Be(1);
+            result.Books.Paging.Count.Should().Be(0);
         }
 
         [Fact]
@@ -411,7 +411,10 @@ namespace TitlesOrganizer.Tests.Services
                 return new AuthorVM()
                 {
                     Id = authorWithBooks.Id,
-                    BooksPaging = new Paging() { CurrentPage = bookPageNo, PageSize = bookPageSize },
+                    Books = new PartialList<Book>()
+                    {
+                        Paging = new Paging() { CurrentPage = bookPageNo, PageSize = bookPageSize }
+                    }
                 };
             }
 

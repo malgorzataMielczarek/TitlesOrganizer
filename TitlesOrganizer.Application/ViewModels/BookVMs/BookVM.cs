@@ -5,6 +5,7 @@ using FluentValidation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
@@ -15,7 +16,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public string Title { get; set; } = string.Empty;
 
-        public List<AuthorForListVM> Authors { get; set; } = new List<AuthorForListVM>();
+        public List<IForListVM<Author>> Authors { get; set; } = new List<IForListVM<Author>>();
 
         [DisplayName("Original title")]
         public string? OriginalTitle { get; set; }
@@ -27,7 +28,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public string? Edition { get; set; }
 
-        public List<GenreForListVM> Genres { get; set; } = new List<GenreForListVM>();
+        public List<IForListVM<LiteratureGenre>> Genres { get; set; } = new List<IForListVM<LiteratureGenre>>();
 
         [DataType(DataType.MultilineText)]
         public string? Description { get; set; }
@@ -75,8 +76,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static BookVM MapFromBase(this Book book, IMapper mapper, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series)
         {
             var bookVM = mapper.Map<BookVM>(book);
-            bookVM.Authors = authors?.Map().ToList() ?? new List<AuthorForListVM>();
-            bookVM.Genres = genres?.Map().ToList() ?? new List<GenreForListVM>();
+            bookVM.Authors = authors?.Map().ToList() ?? new List<IForListVM<Author>>();
+            bookVM.Genres = genres?.Map().ToList() ?? new List<IForListVM<LiteratureGenre>>();
             bookVM.Series = series?.Map();
 
             return bookVM;

@@ -1,6 +1,7 @@
 ﻿using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
+using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Interfaces
 {
@@ -20,9 +21,9 @@ namespace TitlesOrganizer.Application.Interfaces
 
         ListBookForSeriesVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        PartialList<BookForListVM> GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
+        PartialList<Book> GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
 
-        PartialList<BookForListVM> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
+        PartialList<Book> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
 
         void SelectAuthors(int bookId, List<int> selectedIds);
 

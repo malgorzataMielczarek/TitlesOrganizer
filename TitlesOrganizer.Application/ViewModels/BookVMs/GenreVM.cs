@@ -2,23 +2,20 @@
 
 using AutoMapper;
 using FluentValidation;
-using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class GenreVM
+    public class GenreVM : IUpdateVM<LiteratureGenre>
     {
-        [ScaffoldColumn(false)]
         public int Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
 
-        public List<BookForListVM> Books { get; set; } = new List<BookForListVM>();
-
-        [ScaffoldColumn(false)]
-        public Paging BooksPaging { get; set; } = new Paging();
+        public IPartialList<Book> Books { get; set; } = new PartialList<Book>();
     }
 
     public class GenreVMValidator : AbstractValidator<GenreVM>
@@ -40,14 +37,17 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static GenreVM MapFromBase(this LiteratureGenre genreWithBooks, IMapper mapper, Paging booksPaging)
         {
             var genreVM = mapper.Map<GenreVM>(genreWithBooks);
-            booksPaging.Count = genreWithBooks.Books?.Count ?? 0;
-            genreVM.Books = genreWithBooks.Books?
-                .OrderBy(b => b.Title)
-                .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
-                .Take(booksPaging.PageSize)
-                .Map()
-                ?? new List<BookForListVM>();
-            genreVM.BooksPaging = booksPaging;
+            if (genreWithBooks.Books == null)
+            {
+                booksPaging.Count = 0;
+                booksPaging.CurrentPage = 1;
+            }
+            else
+            {
+                genreVM.Books.Values = genreWithBooks.Books.MapToList(ref booksPaging);
+            }
+
+            genreVM.Books.Paging = booksPaging;
 
             return genreVM;
         }
@@ -55,14 +55,17 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static GenreVM MapFromBase(this LiteratureGenre genre, IMapper mapper, IQueryable<Book> books, Paging booksPaging)
         {
             var genreVM = mapper.Map<GenreVM>(genre);
-            booksPaging.Count = books?.Count() ?? 0;
-            genreVM.Books = books?
-                .OrderBy(b => b.Title)
-                .Map()
-                .Skip(booksPaging.PageSize * (booksPaging.CurrentPage - 1))
-                .Take(booksPaging.PageSize)
-                .ToList() ?? new List<BookForListVM>();
-            genreVM.BooksPaging = booksPaging;
+            if (books == null)
+            {
+                booksPaging.Count = 0;
+                booksPaging.CurrentPage = 1;
+            }
+            else
+            {
+                genreVM.Books.Values = books.MapToList(ref booksPaging).ToList();
+            }
+
+            genreVM.Books.Paging = booksPaging;
 
             return genreVM;
         }

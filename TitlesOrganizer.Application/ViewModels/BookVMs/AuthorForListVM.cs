@@ -41,9 +41,16 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
                 .MapToList<Author>(paging, filtering);
         }
 
-        public static IQueryable<AuthorForListVM> MapToList(this IQueryable<Author> authors, ref Paging paging)
+        public static IQueryable<IForListVM<Author>> MapToList(this IQueryable<Author> authors, ref Paging paging)
         {
-            return (IQueryable<AuthorForListVM>)authors
+            return authors
+                .OrderBy(a => a.LastName).ThenBy(a => a.Name)
+                .MapToList<Author>(ref paging);
+        }
+
+        public static List<IForListVM<Author>> MapToList(this IEnumerable<Author> authors, ref Paging paging)
+        {
+            return authors
                 .OrderBy(a => a.LastName).ThenBy(a => a.Name)
                 .MapToList<Author>(ref paging);
         }
