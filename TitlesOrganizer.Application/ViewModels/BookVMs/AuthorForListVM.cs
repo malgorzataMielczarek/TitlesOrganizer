@@ -34,17 +34,29 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return (IForListVM<T>)author.Map();
         }
 
+        public static IQueryable<IForListVM<Author>> Map(this IQueryable<Author> items)
+        {
+            return items.Select(it => it.Map());
+        }
+
+        public static List<IForListVM<Author>> Map(this IEnumerable<Author> items)
+        {
+            return items.Select(it => it.Map<Author>()).ToList();
+        }
+
         public static ListAuthorForListVM MapToList(this IQueryable<Author> authors, Paging paging, Filtering filtering)
         {
             return (ListAuthorForListVM)authors
                 .Sort(filtering.SortBy, a => a.LastName, a => a.Name)
-                .MapToList<Author>(paging, filtering);
+                .Map()
+                .MapToList<Author, ListAuthorForListVM>(paging, filtering);
         }
 
         public static IQueryable<IForListVM<Author>> MapToList(this IQueryable<Author> authors, ref Paging paging)
         {
             return authors
                 .OrderBy(a => a.LastName).ThenBy(a => a.Name)
+                .Map()
                 .MapToList<Author>(ref paging);
         }
 
@@ -52,6 +64,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         {
             return authors
                 .OrderBy(a => a.LastName).ThenBy(a => a.Name)
+                .Map()
                 .MapToList<Author>(ref paging);
         }
     }

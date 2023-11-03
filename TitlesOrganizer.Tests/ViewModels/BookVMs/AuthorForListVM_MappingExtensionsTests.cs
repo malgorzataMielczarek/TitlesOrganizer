@@ -24,87 +24,15 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
-        public void Map_Author_IForListVMAuthor()
+        public void MapAuthor_Author_IForListVMAuthor()
         {
             var author = Helpers.GetAuthor();
 
-            var result = author.Map();
+            var result = author.Map<Author>();
 
             result.Should().NotBeNull().And.BeAssignableTo<IForListVM<Author>>();
             result.Id.Should().Be(author.Id);
             result.Description.Should().NotBeNullOrWhiteSpace().And.Be($"{author.Name} {author.LastName}");
-        }
-
-        [Fact]
-        public void Map_IQueryableAuthor_IQueryableIForListVMAuthor()
-        {
-            int count = 2;
-            var authors = Helpers.GetAuthorsList(count).AsQueryable();
-
-            var result = authors.Map();
-
-            result.Should().NotBeNull().And.BeAssignableTo<IQueryable<IForListVM<Author>>>().And.HaveCount(count);
-            for (int i = 0; i < count; i++)
-            {
-                var authorForList = result.ElementAt(i);
-                var author = authors.ElementAt(i);
-                authorForList.Id.Should().Be(author.Id);
-                authorForList.Description.Should().Be($"{author.Name} {author.LastName}");
-            }
-        }
-
-        [Fact]
-        public void Map_ICollectionAuthor_ListIForListVMAuthor()
-        {
-            int count = 2;
-            var authors = Helpers.GetAuthorsList(count) as ICollection<Author>;
-
-            var result = authors.Map();
-
-            result.Should().NotBeNull().And.BeOfType<List<IForListVM<Author>>>().And.HaveCount(count);
-            for (int i = 0; i < count; i++)
-            {
-                var authorForList = result.ElementAt(i);
-                var author = authors.ElementAt(i);
-                authorForList.Id.Should().Be(author.Id);
-                authorForList.Description.Should().Be($"{author.Name} {author.LastName}");
-            }
-        }
-
-        [Fact]
-        public void Map_IEnumerableAuthor_ListIForListVMAuthor()
-        {
-            int count = 2;
-            var authors = Helpers.GetAuthorsList(count).AsEnumerable();
-
-            var result = authors.Map();
-
-            result.Should().NotBeNull().And.BeOfType<List<IForListVM<Author>>>().And.HaveCount(count);
-            for (int i = 0; i < count; i++)
-            {
-                var authorForList = result.ElementAt(i);
-                var author = authors.ElementAt(i);
-                authorForList.Id.Should().Be(author.Id);
-                authorForList.Description.Should().Be($"{author.Name} {author.LastName}");
-            }
-        }
-
-        [Fact]
-        public void Map_ListAuthor_ListIForListVMAuthor()
-        {
-            int count = 2;
-            var authors = Helpers.GetAuthorsList(count);
-
-            var result = authors.Map();
-
-            result.Should().NotBeNull().And.BeOfType<List<IForListVM<Author>>>().And.HaveCount(count);
-            for (int i = 0; i < count; i++)
-            {
-                var authorForList = result.ElementAt(i);
-                var author = authors.ElementAt(i);
-                authorForList.Id.Should().Be(author.Id);
-                authorForList.Description.Should().Be($"{author.Name} {author.LastName}");
-            }
         }
 
         [Fact]
@@ -297,3 +225,4 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 );
         }
     }
+}

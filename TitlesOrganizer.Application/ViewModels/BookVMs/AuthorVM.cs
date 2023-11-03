@@ -45,7 +45,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         {
             var authorVM = mapper.Map<AuthorVM>(authorWithBooks);
             booksPaging.Count = authorWithBooks.Books.Count;
-            authorVM.Books.Values = authorWithBooks.Books.MapToList<Book>(ref booksPaging);
+            authorVM.Books.Values = authorWithBooks.Books.MapToList(ref booksPaging);
             authorVM.Books.Paging = booksPaging;
 
             return authorVM;

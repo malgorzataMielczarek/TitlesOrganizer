@@ -35,17 +35,29 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return (IForListVM<T>)genre.Map();
         }
 
+        public static IQueryable<IForListVM<LiteratureGenre>> Map(this IQueryable<LiteratureGenre> items)
+        {
+            return items.Select(it => it.Map());
+        }
+
+        public static List<IForListVM<LiteratureGenre>> Map(this IEnumerable<LiteratureGenre> items)
+        {
+            return items.Select(it => it.Map<LiteratureGenre>()).ToList();
+        }
+
         public static ListGenreForListVM MapToList(this IQueryable<LiteratureGenre> genres, Paging paging, Filtering filtering)
         {
             return (ListGenreForListVM)genres
                 .Sort(filtering.SortBy, g => g.Name)
-                .MapToList<LiteratureGenre>(paging, filtering);
+                .Map()
+                .MapToList<LiteratureGenre, ListGenreForListVM>(paging, filtering);
         }
 
         public static IQueryable<IForListVM<LiteratureGenre>> MapToList(this IQueryable<LiteratureGenre> genres, ref Paging paging)
         {
             return genres
                 .OrderBy(g => g.Name)
+                .Map()
                 .MapToList<LiteratureGenre>(ref paging);
         }
 
@@ -53,6 +65,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         {
             return genres
                 .OrderBy(g => g.Name)
+                .Map()
                 .MapToList<LiteratureGenre>(ref paging);
         }
     }

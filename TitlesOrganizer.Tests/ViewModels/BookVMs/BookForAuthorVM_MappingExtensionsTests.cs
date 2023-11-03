@@ -65,7 +65,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = 1, PageSize = books.Count() };
             var filtering = new Filtering();
 
-            var result = books.MapForItemToList(author1, paging, filtering);
+            var result = books.MapForItemToList(author3, paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListBookForAuthorVM>();
             result.SelectedValues.Should()
@@ -96,7 +96,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var paging = new Paging() { CurrentPage = 1, PageSize = books.Count() };
             var filtering = new Filtering() { SortBy = SortByEnum.Descending };
 
-            var result = books.MapForItemToList(author1, paging, filtering);
+            var result = books.MapForItemToList(author3, paging, filtering);
 
             result.Should().NotBeNull().And.BeOfType<ListBookForAuthorVM>();
             result.SelectedValues.Should()

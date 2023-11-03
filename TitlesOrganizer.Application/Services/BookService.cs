@@ -167,7 +167,7 @@ namespace TitlesOrganizer.Application.Services
 
             Paging paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             Filtering filtering = new Filtering() { SortBy = sortBy, SearchString = searchString };
-            return _bookRepository.GetAllGenresWithBooks().MapForBookToList(book, paging, filtering);
+            return _bookRepository.GetAllGenresWithBooks().MapForItemToList(book, paging, filtering);
         }
 
         public ListSeriesForBookVM GetAllSeriesForBookList(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)

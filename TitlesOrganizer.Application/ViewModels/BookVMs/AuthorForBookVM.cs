@@ -39,11 +39,17 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
+        public static IQueryable<IForItemVM<Author, Book>> MapForItem(this IQueryable<Author> sortedList, Book item)
+        {
+            return sortedList.Select(it => it.MapForItem(item));
+        }
+
         public static ListAuthorForBookVM MapForItemToList(this IQueryable<Author> authorsWithBooks, Book book, Paging paging, Filtering filtering)
         {
             return authorsWithBooks
                 .Sort(filtering.SortBy, a => a.LastName, a => a.Name)
-                .MapForItemToDoubleList<Author, Book, ListAuthorForBookVM>(book, paging, filtering);
+                .MapForItem(book)
+                .MapForItemToDoubleList<Author, Book, ListAuthorForBookVM>(book.Map(), paging, filtering);
         }
     }
 }

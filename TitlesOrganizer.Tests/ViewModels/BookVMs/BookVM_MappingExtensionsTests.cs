@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Models;
 
@@ -10,7 +11,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapToBase_BookVM_Book()
         {
-            var authors = new List<AuthorForListVM>()
+            var authors = new List<IForListVM<Author>>()
             {
                 new AuthorForListVM()
                 {
@@ -23,7 +24,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                     Description = "Author2"
                 }
             };
-            var genres = new List<GenreForListVM>()
+            var genres = new List<IForListVM<LiteratureGenre>>()
             {
                 new GenreForListVM()
                 {

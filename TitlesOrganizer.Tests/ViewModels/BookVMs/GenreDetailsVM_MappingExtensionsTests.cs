@@ -11,7 +11,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         {
             // Arrange
             int booksCount = 5, seriesCount = 2, authorsCount = 7;
-            Paging booksPaging = new Paging() { CurrentPage = 1, PageSize = booksCount }, seriesPaging = new Paging() { CurrentPage = 1, PageSize = seriesCount }, authorsPaging = new Paging() { CurrentPage = 1, PageSize = authorsCount };
+            var booksPaging = new Paging() { CurrentPage = 1, PageSize = booksCount };
+            var seriesPaging = new Paging() { CurrentPage = 1, PageSize = seriesCount };
+            var authorsPaging = new Paging() { CurrentPage = 1, PageSize = authorsCount };
             var genre = Helpers.GetGenre();
             var booksQueryable = Helpers.GetBooksList(booksCount).AsQueryable();
             var seriesQueryable = Helpers.GetSeriesList(seriesCount).AsQueryable();
