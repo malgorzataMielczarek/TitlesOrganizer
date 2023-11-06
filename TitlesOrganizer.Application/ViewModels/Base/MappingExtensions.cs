@@ -13,11 +13,7 @@ namespace TitlesOrganizer.Application.ViewModels.Base
         {
             var selectedValues = sortedList.Where(it => it.IsForItem).ToList();
             var notSelectedValues = sortedList.Where(it => !it.IsForItem && it.Description.Contains(filtering.SearchString));
-            paging.Count = notSelectedValues.Count();
-            var limitedList = notSelectedValues
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
+            var limitedList = notSelectedValues.SkipAndTake(ref paging).ToList();
 
             return new TList()
             {
@@ -37,11 +33,7 @@ namespace TitlesOrganizer.Application.ViewModels.Base
             var values = sortedList
                 .Where(it => it.IsForItem || it.Description.Contains(filtering.SearchString))
                 .OrderByDescending(it => it.IsForItem);
-            paging.Count = values.Count();
-            var limitedList = values
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
+            var limitedList = values.SkipAndTake(ref paging).ToList();
 
             return new TList()
             {
@@ -58,11 +50,7 @@ namespace TitlesOrganizer.Application.ViewModels.Base
         {
             var queryable = sortedItems
                 .Where(a => a.Description.Contains(filtering.SearchString));
-            paging.Count = queryable.Count();
-            var limitedList = queryable
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
+            var limitedList = queryable.SkipAndTake(ref paging).ToList();
 
             return new TList()
             {
@@ -75,24 +63,45 @@ namespace TitlesOrganizer.Application.ViewModels.Base
         public static IQueryable<IForListVM<T>> MapToList<T>(this IQueryable<IForListVM<T>> sortedItems, ref Paging paging)
             where T : class, IBaseModel
         {
-            paging.Count = sortedItems.Count();
-            var limitedList = sortedItems
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize);
-
-            return limitedList;
+            return sortedItems.SkipAndTake(ref paging);
         }
 
         public static List<IForListVM<T>> MapToList<T>(this List<IForListVM<T>> sortedItems, ref Paging paging)
             where T : class, IBaseModel
         {
-            paging.Count = sortedItems.Count();
-            var limitedList = sortedItems
-                .Skip(paging.PageSize * (paging.CurrentPage - 1))
-                .Take(paging.PageSize)
-                .ToList();
+            return sortedItems.SkipAndTake(ref paging).ToList();
+        }
 
-            return limitedList;
+        private static IQueryable<T> SkipAndTake<T>(this IQueryable<T> values, ref Paging paging)
+        {
+            if (values?.Any() ?? false)
+            {
+                paging.Count = values.Count();
+                return values.Skip(paging.PageSize * (paging.CurrentPage - 1))
+                .Take(paging.PageSize);
+            }
+            else
+            {
+                paging.CurrentPage = 1;
+                paging.Count = 0;
+                return new List<T>().AsQueryable();
+            }
+        }
+
+        private static IEnumerable<T> SkipAndTake<T>(this IEnumerable<T> values, ref Paging paging)
+        {
+            if (values?.Any() ?? false)
+            {
+                paging.Count = values.Count();
+                return values.Skip(paging.PageSize * (paging.CurrentPage - 1))
+                .Take(paging.PageSize);
+            }
+            else
+            {
+                paging.CurrentPage = 1;
+                paging.Count = 0;
+                return new List<T>();
+            }
         }
     }
 }
