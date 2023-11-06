@@ -36,6 +36,32 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
+        public void Map_IQueryableAuthor_IQueryableIForListVMAuthor()
+        {
+            var authors = Helpers.GetAuthorsList(4).AsQueryable();
+
+            var result = authors.Map();
+
+            result.Should()
+                .NotBeNullOrEmpty().And
+                .BeAssignableTo<IQueryable<IForListVM<Author>>>().And
+                .HaveCount(4);
+        }
+
+        [Fact]
+        public void Map_IEnumerableAuthor_ListIForListVMAuthor()
+        {
+            var authors = Helpers.GetAuthorsList(4).AsEnumerable();
+
+            var result = authors.Map();
+
+            result.Should()
+                .NotBeNullOrEmpty().And
+                .BeAssignableTo<List<IForListVM<Author>>>().And
+                .HaveCount(4);
+        }
+
+        [Fact]
         public void MapToList_IQueryableAuthorAndPaging_IQueryableIForListVMAuthorWithOrderedElements()
         {
             IQueryable<Author> authors = new List<Author>()

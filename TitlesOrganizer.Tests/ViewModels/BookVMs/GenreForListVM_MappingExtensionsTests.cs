@@ -35,6 +35,32 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
+        public void Map_IQueryableLiteratureGenre_IQueryableIForListVMLiteratureGenre()
+        {
+            var genres = Helpers.GetGenresList(4).AsQueryable();
+
+            var result = genres.Map();
+
+            result.Should()
+                .NotBeNullOrEmpty().And
+                .BeAssignableTo<IQueryable<IForListVM<LiteratureGenre>>>().And
+                .HaveCount(4);
+        }
+
+        [Fact]
+        public void Map_IEnumerableLiteratureGenre_ListIForListVMLiteratureGenre()
+        {
+            var genres = Helpers.GetGenresList(4).AsEnumerable();
+
+            var result = genres.Map();
+
+            result.Should()
+                .NotBeNullOrEmpty().And
+                .BeAssignableTo<List<IForListVM<LiteratureGenre>>>().And
+                .HaveCount(4);
+        }
+
+        [Fact]
         public void MapToList_IQueryableLiteratureGenreAndPaging_IQueryableIForListVMLiteratureGenreWithOrderedElements()
         {
             var genres = new List<LiteratureGenre>()
