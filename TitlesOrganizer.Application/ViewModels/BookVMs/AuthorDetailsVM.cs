@@ -20,21 +20,18 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             {
                 Id = author.Id,
                 Title = author.Name + " " + author.LastName,
-                Books = new PartialList<Book>()
-                {
-                    Values = books.MapToList(ref booksPaging).ToList(),
-                    Paging = booksPaging
-                },
-                Series = new PartialList<BookSeries>()
-                {
-                    Values = series.MapToList(ref seriesPaging).ToList(),
-                    Paging = seriesPaging
-                },
-                Genres = new PartialList<LiteratureGenre>()
-                {
-                    Values = genres.MapToList(ref genresPaging).ToList(),
-                    Paging = genresPaging
-                }
+                Books = books.MapToPartialList(booksPaging),
+                Series = series.MapToPartialList(seriesPaging),
+                Genres = genres.MapToPartialList(genresPaging)
+            };
+        }
+
+        public static AuthorDetailsVM MapToDetails(this Author author)
+        {
+            return new AuthorDetailsVM()
+            {
+                Id = author.Id,
+                Title = author.Name + " " + author.LastName
             };
         }
     }

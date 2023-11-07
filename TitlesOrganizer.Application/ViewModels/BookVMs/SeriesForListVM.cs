@@ -68,5 +68,14 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
                 .Map()
                 .MapToList<BookSeries>(ref paging);
         }
+
+        public static IPartialList<BookSeries> MapToPartialList(this IQueryable<BookSeries> series, Paging paging)
+        {
+            return new PartialList<BookSeries>()
+            {
+                Values = series.MapToList(ref paging).ToList(),
+                Paging = paging
+            };
+        }
     }
 }
