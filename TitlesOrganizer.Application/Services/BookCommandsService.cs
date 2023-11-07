@@ -93,5 +93,23 @@ namespace TitlesOrganizer.Application.Services
         {
             return book.MapToBase(_mapper);
         }
+
+        protected virtual BookVM Map(Book book)
+        {
+            return book.MapFromBase(_mapper);
+        }
+
+        protected virtual BookDetailsVM MapToDetails(Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series, IQueryable<Book>? booksInSeries)
+        {
+            return book.MapToDetails(language, authors, genres, series, booksInSeries);
+        }
+
+        protected virtual ListBookForListVM MapToList(IQueryable<Book> books, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return books.MapToList(
+                new Paging() { CurrentPage = pageNo, PageSize = pageSize },
+                new Filtering() { SortBy = sortBy, SearchString = searchString }
+                );
+        }
     }
 }

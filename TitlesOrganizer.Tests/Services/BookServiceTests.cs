@@ -4,8 +4,10 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using TitlesOrganizer.Application.Services;
+using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.ViewModels.BookVMs;
 
 namespace TitlesOrganizer.Tests.Services
 {
@@ -47,6 +49,25 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.Verify(r => r.Delete(book), Times.Never);
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Get_ExistingBookId()
+        {
+            Book book = Helpers.GetBook(1);
+            var commandsRepo = new Mock<IBookCommandsRepository>();
+            var queriesRepo = new Mock<IBookModuleQueriesRepository>();
+            queriesRepo.Setup(r => r.GetBookWithAllRelatedObjects(book.Id)).Returns(book);
+            IMapper mapper = new Mock<IMapper>().Object;
+
+            var service = new BookServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            var result = service.Get(book.Id);
+
+            queriesRepo.Verify(r => r.GetBookWithAllRelatedObjects(book.Id), Times.Once());
+            queriesRepo.VerifyNoOtherCalls();
+            commandsRepo.VerifyNoOtherCalls();
+            result.Should().NotBeNull().And.BeOfType<BookVM>();
+            result.Id.Should().Be(book.Id);
         }
 
         [Fact]
@@ -442,6 +463,30 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.Verify(r => r.UpdateBookSeriesRelation(It.IsAny<Book>()), Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+        }
+    }
+
+    public class BookServiceForTest : BookCommandsService
+    {
+        public BookServiceForTest(IBookCommandsRepository bookCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper) : base(bookCommandsRepository, bookModuleQueriesRepository, mapper)
+        {
+        }
+
+        protected override Book Map(BookVM book)
+        {
+            return new Book()
+            {
+                Id = book.Id,
+                Title = book.Title
+            };
+        }
+
+        protected override BookVM Map(Book book)
+        {
+            return new BookVM()
+            {
+                Id = book.Id
+            };
         }
     }
 }
