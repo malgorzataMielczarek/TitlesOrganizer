@@ -10,24 +10,24 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
     public class BookDetailsVM : BaseDetailsVM<Book>, IDetailsVM<Book>
     {
         [ScaffoldColumn(false)]
-        public string InSeries { get; set; } = null!;
+        public string InSeries { get; set; } = string.Empty;
 
         [ScaffoldColumn(false)]
         public SeriesForListVM? Series { get; set; }
 
         public List<IForListVM<Author>> Authors { get; set; } = new List<IForListVM<Author>>();
 
-        public string Description { get; set; } = null!;
+        public string Description { get; set; } = string.Empty;
 
         [DisplayName("Original title")]
-        public string OriginalTitle { get; set; } = null!;
+        public string OriginalTitle { get; set; } = string.Empty;
 
         [DisplayName("Original language")]
-        public string OriginalLanguage { get; set; } = null!;
+        public string OriginalLanguage { get; set; } = string.Empty;
 
-        public string Year { get; set; } = null!;
+        public string Year { get; set; } = string.Empty;
 
-        public string Edition { get; set; } = null!;
+        public string Edition { get; set; } = string.Empty;
 
         public List<IForListVM<LiteratureGenre>> Genres { get; set; } = new List<IForListVM<LiteratureGenre>>();
     }

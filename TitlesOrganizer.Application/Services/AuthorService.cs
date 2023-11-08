@@ -120,7 +120,7 @@ namespace TitlesOrganizer.Application.Services
             if (genre != null && genre.Books != null && genre.Books.Any())
             {
                 var authors = _queries.GetAllAuthorsWithBooks()
-                    .Where(a => a.Books.Any(b => genre.Books.Contains(b)));
+                    .Where(a => a.Books.Any(b => genre.Books.Any(gb => gb.Id == b.Id)));
                 return MapToPartialList(authors, pageSize, pageNo);
             }
             else
