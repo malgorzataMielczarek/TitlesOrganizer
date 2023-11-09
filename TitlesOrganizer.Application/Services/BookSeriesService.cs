@@ -26,52 +26,217 @@ namespace TitlesOrganizer.Application.Services
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var series = _queries.GetBookSeries(id);
+            if (series != null)
+            {
+                _commands.Delete(series);
+            }
         }
 
         public SeriesVM Get(int id, int booksPageSize, int booksPageNo)
         {
-            throw new NotImplementedException();
+            var series = _queries.GetBookSeriesWithBooks(id);
+            if (series != null)
+            {
+                return Map(series, booksPageSize, booksPageNo);
+            }
+            else
+            {
+                return new SeriesVM()
+                {
+                    Books = new PartialList<Book>()
+                    {
+                        Paging = new Paging(booksPageSize)
+                    }
+                };
+            }
         }
 
         public SeriesDetailsVM GetDetails(int id, int booksPageSize, int booksPageNo)
         {
-            throw new NotImplementedException();
+            var series = _queries.GetBookSeries(id);
+            if (series != null)
+            {
+                var books = _queries.GetAllBooksWithAllRelatedObjects()
+                    .Where(b => b.SeriesId == id);
+                var authors = books.SelectMany(b => b.Authors).Distinct();
+                var genres = books.SelectMany(b => b.Genres).Distinct();
+                return MapToDetails(series, books, booksPageSize, booksPageNo, authors, genres);
+            }
+            else
+            {
+                return new SeriesDetailsVM()
+                {
+                    Books = new PartialList<Book>()
+                    {
+                        Paging = new Paging(booksPageSize)
+                    }
+                };
+            }
         }
 
         public ListSeriesForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
-            throw new NotImplementedException();
+            var series = _queries.GetAllBookSeries();
+            return MapToList(series, sortBy, pageSize, pageNo, searchString ?? string.Empty);
         }
 
         public ListSeriesForBookVM GetListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
-            throw new NotImplementedException();
+            var book = _queries.GetBook(bookId) ?? new Book() { Title = string.Empty };
+            var series = _queries.GetAllBookSeriesWithBooks();
+
+            return MapForBook(series, book, sortBy, pageSize, pageNo, searchString ?? string.Empty);
         }
 
         public PartialList<BookSeries> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
         {
-            throw new NotImplementedException();
+            var author = _queries.GetAuthor(authorId);
+            if (author != null)
+            {
+                var series = _queries.GetAllBooksWithAllRelatedObjects()
+                    .Where(b => b.Authors.Any(a => a.Id == authorId)
+                    && b.Series != null)
+                    .Select(b => b.Series!)
+                    .Distinct();
+                return MapToPartialList(series, pageSize, pageNo);
+            }
+            else
+            {
+                return new PartialList<BookSeries>()
+                {
+                    Paging = new Paging(pageSize)
+                };
+            }
         }
 
         public PartialList<BookSeries> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
         {
-            throw new NotImplementedException();
+            var genre = _queries.GetLiteratureGenre(genreId);
+            if (genre != null)
+            {
+                var series = _queries.GetAllBooksWithAllRelatedObjects()
+                    .Where(b => b.Genres.Any(a => a.Id == genreId)
+                    && b.Series != null)
+                    .Select(b => b.Series!)
+                    .Distinct();
+                return MapToPartialList(series, pageSize, pageNo);
+            }
+            else
+            {
+                return new PartialList<BookSeries>()
+                {
+                    Paging = new Paging(pageSize)
+                };
+            }
         }
 
-        public void SelectBooks(int seriesId, List<int> booksIds)
+        public void SelectBooks(int seriesId, List<int> selectedIds)
         {
-            throw new NotImplementedException();
+            var series = _queries.GetBookSeries(seriesId);
+
+            if (series != null)
+            {
+                var books = new List<Book>();
+                foreach (var id in selectedIds)
+                {
+                    var book = _queries.GetBook(id);
+                    if (book != null)
+                    {
+                        books.Add(book);
+                    }
+                }
+
+                series.Books = books;
+                _commands.UpdateBookSeriesBooksRelation(series);
+            }
         }
 
         public int Upsert(SeriesVM series)
         {
-            throw new NotImplementedException();
+            var entity = Map(series);
+            if (entity != null)
+            {
+                if (entity.Id == default)
+                {
+                    return _commands.Insert(entity);
+                }
+                else
+                {
+                    _commands.Update(entity);
+                    return entity.Id;
+                }
+            }
+
+            return -1;
         }
 
         protected virtual BookSeries Map(SeriesVM series)
         {
             return series.MapToBase(_mapper);
+        }
+
+        protected virtual SeriesVM Map(BookSeries seriesWithBooks, int bookPageSize, int bookPageNo)
+        {
+            return seriesWithBooks.MapFromBase(_mapper, new Paging()
+            {
+                CurrentPage = bookPageNo,
+                PageSize = bookPageSize
+            });
+        }
+
+        protected virtual SeriesDetailsVM MapToDetails(BookSeries series, IQueryable<Book> books, int bookPageSize, int bookPageNo, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres)
+        {
+            return series.MapToDetails(
+                books,
+                new Paging()
+                {
+                    CurrentPage = bookPageNo,
+                    PageSize = bookPageSize
+                },
+                authors,
+                genres);
+        }
+
+        protected virtual ListSeriesForListVM MapToList(IQueryable<BookSeries> series, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return series.MapToList(
+                new Paging()
+                {
+                    CurrentPage = pageNo,
+                    PageSize = pageSize
+                },
+                new Filtering()
+                {
+                    SearchString = searchString,
+                    SortBy = sortBy
+                });
+        }
+
+        protected virtual ListSeriesForBookVM MapForBook(IQueryable<BookSeries> series, Book book, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return series.MapForItemToList(
+                book,
+                new Paging()
+                {
+                    CurrentPage = pageNo,
+                    PageSize = pageSize
+                },
+                new Filtering()
+                {
+                    SearchString = searchString,
+                    SortBy = sortBy
+                });
+        }
+
+        protected virtual PartialList<BookSeries> MapToPartialList(IQueryable<BookSeries> series, int pageSize, int pageNo)
+        {
+            return (PartialList<BookSeries>)series.MapToPartialList(
+                new Paging()
+                {
+                    CurrentPage = pageNo,
+                    PageSize = pageSize
+                });
         }
     }
 }
