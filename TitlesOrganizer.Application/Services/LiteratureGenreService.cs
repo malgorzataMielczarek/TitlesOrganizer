@@ -68,5 +68,91 @@ namespace TitlesOrganizer.Application.Services
         {
             return genre.MapToBase(_mapper);
         }
+
+        protected virtual GenreVM Map(LiteratureGenre genreWithBooks, int booksPageSize, int booksPageNo)
+        {
+            return genreWithBooks.MapFromBase(
+                _mapper,
+                new Paging()
+                {
+                    CurrentPage = booksPageNo,
+                    PageSize = booksPageSize
+                });
+        }
+
+        protected virtual GenreDetailsVM MapToDetails(LiteratureGenre genre)
+        {
+            return genre.MapToDetails();
+        }
+
+        protected virtual GenreDetailsVM MapGenreDetailsAuthors(GenreDetailsVM genreDetails, IQueryable<Author> authors, int pageSize, int pageNo)
+        {
+            genreDetails.Authors = authors.MapToPartialList(new Paging()
+            {
+                CurrentPage = pageNo,
+                PageSize = pageSize
+            });
+
+            return genreDetails;
+        }
+
+        protected virtual GenreDetailsVM MapGenreDetailsBooks(GenreDetailsVM genreDetails, IQueryable<Book> books, int pageSize, int pageNo)
+        {
+            genreDetails.Books = books.MapToPartialList(new Paging()
+            {
+                CurrentPage = pageNo,
+                PageSize = pageSize
+            });
+
+            return genreDetails;
+        }
+
+        protected virtual GenreDetailsVM MapGenreDetailsSeries(GenreDetailsVM genreDetails, IQueryable<BookSeries> series, int pageSize, int pageNo)
+        {
+            genreDetails.Series = series.MapToPartialList(new Paging()
+            {
+                CurrentPage = pageNo,
+                PageSize = pageSize
+            });
+
+            return genreDetails;
+        }
+
+        protected virtual ListGenreForListVM MapToList(IQueryable<LiteratureGenre> genres, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return genres.MapToList(
+                new Paging()
+                {
+                    CurrentPage = pageNo,
+                    PageSize = pageSize
+                },
+                new Filtering()
+                {
+                    SearchString = searchString,
+                    SortBy = sortBy
+                });
+        }
+
+        protected virtual ListGenreForBookVM MapForBook(IQueryable<LiteratureGenre> genresWithBooks, Book book, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return genresWithBooks.MapForItemToList(
+                book,
+                new Paging()
+                {
+                    CurrentPage = pageNo,
+                    PageSize = pageSize
+                },
+                new Filtering()
+                {
+                    SearchString = searchString,
+                    SortBy = sortBy
+                });
+        }
+
+        protected virtual PartialList<LiteratureGenre> MapToPartialList(IQueryable<LiteratureGenre> genres, int pageSize, int pageNo)
+        {
+            return (PartialList<LiteratureGenre>)genres.MapToPartialList(
+                new Paging() { CurrentPage = pageNo, PageSize = pageSize });
+        }
     }
 }
