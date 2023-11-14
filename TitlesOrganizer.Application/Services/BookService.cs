@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: Upsert
 
 using AutoMapper;
+using TitlesOrganizer.Application.Interfaces;
 using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
@@ -9,7 +10,7 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class BookService
+    public class BookService : IBookService
     {
         private readonly IBookCommandsRepository _commands;
         private readonly IBookModuleQueriesRepository _queries;
