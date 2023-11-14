@@ -14,7 +14,6 @@ namespace TitlesOrganizer.Infrastructure
                 .AddTransient<ILiteratureGenreCommandsRepository, LiteratureGenreCommandsRepository>()
                 .AddTransient<IBookModuleQueriesRepository, BookModuleQueriesRepository>()
                 .AddTransient<ILanguageRepository, LanguageRepository>();
-            //.AddTransient<IBookRepository, BookRepository>()
             //.AddTransient<ICountryRepository, CountryRepository>()
             //.AddTransient<IMovieRepository, MovieRepository>()
             //.AddTransient<ITvSeriesRepository, TvSeriesRepository>();

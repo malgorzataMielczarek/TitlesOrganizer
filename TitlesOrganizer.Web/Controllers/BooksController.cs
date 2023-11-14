@@ -16,14 +16,14 @@ namespace TitlesOrganizer.Web.Controllers
         private const int PAGE_SIZE = 10;
         private const int SMALL_PAGE_SIZE = 5;
         private readonly IAuthorService _authorService;
-        private readonly IBookCommandsService _bookService;
+        private readonly IBookService _bookService;
         private readonly IBookSeriesService _seriesService;
         private readonly ILiteratureGenreService _genreService;
         private readonly IValidator<BookVM> _bookValidator;
         private readonly ILanguageService _languageService;
         private readonly ILogger<BooksController> _logger;
 
-        public BooksController(ILogger<BooksController> logger, IAuthorService authorService, IBookCommandsService bookService, IBookSeriesService bookSeriesService, ILiteratureGenreService literatureGenreService, ILanguageService languageService, IValidator<BookVM> bookValidator)
+        public BooksController(ILogger<BooksController> logger, IAuthorService authorService, IBookService bookService, IBookSeriesService bookSeriesService, ILiteratureGenreService literatureGenreService, ILanguageService languageService, IValidator<BookVM> bookValidator)
         {
             _logger = logger;
             _authorService = authorService;

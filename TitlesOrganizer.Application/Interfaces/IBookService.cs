@@ -5,7 +5,7 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Interfaces
 {
-    public interface IBookCommandsService
+    public interface IBookService
     {
         void Delete(int id);
 

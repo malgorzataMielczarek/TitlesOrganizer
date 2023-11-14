@@ -13,7 +13,7 @@ namespace TitlesOrganizer.Application
         {
             // Services
             services.AddTransient<IAuthorService, AuthorService>()
-                .AddTransient<IBookCommandsService, BookCommandsService>()
+                .AddTransient<IBookService, BookService>()
                 .AddTransient<IBookSeriesService, BookSeriesService>()
                 .AddTransient<ILiteratureGenreService, LiteratureGenreService>()
                 .AddTransient<ILanguageService, LanguageService>();

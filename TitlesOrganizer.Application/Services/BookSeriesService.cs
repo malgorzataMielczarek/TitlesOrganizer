@@ -42,13 +42,7 @@ namespace TitlesOrganizer.Application.Services
             }
             else
             {
-                return new SeriesVM()
-                {
-                    Books = new PartialList<Book>()
-                    {
-                        Paging = new Paging(booksPageSize)
-                    }
-                };
+                return new SeriesVM() { Books = new PartialList<Book>(booksPageSize) };
             }
         }
 
@@ -59,19 +53,15 @@ namespace TitlesOrganizer.Application.Services
             {
                 var books = _queries.GetAllBooksWithAllRelatedObjects()
                     .Where(b => b.SeriesId == id);
-                var authors = books.SelectMany(b => b.Authors).Distinct();
-                var genres = books.SelectMany(b => b.Genres).Distinct();
+                var authors = books.SelectMany(b => b.Authors)
+                    .DistinctBy(a => a.Id);
+                var genres = books.SelectMany(b => b.Genres)
+                    .DistinctBy(g => g.Id);
                 return MapToDetails(series, books, booksPageSize, booksPageNo, authors, genres);
             }
             else
             {
-                return new SeriesDetailsVM()
-                {
-                    Books = new PartialList<Book>()
-                    {
-                        Paging = new Paging(booksPageSize)
-                    }
-                };
+                return new SeriesDetailsVM() { Books = new PartialList<Book>(booksPageSize) };
             }
         }
 
@@ -98,15 +88,12 @@ namespace TitlesOrganizer.Application.Services
                     .Where(b => b.Authors.Any(a => a.Id == authorId)
                     && b.Series != null)
                     .Select(b => b.Series!)
-                    .Distinct();
+                    .DistinctBy(s => s.Id);
                 return MapToPartialList(series, pageSize, pageNo);
             }
             else
             {
-                return new PartialList<BookSeries>()
-                {
-                    Paging = new Paging(pageSize)
-                };
+                return new PartialList<BookSeries>(pageSize);
             }
         }
 
@@ -119,15 +106,12 @@ namespace TitlesOrganizer.Application.Services
                     .Where(b => b.Genres.Any(a => a.Id == genreId)
                     && b.Series != null)
                     .Select(b => b.Series!)
-                    .Distinct();
+                    .DistinctBy(s => s.Id);
                 return MapToPartialList(series, pageSize, pageNo);
             }
             else
             {
-                return new PartialList<BookSeries>()
-                {
-                    Paging = new Paging(pageSize)
-                };
+                return new PartialList<BookSeries>(pageSize);
             }
         }
 

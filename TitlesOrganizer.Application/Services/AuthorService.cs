@@ -46,10 +46,7 @@ namespace TitlesOrganizer.Application.Services
             {
                 return new AuthorVM()
                 {
-                    Books = new PartialList<Book>()
-                    {
-                        Paging = new Paging(bookPageSize)
-                    }
+                    Books = new PartialList<Book>(bookPageSize)
                 };
             }
         }
@@ -63,8 +60,10 @@ namespace TitlesOrganizer.Application.Services
                 var books = _queries.GetAllBooksWithAllRelatedObjects()
                     .Where(b => b.Authors.Any(a => a.Id == id));
                 var series = books.Where(b => b.Series != null)
-                    .Select(b => b.Series!).Distinct();
-                var genres = books.SelectMany(b => b.Genres).Distinct();
+                    .Select(b => b.Series!)
+                    .DistinctBy(s => s.Id);
+                var genres = books.SelectMany(b => b.Genres)
+                    .DistinctBy(g => g.Id);
                 var authorDetails = MapToDetails(author);
                 authorDetails = MapAuthorDetailsBooks(
                     authorDetails,
@@ -83,18 +82,9 @@ namespace TitlesOrganizer.Application.Services
             {
                 return new AuthorDetailsVM
                 {
-                    Books = new PartialList<Book>()
-                    {
-                        Paging = new Paging(booksPageSize)
-                    },
-                    Series = new PartialList<BookSeries>()
-                    {
-                        Paging = new Paging(seriesPageSize)
-                    },
-                    Genres = new PartialList<LiteratureGenre>()
-                    {
-                        Paging = new Paging(genresPageSize)
-                    }
+                    Books = new PartialList<Book>(booksPageSize),
+                    Series = new PartialList<BookSeries>(seriesPageSize),
+                    Genres = new PartialList<LiteratureGenre>(genresPageSize)
                 };
             }
         }
@@ -125,10 +115,7 @@ namespace TitlesOrganizer.Application.Services
             }
             else
             {
-                return new PartialList<Author>()
-                {
-                    Paging = new Paging(pageSize)
-                };
+                return new PartialList<Author>(pageSize);
             }
         }
 

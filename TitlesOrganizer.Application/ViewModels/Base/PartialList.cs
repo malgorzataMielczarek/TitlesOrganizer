@@ -6,8 +6,19 @@ namespace TitlesOrganizer.Application.ViewModels.Base
 {
     public class PartialList<T> : IPartialList<T> where T : class, IBaseModel
     {
-        public List<IForListVM<T>> Values { get; set; } = new List<IForListVM<T>>();
+        public List<IForListVM<T>> Values { get; set; }
+        public Paging Paging { get; set; }
 
-        public Paging Paging { get; set; } = new Paging();
+        public PartialList()
+        {
+            Values = new List<IForListVM<T>>();
+            Paging = new Paging();
+        }
+
+        public PartialList(int pageSize)
+        {
+            Values = new List<IForListVM<T>>();
+            Paging = new Paging(pageSize);
+        }
     }
 }

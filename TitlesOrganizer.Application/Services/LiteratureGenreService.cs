@@ -26,42 +26,135 @@ namespace TitlesOrganizer.Application.Services
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var genre = _queries.GetLiteratureGenre(id);
+
+            if (genre != null)
+            {
+                _commands.Delete(genre);
+            }
         }
 
         public GenreVM Get(int id, int booksPageSize, int booksPageNo)
         {
-            throw new NotImplementedException();
+            var genre = _queries.GetLiteratureGenreWithBooks(id);
+
+            if (genre != null)
+            {
+                return Map(genre, booksPageSize, booksPageNo);
+            }
+            else
+            {
+                return new GenreVM()
+                {
+                    Name = string.Empty,
+                    Books = new PartialList<Book>(booksPageSize)
+                };
+            }
         }
 
         public GenreDetailsVM GetDetails(int id, int booksPageSize, int booksPageNo, int authorsPageSize, int authorsPageNo, int seriesPageSize, int seriesPageNo)
         {
-            throw new NotImplementedException();
+            var genre = _queries.GetLiteratureGenre(id);
+
+            if (genre != null)
+            {
+                var books = _queries.GetAllBooksWithAllRelatedObjects()
+                    .Where(b => b.Genres.Any(g => g.Id == id));
+                var authors = books.SelectMany(b => b.Authors)
+                    .DistinctBy(a => a.Id);
+                var series = books.Where(b => b.Series != null)
+                    .Select(b => b.Series!)
+                    .DistinctBy(s => s.Id);
+                var genreDetails = MapToDetails(genre);
+                genreDetails = MapGenreDetailsAuthors(genreDetails, authors, authorsPageSize, authorsPageNo);
+                genreDetails = MapGenreDetailsBooks(genreDetails, books, booksPageSize, booksPageNo);
+                return MapGenreDetailsSeries(genreDetails, series, seriesPageSize, seriesPageNo);
+            }
+            else
+            {
+                return new GenreDetailsVM()
+                {
+                    Authors = new PartialList<Author>(authorsPageSize),
+                    Books = new PartialList<Book>(booksPageSize),
+                    Series = new PartialList<BookSeries>(seriesPageSize)
+                };
+            }
         }
 
         public ListGenreForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
-            throw new NotImplementedException();
+            var genres = _queries.GetAllLiteratureGenres();
+
+            return MapToList(genres, sortBy, pageSize, pageNo, searchString ?? string.Empty);
         }
 
         public ListGenreForBookVM GetListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
-            throw new NotImplementedException();
+            var genres = _queries.GetAllLiteratureGenresWithBooks();
+            var book = _queries.GetBook(bookId) ?? new Book() { Title = string.Empty };
+
+            return MapForBook(genres, book, sortBy, pageSize, pageNo, searchString ?? string.Empty);
         }
 
         public PartialList<LiteratureGenre> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
         {
-            throw new NotImplementedException();
+            var author = _queries.GetAuthor(authorId);
+
+            if (author != null)
+            {
+                var genres = _queries.GetAllBooksWithAllRelatedObjects()
+                .Where(b => b.Authors.Any(a => a.Id == authorId))
+                .SelectMany(b => b.Genres)
+                .DistinctBy(g => g.Id);
+
+                return MapToPartialList(genres, pageSize, pageNo);
+            }
+            else
+            {
+                return new PartialList<LiteratureGenre>(pageSize);
+            }
         }
 
         public void SelectBooks(int genreId, List<int> booksIds)
         {
-            throw new NotImplementedException();
+            var genre = _queries.GetLiteratureGenre(genreId);
+
+            if (genre != null)
+            {
+                var books = new List<Book>();
+                foreach (var id in booksIds)
+                {
+                    var book = _queries.GetBook(id);
+                    if (book != null)
+                    {
+                        books.Add(book);
+                    }
+                }
+
+                genre.Books = books;
+                _commands.UpdateLiteratureGenreBooksRelation(genre);
+            }
         }
 
         public int Upsert(GenreVM genre)
         {
-            throw new NotImplementedException();
+            var entity = Map(genre);
+
+            if (entity != null)
+            {
+                if (entity.Id == default)
+                {
+                    return _commands.Insert(entity);
+                }
+                else
+                {
+                    _commands.Update(entity);
+
+                    return entity.Id;
+                }
+            }
+
+            return -1;
         }
 
         protected virtual LiteratureGenre Map(GenreVM genre)

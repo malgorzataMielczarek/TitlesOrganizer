@@ -1056,7 +1056,7 @@ namespace TitlesOrganizer.Tests.Services
             IMapper mapper = new Mock<IMapper>().Object;
             var lang = new Mock<ILanguageRepository>().Object;
 
-            var service = new BookCommandsService(commandsRepo.Object, queriesRepo.Object, lang, mapper);
+            var service = new BookService(commandsRepo.Object, queriesRepo.Object, lang, mapper);
             service.SelectGenres(bookId, genresIds);
 
             queriesRepo.Verify(r => r.GetBook(bookId), Times.Once());
@@ -1255,7 +1255,7 @@ namespace TitlesOrganizer.Tests.Services
         }
     }
 
-    internal class BookServiceForTest : BookCommandsService
+    internal class BookServiceForTest : BookService
     {
         public IQueryable<Author>? Authors { get; private set; }
         public IQueryable<Book>? Books { get; private set; }

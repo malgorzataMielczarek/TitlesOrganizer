@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: Upsert
 
 using AutoMapper;
+using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
@@ -10,205 +11,271 @@ namespace TitlesOrganizer.Application.Services
 {
     public class BookService
     {
-        private readonly IBookRepository _bookRepository;
+        private readonly IBookCommandsRepository _commands;
+        private readonly IBookModuleQueriesRepository _queries;
+        private readonly ILanguageRepository _language;
+
         private readonly IMapper _mapper;
 
-        public BookService(IBookRepository bookRepository, IMapper mapper)
+        public BookService(IBookCommandsRepository bookCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, ILanguageRepository languageRepository, IMapper mapper)
         {
-            _bookRepository = bookRepository;
+            _commands = bookCommandsRepository;
+            _queries = bookModuleQueriesRepository;
             _mapper = mapper;
+            _language = languageRepository;
         }
 
-        public int AddAuthor(AuthorVM author)
+        public void Delete(int id)
         {
-            return _bookRepository.AddNewAuthor(author.Books.Values.FirstOrDefault()?.Id ?? 0, author.MapToBase(_mapper));
-        }
+            var book = _queries.GetBook(id);
 
-        public void SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
-        {
-            Book? book = _bookRepository.GetBookById(listAuthorForBook.Item.Id);
-            if (book == null)
+            if (book != null)
             {
-                return;
+                _commands.Delete(book);
             }
+        }
 
-            var selectedIds = listAuthorForBook.SelectedValues.Select(a => a.Id).ToList();
-            // Compare lists in case JavaScript function didn't work
-            foreach (var author in listAuthorForBook.Values)
+        public BookVM Get(int id)
+        {
+            var book = _queries.GetBookWithAllRelatedObjects(id);
+
+            if (book != null)
             {
-                if (author.IsForItem)
+                return Map(book);
+            }
+            else
+            {
+                return new BookVM();
+            }
+        }
+
+        public BookDetailsVM GetDetails(int id)
+        {
+            var book = _queries.GetBook(id);
+
+            if (book != null)
+            {
+                var authors = _queries.GetAllAuthorsWithBooks()
+                    .Where(a => a.Books.Any(b => b.Id == id));
+                var genres = _queries.GetAllLiteratureGenresWithBooks()
+                    .Where(g => g.Books != null && g.Books.Any(b => b.Id == id));
+                BookSeries? series = null;
+                if (book.SeriesId != null)
                 {
-                    if (!selectedIds.Contains(author.Id))
+                    series = _queries.GetBookSeriesWithBooks(book.SeriesId.Value);
+                }
+
+                Language? language = null;
+                if (book.OriginalLanguageCode != null)
+                {
+                    language = _language.GetAllLanguages().FirstOrDefault(l => l.Code == book.OriginalLanguageCode);
+                }
+
+                return MapToDetails(book, language, authors, genres, series, series?.Books.AsQueryable());
+            }
+            else
+            {
+                return new BookDetailsVM();
+            }
+        }
+
+        public ListBookForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        {
+            var books = _queries.GetAllBooks();
+
+            return MapToList(books, sortBy, pageSize, pageNo, searchString ?? string.Empty);
+        }
+
+        public ListBookForAuthorVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        {
+            var books = _queries.GetAllBooksWithAllRelatedObjects();
+            var author = _queries.GetAuthor(authorId) ?? new Author();
+
+            return MapForAuthor(books, author, sortBy, pageSize, pageNo, searchString ?? string.Empty);
+        }
+
+        public ListBookForGenreVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        {
+            var books = _queries.GetAllBooksWithAllRelatedObjects();
+            var genre = _queries.GetLiteratureGenre(genreId) ?? new LiteratureGenre() { Name = string.Empty };
+
+            return MapForGenre(books, genre, sortBy, pageSize, pageNo, searchString ?? string.Empty);
+        }
+
+        public ListBookForSeriesVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        {
+            var books = _queries.GetAllBooks();
+            var series = _queries.GetBookSeries(seriesId) ?? new BookSeries() { Title = string.Empty };
+
+            return MapForSeries(books, series, sortBy, pageSize, pageNo, searchString ?? string.Empty);
+        }
+
+        public PartialList<Book> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
+        {
+            var author = _queries.GetAuthorWithBooks(authorId);
+
+            if (author == null)
+            {
+                return new PartialList<Book>(pageSize);
+            }
+            else
+            {
+                return MapToPartialList(author.Books, pageSize, pageNo);
+            }
+        }
+
+        public PartialList<Book> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
+        {
+            var genre = _queries.GetLiteratureGenreWithBooks(genreId);
+
+            if (genre == null || genre.Books == null)
+            {
+                return new PartialList<Book>(pageSize); ;
+            }
+            else
+            {
+                return MapToPartialList(genre.Books, pageSize, pageNo);
+            }
+        }
+
+        public void SelectAuthors(int bookId, List<int> selectedIds)
+        {
+            var book = _queries.GetBook(bookId);
+
+            if (book != null)
+            {
+                var authors = new List<Author>();
+                foreach (var id in selectedIds)
+                {
+                    var author = _queries.GetAuthor(id);
+                    if (author != null)
                     {
-                        selectedIds.Add(author.Id);
+                        authors.Add(author);
                     }
+                }
+
+                book.Authors = authors;
+                _commands.UpdateBookAuthorsRelation(book);
+            }
+        }
+
+        public void SelectGenres(int bookId, List<int> selectedIds)
+        {
+            var book = _queries.GetBook(bookId);
+
+            if (book != null)
+            {
+                var genres = new List<LiteratureGenre>();
+                foreach (var id in selectedIds)
+                {
+                    var genre = _queries.GetLiteratureGenre(id);
+                    if (genre != null)
+                    {
+                        genres.Add(genre);
+                    }
+                }
+
+                book.Genres = genres;
+                _commands.UpdateBookGenresRelation(book);
+            }
+        }
+
+        public void SelectSeries(int bookId, int? selectedId)
+        {
+            var book = _queries.GetBook(bookId);
+
+            if (book != null)
+            {
+                BookSeries? series = null;
+                if (selectedId.HasValue)
+                {
+                    series = _queries.GetBookSeries(selectedId.Value);
+                }
+
+                book.Series = series;
+                book.SeriesId = series?.Id;
+                _commands.UpdateBookSeriesRelation(book);
+            }
+        }
+
+        public int Upsert(BookVM book)
+        {
+            var entity = Map(book);
+
+            if (entity != null)
+            {
+                if (entity.Id == default)
+                {
+                    return _commands.Insert(entity);
                 }
                 else
                 {
-                    if (selectedIds.Contains(author.Id))
-                    {
-                        selectedIds.Remove(author.Id);
-                    }
+                    _commands.Update(entity);
+                    return entity.Id;
                 }
             }
 
-            // Update list of selected authors
-            foreach (var author in book.Authors.ToList())
-            {
-                if (selectedIds.Contains(author.Id))
+            return -1;
+        }
+
+        protected virtual Book Map(BookVM book)
+        {
+            return book.MapToBase(_mapper);
+        }
+
+        protected virtual BookVM Map(Book bookWithRelatedObjects)
+        {
+            return bookWithRelatedObjects.MapFromBase(_mapper);
+        }
+
+        protected virtual BookDetailsVM MapToDetails(Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series, IQueryable<Book>? booksInSeries)
+        {
+            return book.MapToDetails(language, authors, genres, series, booksInSeries);
+        }
+
+        protected virtual ListBookForListVM MapToList(IQueryable<Book> books, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return books.MapToList(
+                new Paging() { CurrentPage = pageNo, PageSize = pageSize },
+                new Filtering() { SortBy = sortBy, SearchString = searchString }
+                );
+        }
+
+        protected virtual ListBookForAuthorVM MapForAuthor(IQueryable<Book> books, Author author, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return books.MapForItemToList(
+                author,
+                new Paging() { CurrentPage = pageNo, PageSize = pageSize },
+                new Filtering() { SortBy = sortBy, SearchString = searchString }
+                );
+        }
+
+        protected virtual ListBookForGenreVM MapForGenre(IQueryable<Book> books, LiteratureGenre genre, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return books.MapForItemToList(
+                genre,
+                new Paging() { CurrentPage = pageNo, PageSize = pageSize },
+                new Filtering() { SortBy = sortBy, SearchString = searchString }
+                );
+        }
+
+        protected virtual ListBookForSeriesVM MapForSeries(IQueryable<Book> books, BookSeries series, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
+        {
+            return books.MapForItemToList(
+                series,
+                new Paging() { CurrentPage = pageNo, PageSize = pageSize },
+                new Filtering() { SortBy = sortBy, SearchString = searchString }
+                );
+        }
+
+        protected virtual PartialList<Book> MapToPartialList(ICollection<Book> books, int pageSize, int pageNo)
+        {
+            return (PartialList<Book>)books.AsQueryable().MapToPartialList(
+                new Paging()
                 {
-                    selectedIds.Remove(author.Id);
-                }
-                else
-                {
-                    book.Authors.Remove(author);
-                }
-            }
-
-            foreach (var authorId in selectedIds)
-            {
-                Author? author = _bookRepository.GetAuthorById(authorId);
-                if (author != null)
-                {
-                    book.Authors.Add(author);
-                }
-            }
-
-            _bookRepository.UpdateAuthorsOfBook(book);
+                    CurrentPage = pageNo,
+                    PageSize = pageSize
+                });
         }
-
-        public int UpsertBook(BookVM book)
-        {
-            if (book == null || string.IsNullOrWhiteSpace(book.Title))
-            {
-                return default;
-            }
-
-            return _bookRepository.UpsertBook(book.MapToBase(_mapper));
-        }
-
-        public int AddGenre(GenreVM genre)
-        {
-            return AddGenre(default, genre);
-        }
-
-        public int AddGenre(int bookId, GenreVM genre)
-        {
-            return _bookRepository.AddNewGenre(bookId, genre.MapToBase(_mapper));
-        }
-
-        public void AddGenresForBook(int bookId, List<int> genresIds)
-        {
-            foreach (int genreId in genresIds)
-            {
-                _bookRepository.AddExistingGenre(bookId, genreId);
-            }
-
-            var genresToRemoveIds = _bookRepository.GetBookById(bookId)?.Genres.Select(g => g.Id).SkipWhile(id => genresIds.Contains(id));
-            if (genresToRemoveIds?.Any() ?? false)
-            {
-                foreach (var genreId in genresToRemoveIds)
-                {
-                    _bookRepository.RemoveGenre(bookId, genreId);
-                }
-            }
-        }
-
-        public int AddNewSeries(SeriesVM newSeries)
-        {
-            return _bookRepository.AddNewSeries(newSeries.Books.Values.FirstOrDefault()?.Id ?? 0, newSeries.MapToBase(_mapper));
-        }
-
-        public void AddSeriesForBook(int bookId, int seriesId)
-        {
-            _bookRepository.AddExistingSeries(bookId, seriesId);
-        }
-
-        public void DeleteBook(int id)
-        {
-            _bookRepository.DeleteBook(id);
-        }
-
-        public ListAuthorForBookVM GetAllAuthorsForBookList(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            Book? book = _bookRepository.GetBookById(bookId);
-            if (book == null)
-            {
-                return new ListAuthorForBookVM();
-            }
-
-            string bookTitle = book.Title;
-            Paging paging = new Paging() { PageSize = pageSize, CurrentPage = pageNo };
-            Filtering filtering = new Filtering() { SearchString = searchString, SortBy = sortBy };
-
-            return _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapForItemToList(book, paging, filtering);
-        }
-
-        public ListAuthorForListVM GetAllAuthorsForList(SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllAuthorsWithBooks().OrderBy(a => a.LastName).MapToList(new Paging() { PageSize = pageSize, CurrentPage = pageNo }, new Filtering() { SearchString = searchString, SortBy = sortBy });
-
-        public ListBookForListVM GetAllBooksForList(SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            var books = _bookRepository.GetAllBooks();
-            Paging paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-            Filtering filtering = new Filtering() { SortBy = sortBy, SearchString = searchString };
-
-            return books.MapToList(paging, filtering);
-        }
-
-        public ListGenreForListVM GetAllGenres(SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllGenres().MapToList(new Paging() { PageSize = pageSize, CurrentPage = pageNo }, new Filtering() { SearchString = searchString, SortBy = sortBy });
-
-        public ListGenreForBookVM GetAllGenresForBookList(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            Book? book = _bookRepository.GetBookById(bookId);
-            if (book == null)
-            {
-                return new ListGenreForBookVM();
-            }
-
-            Paging paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-            Filtering filtering = new Filtering() { SortBy = sortBy, SearchString = searchString };
-            return _bookRepository.GetAllGenresWithBooks().MapForItemToList(book, paging, filtering);
-        }
-
-        public ListSeriesForBookVM GetAllSeriesForBookList(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            Book? book = _bookRepository.GetBookById(bookId);
-            if (book == null)
-            {
-                return new ListSeriesForBookVM();
-            }
-
-            Paging paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-            Filtering filtering = new Filtering() { SortBy = sortBy, SearchString = searchString };
-            return _bookRepository.GetAllSeriesWithBooks().MapForItemToList(book, paging, filtering);
-        }
-
-        public ListSeriesForListVM GetAllSeriesForList(SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAllSeriesWithBooks().MapToList(new Paging() { PageSize = pageSize, CurrentPage = pageNo }, new Filtering() { SearchString = searchString, SortBy = sortBy });
-
-        //public AuthorDetailsVM GetAuthorDetails(int id, SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetAuthorById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new AuthorDetailsVM();
-
-        public BookVM GetBook(int id) => _bookRepository.GetBookById(id)?.MapFromBase(_mapper) ?? new BookVM();
-
-        public BookDetailsVM GetBookDetails(int id)
-        {
-            var book = _bookRepository.GetBookById(id);
-            if (book?.Series != null)
-            {
-                book.Series = _bookRepository.GetSeriesById(book.Series.Id);
-            }
-
-            return book?.MapToDetails() ?? new BookDetailsVM();
-        }
-
-        //public GenreDetailsVM GetGenreDetails(int id, SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetGenreById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new GenreDetailsVM();
-
-        //public SeriesDetailsVM GetSeriesDetails(int id, SortByEnum sortBy, int pageSize, int pageNo, string searchString) => _bookRepository.GetSeriesById(id)?.MapToDetails(_mapper, sortBy, pageSize, pageNo, searchString) ?? new SeriesDetailsVM();
-
-        //public ListAuthorForBookVM GetAllAuthorsForBookList(ListAuthorForBookVM listAuthorForBook) => GetAllAuthorsForBookList(
-        //    listAuthorForBook.BookId,
-        //    listAuthorForBook.SortBy,
-        //    listAuthorForBook.PageSize,
-        //    listAuthorForBook.CurrentPage,
-        //    listAuthorForBook.SearchString!);
     }
 }
