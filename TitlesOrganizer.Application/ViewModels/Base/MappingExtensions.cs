@@ -60,6 +60,22 @@ namespace TitlesOrganizer.Application.ViewModels.Base
             };
         }
 
+        public static TList MapToList<T, TList>(this IEnumerable<IForListVM<T>> sortedItems, Paging paging, Filtering filtering)
+            where T : class, IBaseModel
+            where TList : class, IListVM<T>, new()
+        {
+            var queryable = sortedItems
+                .Where(a => a.Description.Contains(filtering.SearchString));
+            var limitedList = queryable.SkipAndTake(ref paging).ToList();
+
+            return new TList()
+            {
+                Values = limitedList,
+                Paging = paging,
+                Filtering = filtering
+            };
+        }
+
         public static IQueryable<IForListVM<T>> MapToList<T>(this IQueryable<IForListVM<T>> sortedItems, ref Paging paging)
             where T : class, IBaseModel
         {

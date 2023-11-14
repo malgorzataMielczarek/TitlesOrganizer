@@ -49,6 +49,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return (ListBookForListVM)books
                 .Sort(filtering.SortBy, b => b.Title)
                 .Map()
+                .ToList()
                 .MapToList<Book, ListBookForListVM>(paging, filtering);
         }
 

@@ -57,9 +57,9 @@ namespace TitlesOrganizer.Application.Services
             if (book != null)
             {
                 var authors = _queries.GetAllAuthorsWithBooks()
-                    .Where(a => a.Books.Any(b => b.Id == id));
+                    .Where(a => a.Books.Any(b => b.Id == id)).ToList();
                 var genres = _queries.GetAllLiteratureGenresWithBooks()
-                    .Where(g => g.Books != null && g.Books.Any(b => b.Id == id));
+                    .Where(g => g.Books.Any(b => b.Id == id)).ToList();
                 BookSeries? series = null;
                 if (book.SeriesId != null)
                 {
@@ -72,7 +72,7 @@ namespace TitlesOrganizer.Application.Services
                     language = _language.GetAllLanguages().FirstOrDefault(l => l.Code == book.OriginalLanguageCode);
                 }
 
-                return MapToDetails(book, language, authors, genres, series, series?.Books.AsQueryable());
+                return MapToDetails(book, language, authors, genres, series, series?.Books);
             }
             else
             {
@@ -229,7 +229,7 @@ namespace TitlesOrganizer.Application.Services
             return bookWithRelatedObjects.MapFromBase(_mapper);
         }
 
-        protected virtual BookDetailsVM MapToDetails(Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series, IQueryable<Book>? booksInSeries)
+        protected virtual BookDetailsVM MapToDetails(Book book, Language? language, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres, BookSeries? series, IEnumerable<Book>? booksInSeries)
         {
             return book.MapToDetails(language, authors, genres, series, booksInSeries);
         }

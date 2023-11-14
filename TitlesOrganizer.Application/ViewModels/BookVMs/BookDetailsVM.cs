@@ -52,7 +52,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
-        public static BookDetailsVM MapToDetails(this Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? seriesWithBooks)
+        public static BookDetailsVM MapToDetails(this Book book, Language? language, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres, BookSeries? seriesWithBooks)
         {
             return new BookDetailsVM()
             {
@@ -70,7 +70,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
-        public static BookDetailsVM MapToDetails(this Book book, Language? language, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series, IQueryable<Book>? booksInSeries)
+        public static BookDetailsVM MapToDetails(this Book book, Language? language, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres, BookSeries? series, IEnumerable<Book>? booksInSeries)
         {
             if (series != null && booksInSeries != null)
             {

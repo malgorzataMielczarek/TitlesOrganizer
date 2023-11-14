@@ -56,8 +56,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         {
             // Arrange
             int authorsCount = 2, genresCount = 3;
-            var authorsQueryable = Helpers.GetAuthorsList(authorsCount).AsQueryable();
-            var genresQueryble = Helpers.GetGenresList(genresCount).AsQueryable();
+            var authorsQueryable = Helpers.GetAuthorsList(authorsCount);
+            var genresQueryble = Helpers.GetGenresList(genresCount);
             var series = new BookSeries() { Id = 1, Title = "Series Title", Books = Helpers.GetBooksList(3) };
             var lang = new Language() { Code = "ENG", Name = "English" };
             var book = new Book()

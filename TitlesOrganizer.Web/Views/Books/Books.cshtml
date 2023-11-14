@@ -12,7 +12,7 @@
     <a asp-action="Genres" class="col">See Genres</a>
     <a asp-action="Series" class="col">See Book Series</a>
 </p>
-<form asp-action="Index" asp-controller="Books" method="post">
+<form asp-action="Books" asp-controller="Books" method="post">
     <div class="row">
         <div class="mb-1">
             <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle filters</button>
@@ -25,10 +25,10 @@
             <div class="offcanvas-body">
                 <div class="container list-group list-group-horizontal-md">
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
+                        <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" asp-for="Paging.PageSize" onchange="javascript:Submit();" action="/Books/Index">
+                        <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:Submit();" action="/Books/Index">
                             <option value="3">3 books on page</option>
                             <option value="5">5 books on page</option>
                             <option value="10">10 books on page</option>
@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="row">
-        <table class="table">
+        <table class="table" id="BooksGrid">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -59,10 +59,11 @@
             <tbody>
             @foreach (var book in Model.Values) {
                 <tr>
+                    <input type="hidden" value="@book.Id">
                     <td>@Html.DisplayFor(modelItem => book.Description)</td>
                     <td>
                         <a href=@($"/Books/Update/{book.Id}")>Edit</a> |
-                        @Html.ActionLink("Details", "Details", new { id = book.Id }) |
+                        <a class="details" href="javascript:;">Details</a> |
                         @Html.ActionLink("Delete", "Delete", new { id = book.Id })
                     </td>
                 </tr>
@@ -115,6 +116,24 @@
         <input type="hidden" name="pageNo" id="pageNo"/>
     </div>
 </form>
+
+<div id="partialModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Customer Details Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script type="text/javascript">
         function PagerClick(index){
@@ -124,5 +143,19 @@
         function Submit(){
             document.forms[0].submit();
         }
+        $(function () {
+            $("#BooksGrid .details").click(function () {
+                var bookId = $(this).closest("tr").find("input")[0].value;
+                console.log(bookId);
+                $.post("/Books/BookDetails", { "id": bookId })
+                .done(function (response) {
+                    $("#partialModal").find(".modal-body").html(response);
+                    $("#partialModal").modal('show');
+                })
+                .fail(function (response) {
+                    alert(response.responseText);
+                });
+            });
+        });
     </script>
 }

@@ -142,16 +142,16 @@ namespace TitlesOrganizer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet("/Books/Details/{id?}")]
-        public ActionResult Details(int id)
+        [HttpPost]
+        public ActionResult BookDetails(int id)
         {
             BookDetailsVM book = _bookService.GetDetails(id);
-            if (book == null)
+            if (book.Id == default)
             {
                 return BadRequest($"No book with id {id}");
             }
 
-            return View(book);
+            return PartialView(book);
         }
 
         [HttpGet("/Books/Genres/Details/{id}")]
@@ -181,14 +181,14 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Books()
         {
             ListBookForListVM list = _bookService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
             return View(list);
         }
 
         [HttpPost]
-        public ActionResult Index(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        public ActionResult Books(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
         {
             if (!pageNo.HasValue)
             {
