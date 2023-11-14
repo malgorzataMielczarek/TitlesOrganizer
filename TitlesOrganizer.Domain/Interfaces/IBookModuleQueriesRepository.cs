@@ -10,7 +10,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<Book> GetAllBooks();
 
-        IQueryable<Book> GetAllBooksWithAllRelatedObjects();
+        IQueryable<Book> GetAllBooksWithAuthorsGenresAndSeries();
 
         IQueryable<BookSeries> GetAllBookSeries();
 
@@ -30,7 +30,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         BookSeries? GetBookSeriesWithBooks(int id);
 
-        Book? GetBookWithAllRelatedObjects(int id);
+        Book? GetBookWithAuthorsGenresAndSeries(int id);
 
         LiteratureGenre? GetLiteratureGenre(int id);
 

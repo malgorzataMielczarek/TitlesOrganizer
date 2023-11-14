@@ -14,22 +14,30 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public void Delete(LiteratureGenre genre)
         {
-            throw new NotImplementedException();
+            _context.LiteratureGenres.Remove(genre);
+            _context.SaveChanges();
         }
 
         public int Insert(LiteratureGenre genre)
         {
-            throw new NotImplementedException();
+            _context.LiteratureGenres.Add(genre);
+            _context.SaveChanges();
+
+            return genre.Id;
         }
 
         public void Update(LiteratureGenre genre)
         {
-            throw new NotImplementedException();
+            _context.Attach(genre);
+            _context.Entry(genre).Property(nameof(LiteratureGenre.Name)).IsModified = true;
+            _context.SaveChanges();
         }
 
         public void UpdateLiteratureGenreBooksRelation(LiteratureGenre genre)
         {
-            throw new NotImplementedException();
+            _context.Attach(genre);
+            _context.Entry(genre).Collection(nameof(LiteratureGenre.Books)).IsModified = true;
+            _context.SaveChanges();
         }
     }
 }

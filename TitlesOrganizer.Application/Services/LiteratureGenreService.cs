@@ -58,7 +58,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (genre != null)
             {
-                var books = _queries.GetAllBooksWithAllRelatedObjects()
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                     .Where(b => b.Genres.Any(g => g.Id == id));
                 var authors = books.SelectMany(b => b.Authors)
                     .DistinctBy(a => a.Id);
@@ -102,7 +102,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (author != null)
             {
-                var genres = _queries.GetAllBooksWithAllRelatedObjects()
+                var genres = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                 .Where(b => b.Authors.Any(a => a.Id == authorId))
                 .SelectMany(b => b.Genres)
                 .DistinctBy(g => g.Id);

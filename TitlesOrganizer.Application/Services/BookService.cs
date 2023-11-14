@@ -37,7 +37,7 @@ namespace TitlesOrganizer.Application.Services
 
         public BookVM Get(int id)
         {
-            var book = _queries.GetBookWithAllRelatedObjects(id);
+            var book = _queries.GetBookWithAuthorsGenresAndSeries(id);
 
             if (book != null)
             {
@@ -88,7 +88,7 @@ namespace TitlesOrganizer.Application.Services
 
         public ListBookForAuthorVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
-            var books = _queries.GetAllBooksWithAllRelatedObjects();
+            var books = _queries.GetAllBooksWithAuthorsGenresAndSeries();
             var author = _queries.GetAuthor(authorId) ?? new Author();
 
             return MapForAuthor(books, author, sortBy, pageSize, pageNo, searchString ?? string.Empty);
@@ -96,7 +96,7 @@ namespace TitlesOrganizer.Application.Services
 
         public ListBookForGenreVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
-            var books = _queries.GetAllBooksWithAllRelatedObjects();
+            var books = _queries.GetAllBooksWithAuthorsGenresAndSeries();
             var genre = _queries.GetLiteratureGenre(genreId) ?? new LiteratureGenre() { Name = string.Empty };
 
             return MapForGenre(books, genre, sortBy, pageSize, pageNo, searchString ?? string.Empty);

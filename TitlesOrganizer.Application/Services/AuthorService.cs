@@ -57,7 +57,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (author != null)
             {
-                var books = _queries.GetAllBooksWithAllRelatedObjects()
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                     .Where(b => b.Authors.Any(a => a.Id == id));
                 var series = books.Where(b => b.Series != null)
                     .Select(b => b.Series!)

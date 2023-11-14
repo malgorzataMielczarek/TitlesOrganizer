@@ -14,22 +14,32 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public void Delete(BookSeries series)
         {
-            throw new NotImplementedException();
+            _context.BookSeries.Remove(series);
+            _context.SaveChanges();
         }
 
         public int Insert(BookSeries series)
         {
-            throw new NotImplementedException();
+            _context.BookSeries.Add(series);
+            _context.SaveChanges();
+
+            return series.Id;
         }
 
         public void Update(BookSeries series)
         {
-            throw new NotImplementedException();
+            _context.Attach(series);
+            _context.Entry(series).Property(nameof(BookSeries.Description)).IsModified = true;
+            _context.Entry(series).Property(nameof(BookSeries.Title)).IsModified = true;
+            _context.Entry(series).Property(nameof(BookSeries.OriginalTitle)).IsModified = true;
+            _context.SaveChanges();
         }
 
         public void UpdateBookSeriesBooksRelation(BookSeries series)
         {
-            throw new NotImplementedException();
+            _context.Attach(series);
+            _context.Entry(series).Collection(nameof(BookSeries.Books)).IsModified = true;
+            _context.SaveChanges();
         }
     }
 }

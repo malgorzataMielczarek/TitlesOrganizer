@@ -179,7 +179,7 @@ namespace TitlesOrganizer.Tests.Services
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id))
                 .Returns(genre);
-            queriesRepo.Setup(r => r.GetAllBooksWithAllRelatedObjects())
+            queriesRepo.Setup(r => r.GetAllBooksWithAuthorsGenresAndSeries())
                 .Returns(books.AsQueryable());
             var mapper = new Mock<IMapper>().Object;
 
@@ -193,7 +193,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetLiteratureGenre(genre.Id),
                 Times.Once());
             queriesRepo.Verify(
-                r => r.GetAllBooksWithAllRelatedObjects(),
+                r => r.GetAllBooksWithAuthorsGenresAndSeries(),
                 Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
@@ -248,7 +248,7 @@ namespace TitlesOrganizer.Tests.Services
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genreId))
                 .Returns((LiteratureGenre?)null);
-            queriesRepo.Setup(r => r.GetAllBooksWithAllRelatedObjects());
+            queriesRepo.Setup(r => r.GetAllBooksWithAuthorsGenresAndSeries());
             var mapper = new Mock<IMapper>().Object;
             var service = new LiteratureGenreServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
 
@@ -258,7 +258,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetLiteratureGenre(genreId),
                 Times.Once());
             queriesRepo.Verify(
-                r => r.GetAllBooksWithAllRelatedObjects(),
+                r => r.GetAllBooksWithAuthorsGenresAndSeries(),
                 Times.Never());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
@@ -459,7 +459,7 @@ namespace TitlesOrganizer.Tests.Services
             var query = new Mock<IBookModuleQueriesRepository>();
             query.Setup(q => q.GetAuthor(author.Id))
                 .Returns(author);
-            query.Setup(q => q.GetAllBooksWithAllRelatedObjects())
+            query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries())
                 .Returns(books);
             var mapper = new Mock<IMapper>().Object;
             var service = new LiteratureGenreServiceForTest(comm.Object, query.Object, mapper);
@@ -477,7 +477,7 @@ namespace TitlesOrganizer.Tests.Services
                 q => q.GetAuthor(author.Id),
                 Times.Once);
             query.Verify(
-                q => q.GetAllBooksWithAllRelatedObjects(),
+                q => q.GetAllBooksWithAuthorsGenresAndSeries(),
                 Times.Once);
             query.VerifyNoOtherCalls();
             comm.VerifyNoOtherCalls();
@@ -495,7 +495,7 @@ namespace TitlesOrganizer.Tests.Services
             var query = new Mock<IBookModuleQueriesRepository>();
             query.Setup(q => q.GetAuthor(authorId))
                 .Returns((Author?)null);
-            query.Setup(q => q.GetAllBooksWithAllRelatedObjects());
+            query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries());
             var mapper = new Mock<IMapper>().Object;
             var service = new LiteratureGenreServiceForTest(comm.Object, query.Object, mapper);
             int pageSize = 2, pageNo = 3;
@@ -513,7 +513,7 @@ namespace TitlesOrganizer.Tests.Services
                 q => q.GetAuthor(authorId),
                 Times.Once);
             query.Verify(
-                q => q.GetAllBooksWithAllRelatedObjects(),
+                q => q.GetAllBooksWithAuthorsGenresAndSeries(),
                 Times.Never);
             query.VerifyNoOtherCalls();
             comm.VerifyNoOtherCalls();

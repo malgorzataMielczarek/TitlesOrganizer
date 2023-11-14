@@ -1,4 +1,5 @@
-﻿using TitlesOrganizer.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Infrastructure.Repositories
@@ -12,84 +13,43 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             _context = context;
         }
 
-        public IQueryable<Author> GetAllAuthors()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<Author> GetAllAuthors() => _context.Authors;
 
-        public IQueryable<Author> GetAllAuthorsWithBooks()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<Author> GetAllAuthorsWithBooks() => _context.Authors.Include(a => a.Books);
 
-        public IQueryable<Book> GetAllBooks()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<Book> GetAllBooks() => _context.Books;
 
-        public IQueryable<BookSeries> GetAllBookSeries()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<BookSeries> GetAllBookSeries() => _context.BookSeries;
 
-        public IQueryable<BookSeries> GetAllBookSeriesWithBooks()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<BookSeries> GetAllBookSeriesWithBooks() => _context.BookSeries.Include(s => s.Books);
 
-        public IQueryable<Book> GetAllBooksWithAllRelatedObjects()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<Book> GetAllBooksWithAuthorsGenresAndSeries() => _context.Books
+            .Include(b => b.Authors)
+            .Include(b => b.Genres)
+            .Include(b => b.Series);
 
-        public IQueryable<LiteratureGenre> GetAllLiteratureGenres()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<LiteratureGenre> GetAllLiteratureGenres() => _context.LiteratureGenres;
 
-        public IQueryable<LiteratureGenre> GetAllLiteratureGenresWithBooks()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<LiteratureGenre> GetAllLiteratureGenresWithBooks() => _context.LiteratureGenres.Include(g => g.Books);
 
-        public Author? GetAuthor(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public Author? GetAuthor(int id) => _context.Authors.FirstOrDefault(a => a.Id == id);
 
-        public Author? GetAuthorWithBooks(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public Author? GetAuthorWithBooks(int id) => _context.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == id);
 
-        public Book? GetBook(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public Book? GetBook(int id) => _context.Books.FirstOrDefault(b => b.Id == id);
 
-        public BookSeries? GetBookSeries(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public BookSeries? GetBookSeries(int id) => _context.BookSeries.FirstOrDefault(s => s.Id == id);
 
-        public BookSeries? GetBookSeriesWithBooks(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public BookSeries? GetBookSeriesWithBooks(int id) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == id);
 
-        public Book? GetBookWithAllRelatedObjects(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public Book? GetBookWithAuthorsGenresAndSeries(int id) => _context.Books
+            .Include(b => b.Authors)
+            .Include(b => b.Genres)
+            .Include(b => b.Series)
+            .FirstOrDefault(b => b.Id == id);
 
-        public LiteratureGenre? GetLiteratureGenre(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public LiteratureGenre? GetLiteratureGenre(int id) => _context.LiteratureGenres.FirstOrDefault(g => g.Id == id);
 
-        public LiteratureGenre? GetLiteratureGenreWithBooks(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public LiteratureGenre? GetLiteratureGenreWithBooks(int id) => _context.LiteratureGenres.Include(g => g.Books).FirstOrDefault(g => g.Id == id);
     }
 }
