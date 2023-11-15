@@ -15,7 +15,19 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
     public class ListBookForListVM : BaseListVM<Book>, IListVM<Book>
     {
         [DisplayName("Books")]
-        public override List<IForListVM<Book>> Values { get; set; } = new List<IForListVM<Book>>();
+        public override List<IForListVM<Book>> Values { get; set; }
+
+        public ListBookForListVM()
+        {
+            Values = new List<IForListVM<Book>>();
+        }
+
+        public ListBookForListVM(List<IForListVM<Book>> values, Paging paging, Filtering filtering)
+        {
+            Values = values;
+            Paging = paging;
+            Filtering = filtering;
+        }
     }
 
     public static partial class MappingExtensions
@@ -29,11 +41,6 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
-        public static IForListVM<T> Map<T>(this Book book) where T : Book
-        {
-            return (IForListVM<T>)book.Map();
-        }
-
         public static IQueryable<IForListVM<Book>> Map(this IQueryable<Book> items)
         {
             return items.Select(it => it.Map());
@@ -41,24 +48,19 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public static List<IForListVM<Book>> Map(this IEnumerable<Book> items)
         {
-            return items.Select(it => it.Map<Book>()).ToList();
+            return items.Select(it => (IForListVM<Book>)it.Map()).ToList();
         }
 
         public static ListBookForListVM MapToList(this IQueryable<Book> books, Paging paging, Filtering filtering)
         {
-            return (ListBookForListVM)books
+            var values = books
                 .Sort(filtering.SortBy, b => b.Title)
+                .Where(b => b.Title.Contains(filtering.SearchString))
                 .Map()
-                .ToList()
-                .MapToList<Book, ListBookForListVM>(paging, filtering);
-        }
+                .SkipAndTake(ref paging)
+                .ToList();
 
-        public static IQueryable<IForListVM<Book>> MapToList(this IQueryable<Book> books, ref Paging paging)
-        {
-            return books
-                .OrderBy(b => b.Title)
-                .Map()
-                .MapToList<Book>(ref paging);
+            return new ListBookForListVM(values, paging, filtering);
         }
 
         public static List<IForListVM<Book>> MapToList(this IEnumerable<Book> books, ref Paging paging)
@@ -66,7 +68,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return books
                 .OrderBy(b => b.Title)
                 .Map()
-                .MapToList<Book>(ref paging);
+                .SkipAndTake(ref paging)
+                .ToList();
         }
 
         public static IPartialList<Book> MapToPartialList(this IQueryable<Book> books, Paging paging)
@@ -74,6 +77,15 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return new PartialList<Book>()
             {
                 Values = books.MapToList(ref paging).ToList(),
+                Paging = paging
+            };
+        }
+
+        public static IPartialList<Book> MapToPartialList(this IEnumerable<Book> books, Paging paging)
+        {
+            return new PartialList<Book>()
+            {
+                Values = books.MapToList(ref paging),
                 Paging = paging
             };
         }

@@ -23,18 +23,6 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
-        public void MapBook_Book_ForListVMBook()
-        {
-            var book = Helpers.GetBook();
-
-            var result = book.Map<Book>();
-
-            result.Should().NotBeNull().And.BeAssignableTo<IForListVM<Book>>();
-            result.Id.Should().Be(book.Id);
-            result.Description.Should().NotBeNullOrWhiteSpace().And.Be(book.Title);
-        }
-
-        [Fact]
         public void Map_IQueryableBook_IQueryableIForListVMBook()
         {
             var books = Helpers.GetBooksList(4).AsQueryable();

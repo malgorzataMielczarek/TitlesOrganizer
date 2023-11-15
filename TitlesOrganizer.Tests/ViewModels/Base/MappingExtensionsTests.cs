@@ -205,88 +205,16 @@ namespace TitlesOrganizer.Tests.ViewModels.Base
             result.Filtering.Should().NotBeNull().And.Be(filtering);
         }
 
-        [Fact]
-        public void MapToList_IQueryableForListPagingAndFiltering_CheckAssigning()
-        {
-            var items = ItemForList.GetItemList(5).AsQueryable();
-            var paging = new Paging() { CurrentPage = 1, PageSize = 5 };
-            var filtering = new Filtering() { SortBy = SortByEnum.Descending, SearchString = "Desc" };
-
-            var result = items.MapToList<Item, ListItemForList>(paging, filtering);
-
-            result.Should().NotBeNull().And.BeOfType<ListItemForList>();
-            result.Values.Should()
-                .NotBeNullOrEmpty().And
-                .HaveCount(5).And
-                .Equal(items);
-            result.Paging.Should().Be(paging);
-            result.Paging.CurrentPage.Should().Be(1);
-            result.Paging.PageSize.Should().Be(5);
-            result.Paging.Count.Should().Be(5);
-            result.Filtering.Should().Be(filtering);
-            result.Filtering.SearchString.Should().Be("Desc");
-            result.Filtering.SortBy.Should().Be(SortByEnum.Descending);
-        }
-
-        [Fact]
-        public void MapToList_IQueryableForListPagingAndFiltering_CheckSearching()
-        {
-            var it1 = new ItemForList() { Id = 1, Description = "Action" };
-            var it2 = new ItemForList() { Id = 2, Description = "Crime Comedy" };
-            var it3 = new ItemForList() { Id = 3, Description = "Crime Story" };
-            var it4 = new ItemForList() { Id = 4, Description = "Fantasy" };
-            var items = new List<IForListVM<Item>> { it1, it2, it3, it4 }.AsQueryable();
-            var paging = new Paging() { CurrentPage = 1, PageSize = 5 };
-            var filtering = new Filtering() { SortBy = SortByEnum.Descending, SearchString = "rim" };
-
-            var result = items.MapToList<Item, ListItemForList>(paging, filtering);
-
-            result.Should().NotBeNull().And.BeOfType<ListItemForList>();
-            result.Values.Should()
-                .NotBeNullOrEmpty().And
-                .HaveCount(2).And
-                .Equal(it2, it3);
-            result.Paging.Should().Be(paging);
-            result.Paging.CurrentPage.Should().Be(1);
-            result.Paging.PageSize.Should().Be(5);
-            result.Paging.Count.Should().Be(2);
-            result.Filtering.Should().Be(filtering);
-            result.Filtering.SearchString.Should().Be("rim");
-            result.Filtering.SortBy.Should().Be(SortByEnum.Descending);
-        }
-
         [Theory]
         [InlineData(5, 1, 3, 3, new[] { 1, 2, 3 }, 1)]
         [InlineData(5, 2, 3, 2, new[] { 4, 5 }, 2)]
         [InlineData(0, 2, 3, 0, new int[] { }, 1)]
-        public void MapToList_IQueryable_CheckPaging(int count, int pageNo, int pageSize, int pageCount, int[] ids, int currPage)
-        {
-            var items = ItemForList.GetItemList(count).AsQueryable();
-            var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-
-            var result = items.MapToList(ref paging);
-
-            result.Should()
-                .NotBeNull().And
-                .BeAssignableTo<IQueryable<IForListVM<Item>>>().And
-                .HaveCount(pageCount).And
-                .Equal(ids, (it, id) => it.Equals(id)); ;
-            paging.Should().NotBeNull();
-            paging.Count.Should().Be(count);
-            paging.CurrentPage.Should().Be(currPage);
-            paging.PageSize.Should().Be(pageSize);
-        }
-
-        [Theory]
-        [InlineData(5, 1, 3, 3, new[] { 1, 2, 3 }, 1)]
-        [InlineData(5, 2, 3, 2, new[] { 4, 5 }, 2)]
-        [InlineData(0, 2, 3, 0, new int[] { }, 1)]
-        public void MapToList_List_CheckPaging(int count, int pageNo, int pageSize, int pageCount, int[] ids, int currPage)
+        public void SkipAndTake_List_CheckPaging(int count, int pageNo, int pageSize, int pageCount, int[] ids, int currPage)
         {
             var items = ItemForList.GetItemList(count);
             var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
 
-            var result = items.MapToList(ref paging);
+            var result = items.SkipAndTake(ref paging);
 
             result.Should()
                 .NotBeNull().And

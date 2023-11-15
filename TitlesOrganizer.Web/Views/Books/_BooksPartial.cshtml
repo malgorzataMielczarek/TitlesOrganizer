@@ -1,0 +1,92 @@
+﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IPartialList<TitlesOrganizer.Domain.Models.Book>
+<form asp-action="BooksPartial" method="post" id="BooksForm">
+    <div class="d-flex w-100">
+        <h5 class="mb-1">Books</h5>
+    </div>
+    @*@if (Model.Paging.Count > 0)
+    {*@
+        <div class="mb-1 row">
+            <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                <select class="form-select" name="booksPageSize" asp-for="Paging.PageSize" onchange="javascript:SubmitBooks();">
+                    <option value="1">1 books on page</option>
+                    <option value="3">3 books on page</option>
+                    <option value="5">5 books on page</option>
+                    <option value="10">10 books on page</option>
+                    <option value="15">15 books on page</option>
+                    <option value="20">20 books on page</option>
+                    <option value="50">50 books on page</option>
+                    <option value="100">100 books on page</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table" id="BooksGrid">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var book in Model.Values)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => book.Description)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row justify-content-center">
+            @{
+                var pages = Math.Ceiling(Model.Paging.Count / (double)Model.Paging.PageSize);
+                int numbersNextTo = 2;
+            }
+            <nav aria-label="...">
+                <ul class="pagination">
+                    @if (Model.Paging.CurrentPage > numbersNextTo + 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    }
+                    @for (int i = numbersNextTo; i >= 1; i--)
+                    {
+                        if (i < Model.Paging.CurrentPage)
+                        {
+                            <li class="page-item"><a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage - i))">@(
+                        Model.Paging.CurrentPage - i
+                        )</a></li>
+                        }
+                    }
+                    @if (pages > 1)
+                    {
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">@Model.Paging.CurrentPage</span>
+                        </li>
+                    }
+                    @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
+                    {
+                        <li class="page-item"><a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage + i))">@(
+                        Model.Paging.CurrentPage + i
+                        )</a></li>
+                    }
+                    @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            <input type="hidden" name="booksPageNo" id="booksPageNo" />
+        </div>
+    @*}*@
+    @if (ViewData.ContainsKey("AuthorId"))
+    {
+        <input type="hidden" name="authorId" value="@ViewData["AuthorId"]" />
+    }
+</form>

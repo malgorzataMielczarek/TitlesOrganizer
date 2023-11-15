@@ -24,18 +24,6 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
-        public void MapAuthor_Author_IForListVMAuthor()
-        {
-            var author = Helpers.GetAuthor();
-
-            var result = author.Map<Author>();
-
-            result.Should().NotBeNull().And.BeAssignableTo<IForListVM<Author>>();
-            result.Id.Should().Be(author.Id);
-            result.Description.Should().NotBeNullOrWhiteSpace().And.Be($"{author.Name} {author.LastName}");
-        }
-
-        [Fact]
         public void Map_IQueryableAuthor_IQueryableIForListVMAuthor()
         {
             var authors = Helpers.GetAuthorsList(4).AsQueryable();

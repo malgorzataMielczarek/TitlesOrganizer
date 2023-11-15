@@ -1,0 +1,13 @@
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.AuthorDetailsVM
+@{
+    ViewData["AuthorId"] = Model.Id;
+}
+<div class="container">
+    <h1 class="mb-0 align-bottom text-wrap" style="width:fit-content;">@Model.Title</h1>
+    <hr />
+    <div class="list-group">
+        <div class="list-group-item">
+            <partial name="_BooksPartial.cshtml" model="@Model.Books" />
+        </div>
+    </div>
+</div>

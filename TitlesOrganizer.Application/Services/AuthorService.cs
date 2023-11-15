@@ -57,13 +57,9 @@ namespace TitlesOrganizer.Application.Services
 
             if (author != null)
             {
-                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                    .Where(b => b.Authors.Any(a => a.Id == id));
-                var series = books.Where(b => b.Series != null)
-                    .Select(b => b.Series!)
-                    .DistinctBy(s => s.Id);
-                var genres = books.SelectMany(b => b.Genres)
-                    .DistinctBy(g => g.Id);
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries().Where(b => b.Authors.Select(a => a.Id).Contains(id)).ToList();
+                var series = books.Where(b => b.Series != null).Select(b => b.Series!).DistinctBy(s => s.Id);
+                var genres = books.SelectMany(b => b.Genres).DistinctBy(g => g.Id);
                 var authorDetails = MapToDetails(author);
                 authorDetails = MapAuthorDetailsBooks(
                     authorDetails,
@@ -172,7 +168,7 @@ namespace TitlesOrganizer.Application.Services
             return author.MapToDetails();
         }
 
-        protected virtual AuthorDetailsVM MapAuthorDetailsBooks(AuthorDetailsVM authorDetails, IQueryable<Book> books, int pageSize, int pageNo)
+        protected virtual AuthorDetailsVM MapAuthorDetailsBooks(AuthorDetailsVM authorDetails, IEnumerable<Book> books, int pageSize, int pageNo)
         {
             authorDetails.Books = books.MapToPartialList(new Paging()
             {
@@ -183,7 +179,7 @@ namespace TitlesOrganizer.Application.Services
             return authorDetails;
         }
 
-        protected virtual AuthorDetailsVM MapAuthorDetailsSeries(AuthorDetailsVM authorDetails, IQueryable<BookSeries> series, int pageSize, int pageNo)
+        protected virtual AuthorDetailsVM MapAuthorDetailsSeries(AuthorDetailsVM authorDetails, IEnumerable<BookSeries> series, int pageSize, int pageNo)
         {
             authorDetails.Series = series.MapToPartialList(new Paging()
             {
@@ -194,7 +190,7 @@ namespace TitlesOrganizer.Application.Services
             return authorDetails;
         }
 
-        protected virtual AuthorDetailsVM MapAuthorDetailsGenres(AuthorDetailsVM authorDetails, IQueryable<LiteratureGenre> genres, int pageSize, int pageNo)
+        protected virtual AuthorDetailsVM MapAuthorDetailsGenres(AuthorDetailsVM authorDetails, IEnumerable<LiteratureGenre> genres, int pageSize, int pageNo)
         {
             authorDetails.Genres = genres.MapToPartialList(new Paging()
             {

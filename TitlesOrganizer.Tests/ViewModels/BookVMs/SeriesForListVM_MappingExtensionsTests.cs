@@ -23,31 +23,6 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
-        public void MapBookSeries_BookSeries_IForListVMBookSeries()
-        {
-            var series = Helpers.GetSeries();
-
-            var result = series.Map<BookSeries>();
-
-            result.Should().NotBeNull().And.BeAssignableTo<IForListVM<BookSeries>>();
-            result.Id.Should().Be(series.Id);
-            result.Description.Should().NotBeNullOrWhiteSpace().And.Be(series.Title);
-        }
-
-        [Fact]
-        public void Map_IQueryableBookSeries_IQueryableIForListVMBookSeries()
-        {
-            var series = Helpers.GetSeriesList(4).AsQueryable();
-
-            var result = series.Map();
-
-            result.Should()
-                .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<IForListVM<BookSeries>>>().And
-                .HaveCount(4);
-        }
-
-        [Fact]
         public void Map_IEnumerableBookSeries_ListIForListVMBookSeries()
         {
             var series = Helpers.GetSeriesList(4).AsEnumerable();

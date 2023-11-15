@@ -15,7 +15,19 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
     public class ListAuthorForListVM : BaseListVM<Author>, IListVM<Author>
     {
         [DisplayName("Authors")]
-        public override List<IForListVM<Author>> Values { get; set; } = new List<IForListVM<Author>>();
+        public override List<IForListVM<Author>> Values { get; set; }
+
+        public ListAuthorForListVM()
+        {
+            Values = new List<IForListVM<Author>>();
+        }
+
+        public ListAuthorForListVM(List<IForListVM<Author>> values, Paging paging, Filtering filtering)
+        {
+            Values = values;
+            Paging = paging;
+            Filtering = filtering;
+        }
     }
 
     public static partial class MappingExtensions
@@ -29,11 +41,6 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
-        public static IForListVM<T> Map<T>(this Author author) where T : Author
-        {
-            return (IForListVM<T>)author.Map();
-        }
-
         public static IQueryable<IForListVM<Author>> Map(this IQueryable<Author> items)
         {
             return items.Select(it => it.Map());
@@ -41,38 +48,33 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public static List<IForListVM<Author>> Map(this IEnumerable<Author> items)
         {
-            return items.Select(it => it.Map<Author>()).ToList();
+            return items.Select(it => (IForListVM<Author>)it.Map()).ToList();
         }
 
         public static ListAuthorForListVM MapToList(this IQueryable<Author> authors, Paging paging, Filtering filtering)
         {
-            return (ListAuthorForListVM)authors
+            var values = authors
                 .Sort(filtering.SortBy, a => a.LastName, a => a.Name)
-                .Map()
-                .MapToList<Author, ListAuthorForListVM>(paging, filtering);
-        }
+                .Where(a => (a.Name + " " + a.LastName).Contains(filtering.SearchString))
+                .SkipAndTake(ref paging)
+                .Map();
 
-        public static IQueryable<IForListVM<Author>> MapToList(this IQueryable<Author> authors, ref Paging paging)
-        {
-            return authors
-                .OrderBy(a => a.LastName).ThenBy(a => a.Name)
-                .Map()
-                .MapToList<Author>(ref paging);
+            return new ListAuthorForListVM(values, paging, filtering);
         }
 
         public static List<IForListVM<Author>> MapToList(this IEnumerable<Author> authors, ref Paging paging)
         {
             return authors
                 .OrderBy(a => a.LastName).ThenBy(a => a.Name)
-                .Map()
-                .MapToList<Author>(ref paging);
+                .SkipAndTake(ref paging)
+                .Map();
         }
 
-        public static IPartialList<Author> MapToPartialList(this IQueryable<Author> authors, Paging paging)
+        public static IPartialList<Author> MapToPartialList(this IEnumerable<Author> authors, Paging paging)
         {
             return new PartialList<Author>()
             {
-                Values = authors.MapToList(ref paging).ToList(),
+                Values = authors.MapToList(ref paging),
                 Paging = paging
             };
         }

@@ -15,7 +15,19 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
     public class ListGenreForListVM : BaseListVM<LiteratureGenre>, IListVM<LiteratureGenre>
     {
         [DisplayName("Genres")]
-        public override List<IForListVM<LiteratureGenre>> Values { get; set; } = new List<IForListVM<LiteratureGenre>>();
+        public override List<IForListVM<LiteratureGenre>> Values { get; set; }
+
+        public ListGenreForListVM()
+        {
+            Values = new List<IForListVM<LiteratureGenre>>();
+        }
+
+        public ListGenreForListVM(List<IForListVM<LiteratureGenre>> values, Paging paging, Filtering filtering)
+        {
+            Values = values;
+            Paging = paging;
+            Filtering = filtering;
+        }
     }
 
     public static partial class MappingExtensions
@@ -29,12 +41,6 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
-        public static IForListVM<T> Map<T>(this LiteratureGenre genre)
-            where T : LiteratureGenre
-        {
-            return (IForListVM<T>)genre.Map();
-        }
-
         public static IQueryable<IForListVM<LiteratureGenre>> Map(this IQueryable<LiteratureGenre> items)
         {
             return items.Select(it => it.Map());
@@ -42,38 +48,33 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
         public static List<IForListVM<LiteratureGenre>> Map(this IEnumerable<LiteratureGenre> items)
         {
-            return items.Select(it => it.Map<LiteratureGenre>()).ToList();
+            return items.Select(it => (IForListVM<LiteratureGenre>)it.Map()).ToList();
         }
 
         public static ListGenreForListVM MapToList(this IQueryable<LiteratureGenre> genres, Paging paging, Filtering filtering)
         {
-            return (ListGenreForListVM)genres
+            var values = genres
                 .Sort(filtering.SortBy, g => g.Name)
-                .Map()
-                .MapToList<LiteratureGenre, ListGenreForListVM>(paging, filtering);
-        }
+                .Where(g => g.Name.Contains(filtering.SearchString))
+                .SkipAndTake(ref paging)
+                .Map();
 
-        public static IQueryable<IForListVM<LiteratureGenre>> MapToList(this IQueryable<LiteratureGenre> genres, ref Paging paging)
-        {
-            return genres
-                .OrderBy(g => g.Name)
-                .Map()
-                .MapToList<LiteratureGenre>(ref paging);
+            return new ListGenreForListVM(values, paging, filtering);
         }
 
         public static List<IForListVM<LiteratureGenre>> MapToList(this IEnumerable<LiteratureGenre> genres, ref Paging paging)
         {
             return genres
                 .OrderBy(g => g.Name)
-                .Map()
-                .MapToList<LiteratureGenre>(ref paging);
+                .SkipAndTake(ref paging)
+                .Map();
         }
 
-        public static IPartialList<LiteratureGenre> MapToPartialList(this IQueryable<LiteratureGenre> genres, Paging paging)
+        public static IPartialList<LiteratureGenre> MapToPartialList(this IEnumerable<LiteratureGenre> genres, Paging paging)
         {
             return new PartialList<LiteratureGenre>()
             {
-                Values = genres.MapToList(ref paging).ToList(),
+                Values = genres.MapToList(ref paging),
                 Paging = paging
             };
         }

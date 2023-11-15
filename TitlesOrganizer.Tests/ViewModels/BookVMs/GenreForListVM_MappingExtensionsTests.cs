@@ -23,18 +23,6 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         }
 
         [Fact]
-        public void MapLiteratureGenre_LiteratureGenre_IForListVMLiteratureGenre()
-        {
-            var genre = Helpers.GetGenre();
-
-            var result = genre.Map<LiteratureGenre>();
-
-            result.Should().NotBeNull().And.BeAssignableTo<IForListVM<LiteratureGenre>>();
-            result.Id.Should().Be(genre.Id);
-            result.Description.Should().NotBeNullOrWhiteSpace().And.Be(genre.Name);
-        }
-
-        [Fact]
         public void Map_IQueryableLiteratureGenre_IQueryableIForListVMLiteratureGenre()
         {
             var genres = Helpers.GetGenresList(4).AsQueryable();
