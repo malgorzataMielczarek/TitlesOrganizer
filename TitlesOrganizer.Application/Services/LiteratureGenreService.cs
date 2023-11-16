@@ -59,7 +59,8 @@ namespace TitlesOrganizer.Application.Services
             if (genre != null)
             {
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                    .Where(b => b.Genres.Any(g => g.Id == id));
+                    .Where(b => b.Genres.Any(g => g.Id == id))
+                    .ToList();
                 var authors = books.SelectMany(b => b.Authors)
                     .DistinctBy(a => a.Id);
                 var series = books.Where(b => b.Series != null)
@@ -102,8 +103,10 @@ namespace TitlesOrganizer.Application.Services
 
             if (author != null)
             {
-                var genres = _queries.GetAllBooksWithAuthorsGenresAndSeries()
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                 .Where(b => b.Authors.Any(a => a.Id == authorId))
+                .ToList();
+                var genres = books
                 .SelectMany(b => b.Genres)
                 .DistinctBy(g => g.Id);
 
@@ -178,7 +181,7 @@ namespace TitlesOrganizer.Application.Services
             return genre.MapToDetails();
         }
 
-        protected virtual GenreDetailsVM MapGenreDetailsAuthors(GenreDetailsVM genreDetails, IQueryable<Author> authors, int pageSize, int pageNo)
+        protected virtual GenreDetailsVM MapGenreDetailsAuthors(GenreDetailsVM genreDetails, IEnumerable<Author> authors, int pageSize, int pageNo)
         {
             genreDetails.Authors = authors.MapToPartialList(new Paging()
             {
@@ -189,7 +192,7 @@ namespace TitlesOrganizer.Application.Services
             return genreDetails;
         }
 
-        protected virtual GenreDetailsVM MapGenreDetailsBooks(GenreDetailsVM genreDetails, IQueryable<Book> books, int pageSize, int pageNo)
+        protected virtual GenreDetailsVM MapGenreDetailsBooks(GenreDetailsVM genreDetails, IEnumerable<Book> books, int pageSize, int pageNo)
         {
             genreDetails.Books = books.MapToPartialList(new Paging()
             {
@@ -200,7 +203,7 @@ namespace TitlesOrganizer.Application.Services
             return genreDetails;
         }
 
-        protected virtual GenreDetailsVM MapGenreDetailsSeries(GenreDetailsVM genreDetails, IQueryable<BookSeries> series, int pageSize, int pageNo)
+        protected virtual GenreDetailsVM MapGenreDetailsSeries(GenreDetailsVM genreDetails, IEnumerable<BookSeries> series, int pageSize, int pageNo)
         {
             genreDetails.Series = series.MapToPartialList(new Paging()
             {
@@ -242,7 +245,7 @@ namespace TitlesOrganizer.Application.Services
                 });
         }
 
-        protected virtual PartialList<LiteratureGenre> MapToPartialList(IQueryable<LiteratureGenre> genres, int pageSize, int pageNo)
+        protected virtual PartialList<LiteratureGenre> MapToPartialList(IEnumerable<LiteratureGenre> genres, int pageSize, int pageNo)
         {
             return (PartialList<LiteratureGenre>)genres.MapToPartialList(
                 new Paging() { CurrentPage = pageNo, PageSize = pageSize });

@@ -1,29 +1,29 @@
-﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IPartialList<TitlesOrganizer.Domain.Models.Book>
-<form asp-action="BooksPartial" method="post" id="BooksForm">
+﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IPartialList<TitlesOrganizer.Domain.Models.Author>
+<form asp-action="AuthorsPartial" method="post" id="AuthorsForm">
     <div class="card w-100">
         <div class="card-header d-flex w-100 justify-content-between mb-1 bg-body-tertiary border-0 align-items-center">
-            <h5>Books</h5>
+            <h5>Authors</h5>
             <span>
-                <select class="form-select" name="booksPageSize" id="booksPageSize" asp-for="Paging.PageSize" onchange="javascript:ReloadBooks();">
-                    <option value="1">1 book on page</option>
-                    <option value="3">3 books on page</option>
-                    <option value="5">5 books on page</option>
-                    <option value="10">10 books on page</option>
-                    <option value="15">15 books on page</option>
-                    <option value="20">20 books on page</option>
-                    <option value="50">50 books on page</option>
-                    <option value="100">100 books on page</option>
+                <select class="form-select" name="authorsPageSize" id="authorsPageSize" asp-for="Paging.PageSize" onchange="javascript:ReloadAuthors();">
+                    <option value="1">1 author on page</option>
+                    <option value="3">3 authors on page</option>
+                    <option value="5">5 authors on page</option>
+                    <option value="10">10 authors on page</option>
+                    <option value="15">15 authors on page</option>
+                    <option value="20">20 authors on page</option>
+                    <option value="50">50 authors on page</option>
+                    <option value="100">100 authors on page</option>
                 </select>
             </span>
         </div>
         @if (Model.Paging.Count > 0)
         {
             <ul class="list-group list-group-flush">
-                @foreach (var book in Model.Values)
+                @foreach (var author in Model.Values)
                 {
                     <li class="list-group-item list-group-item-action">
-                        <a type="button" asp-action="BookDetails" asp-route-id="@book.Id">
-                            @book.Description
+                        <a type="button" asp-action="AuthorDetails" asp-route-id="@author.Id">
+                            @author.Description
                         </a>
                     </li>
                 }
@@ -32,7 +32,7 @@
         else
         {
             <div class="card-body">
-                <small><i>No associated books</i></small>
+                <small><i>No associated authors</i></small>
             </div>
         }
         <div class="card-footer justify-content-center">
@@ -45,7 +45,7 @@
                     @if (Model.Paging.CurrentPage > numbersNextTo + 1)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                            <a class="page-link" href="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -55,7 +55,7 @@
                         if (i < Model.Paging.CurrentPage)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage - i))">
+                                <a class="page-link" href="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage - i))">
                                     @(Model.Paging.CurrentPage - i)
                                 </a>
                             </li>
@@ -70,7 +70,7 @@
                     @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage + i))">
+                            <a class="page-link" href="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage + i))">
                                 @(Model.Paging.CurrentPage + i)
                             </a>
                         </li>
@@ -78,14 +78,14 @@
                     @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                            <a class="page-link" href="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                     }
                 </ul>
             </nav>
-            <input type="hidden" name="booksPageNo" id="booksPageNo" />
+            <input type="hidden" name="authorsPageNo" id="authorsPageNo" />
         </div>
     </div>
 </form>

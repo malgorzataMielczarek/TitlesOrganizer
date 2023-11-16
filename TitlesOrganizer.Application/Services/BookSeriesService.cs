@@ -84,9 +84,10 @@ namespace TitlesOrganizer.Application.Services
             var author = _queries.GetAuthor(authorId);
             if (author != null)
             {
-                var series = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                    .Where(b => b.Authors.Any(a => a.Id == authorId)
-                    && b.Series != null)
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
+                    .Where(b => b.Authors.Any(a => a.Id == authorId)).ToList();
+                var series = books
+                    .Where(b => b.Series != null)
                     .Select(b => b.Series!)
                     .DistinctBy(s => s.Id);
                 return MapToPartialList(series, pageSize, pageNo);
@@ -102,11 +103,14 @@ namespace TitlesOrganizer.Application.Services
             var genre = _queries.GetLiteratureGenre(genreId);
             if (genre != null)
             {
-                var series = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                    .Where(b => b.Genres.Any(a => a.Id == genreId)
-                    && b.Series != null)
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
+                    .Where(b => b.Genres.Any(a => a.Id == genreId))
+                    .ToList();
+                var series = books
+                    .Where(b => b.Series != null)
                     .Select(b => b.Series!)
                     .DistinctBy(s => s.Id);
+
                 return MapToPartialList(series, pageSize, pageNo);
             }
             else
@@ -213,7 +217,7 @@ namespace TitlesOrganizer.Application.Services
                 });
         }
 
-        protected virtual PartialList<BookSeries> MapToPartialList(IQueryable<BookSeries> series, int pageSize, int pageNo)
+        protected virtual PartialList<BookSeries> MapToPartialList(IEnumerable<BookSeries> series, int pageSize, int pageNo)
         {
             return (PartialList<BookSeries>)series.MapToPartialList(
                 new Paging()

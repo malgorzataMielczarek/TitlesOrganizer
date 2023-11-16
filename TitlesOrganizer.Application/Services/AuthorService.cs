@@ -102,11 +102,16 @@ namespace TitlesOrganizer.Application.Services
 
         public PartialList<Author> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
         {
-            var genre = _queries.GetLiteratureGenreWithBooks(genreId);
-            if (genre != null && genre.Books != null && genre.Books.Any())
+            var genre = _queries.GetLiteratureGenre(genreId);
+            if (genre != null)
             {
-                var authors = _queries.GetAllAuthorsWithBooks()
-                    .Where(a => a.Books.Any(b => genre.Books.Any(gb => gb.Id == b.Id)));
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
+                    .Where(b => b.Genres.Any(g => g.Id == genreId))
+                    .ToList();
+                var authors = books
+                    .SelectMany(b => b.Authors)
+                    .DistinctBy(a => a.Id);
+
                 return MapToPartialList(authors, pageSize, pageNo);
             }
             else
@@ -232,7 +237,7 @@ namespace TitlesOrganizer.Application.Services
                 });
         }
 
-        protected virtual PartialList<Author> MapToPartialList(IQueryable<Author> authors, int pageSize, int pageNo)
+        protected virtual PartialList<Author> MapToPartialList(IEnumerable<Author> authors, int pageSize, int pageNo)
         {
             return (PartialList<Author>)authors.MapToPartialList(new Paging()
             {

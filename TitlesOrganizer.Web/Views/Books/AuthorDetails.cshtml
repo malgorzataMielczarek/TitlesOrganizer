@@ -1,13 +1,21 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.AuthorDetailsVM
 @{
-    ViewData["AuthorId"] = Model.Id;
+    ViewData["Title"] = @Model.Title;
 }
-<div class="container">
-    <h1 class="mb-0 align-bottom text-wrap" style="width:fit-content;">@Model.Title</h1>
-    <hr />
-    <div class="list-group">
-        <div class="list-group-item">
-            <partial name="_BooksPartial.cshtml" model="@Model.Books" />
-        </div>
+
+<div class="container w-100 p-0" id="authorDetails">
+    <h1 class="mb-0 align-bottom text-wrap w-100">@Model.Title</h1>
+    <input type="hidden" asp-for="@Model.Id" id="authorId" name="authorId" />
+    <div class="py-2" id="booksPartial">
+        <partial name="_BooksPartial.cshtml" model="@Model.Books" />
+    </div>
+    <div class="py-2" id="seriesPartial">
+        <partial name="_SeriesPartial.cshtml" model="@Model.Series" />
+    </div>
+    <div class="py-2" id="genresPartial">
+        <partial name="_GenresPartial.cshtml" model="@Model.Genres" />
     </div>
 </div>
+@section Scripts {
+    <script type="text/javascript" src="~/js/Books/AuthorDetailsScript.js"></script>
+}

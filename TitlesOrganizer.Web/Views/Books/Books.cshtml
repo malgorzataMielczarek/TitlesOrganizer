@@ -19,7 +19,8 @@
             <div class="offcanvas-body">
                 <div class="container list-group list-group-horizontal-md">
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
+                        <select class="form-select" name="sortBy" asp-for="Filtering.SortBy"
+                        asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
                         <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:Submit();" action="/Books/Books">
@@ -140,7 +141,7 @@
 
         function ShowDetails(id) {
             console.log(id);
-            $.post("/Books/BookDetails", { "id": id })
+            $.post("/Books/BookDetailsPartial", { "id": id })
             .done(function (response) {
                 $("#partialModal").find(".modal-body").html(response);
                 $("#partialModal").modal('show');

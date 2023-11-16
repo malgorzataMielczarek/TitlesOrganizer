@@ -1,4 +1,8 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.BookDetailsVM
+@{
+    ViewData["Title"] = Model.Title;
+}
+
 <div class="container">
     <div class="d-flex flex-column pb-1" style="width: fit-content;">
         <div class="m-0 pb-0" style="width:fit-content;">
@@ -15,7 +19,7 @@
         <nav class="nav">
             @foreach (var author in Model.Authors)
             {
-                <h3 class="px-0"><a asp-action="AuthorDetails" , asp-route-id="@author.Id" class="nav-link px-2">@author.Description</a></h3>
+                <h3 class="px-0"><a asp-action="AuthorDetails" asp-route-id="@author.Id" class="nav-link px-2">@author.Description</a></h3>
             }
         </nav>
     </div>

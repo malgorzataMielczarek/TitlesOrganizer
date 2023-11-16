@@ -52,12 +52,24 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListAuthorForListVM authors = _authorService.GetList(sortBy, pageSize, (int)pageNo, searchString);
+            ListAuthorForListVM authors = _authorService.GetList(sortBy, pageSize, pageNo.Value, searchString);
             return View(authors);
         }
 
+        [HttpGet]
+        public ActionResult AuthorDetails(int id)
+        {
+            AuthorDetailsVM author = _authorService.GetDetails(id, PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
+            if (author.Id == default)
+            {
+                return BadRequest("No author with given id");
+            }
+
+            return View(author);
+        }
+
         [HttpPost]
-        public ActionResult AuthorDetails(int id, int booksPageSize = 1, int booksPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1, int genresPageSize = SMALL_PAGE_SIZE, int genresPageNo = 1)
+        public ActionResult AuthorDetailsPartial(int id, int booksPageSize = 1, int booksPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1, int genresPageSize = SMALL_PAGE_SIZE, int genresPageNo = 1)
         {
             AuthorDetailsVM author = _authorService.GetDetails(id, booksPageSize, booksPageNo, seriesPageSize, seriesPageNo, genresPageSize, genresPageNo);
             if (author.Id == default)
@@ -65,7 +77,24 @@ namespace TitlesOrganizer.Web.Controllers
                 return BadRequest("No author with given id");
             }
 
-            return PartialView(author);
+            return PartialView("AuthorDetails", author);
+        }
+
+        [HttpPost]
+        public ActionResult AuthorsPartial(int authorsPageSize, int? authorsPageNo, int? genreId)
+        {
+            PartialList<Author> authors = new();
+            if (!authorsPageNo.HasValue)
+            {
+                authorsPageNo = 1;
+            }
+
+            if (genreId.HasValue)
+            {
+                authors = _authorService.GetPartialListForGenre(genreId.Value, authorsPageSize, authorsPageNo.Value);
+            }
+
+            return PartialView("_AuthorsPartial", authors);
         }
 
         [HttpGet]
@@ -84,11 +113,11 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListBookForListVM list = _bookService.GetList(sortBy, pageSize, (int)pageNo, searchString);
+            ListBookForListVM list = _bookService.GetList(sortBy, pageSize, pageNo.Value, searchString);
             return View(list);
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult BookDetails(int id)
         {
             BookDetailsVM book = _bookService.GetDetails(id);
@@ -97,19 +126,112 @@ namespace TitlesOrganizer.Web.Controllers
                 return BadRequest("No book with given id");
             }
 
-            return PartialView(book);
+            return View(book);
         }
 
         [HttpPost]
-        public ActionResult BooksPartial(int bookPageSize, int bookPageNo, int? authorId)
+        public ActionResult BookDetailsPartial(int id)
+        {
+            BookDetailsVM book = _bookService.GetDetails(id);
+            if (book.Id == default)
+            {
+                return BadRequest("No book with given id");
+            }
+
+            return PartialView("BookDetails", book);
+        }
+
+        [HttpPost]
+        public ActionResult BooksPartial(int booksPageSize, int? booksPageNo, int? authorId, int? genreId)
         {
             PartialList<Book> books = new();
+            if (!booksPageNo.HasValue)
+            {
+                booksPageNo = 1;
+            }
+
             if (authorId.HasValue)
             {
-                books = _bookService.GetPartialListForAuthor(authorId.Value, bookPageSize, bookPageNo);
+                books = _bookService.GetPartialListForAuthor(authorId.Value, booksPageSize, booksPageNo.Value);
+            }
+            else if (genreId.HasValue)
+            {
+                books = _bookService.GetPartialListForGenre(genreId.Value, booksPageSize, booksPageNo.Value);
             }
 
             return PartialView("_BooksPartial", books);
+        }
+
+        [HttpGet]
+        public ActionResult Genres()
+        {
+            ListGenreForListVM genres = _genreService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            return View(genres);
+        }
+
+        [HttpPost]
+        public ActionResult Genres(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        {
+            if (!pageNo.HasValue)
+            {
+                pageNo = 1;
+            }
+
+            ListGenreForListVM genres = _genreService.GetList(sortBy, pageSize, pageNo.Value, searchString);
+            return View(genres);
+        }
+
+        [HttpGet]
+        public ActionResult GenreDetails(int id)
+        {
+            GenreDetailsVM genre = _genreService.GetDetails(id, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
+            return View(genre);
+        }
+
+        [HttpPost]
+        public ActionResult GenreDetailsPartial(int id, int booksPageSize = PAGE_SIZE, int booksPageNo = 1, int authorsPageSize = SMALL_PAGE_SIZE, int authorsPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1)
+        {
+            GenreDetailsVM genre = _genreService.GetDetails(id, booksPageSize, booksPageNo, authorsPageSize, authorsPageNo, seriesPageSize, seriesPageNo);
+
+            return PartialView("GenreDetails", genre);
+        }
+
+        [HttpPost]
+        public ActionResult GenresPartial(int genresPageSize, int? genresPageNo, int? authorId)
+        {
+            PartialList<LiteratureGenre> genres = new();
+            if (!genresPageNo.HasValue)
+            {
+                genresPageNo = 1;
+            }
+
+            if (authorId.HasValue)
+            {
+                genres = _genreService.GetPartialListForAuthor(authorId.Value, genresPageSize, genresPageNo.Value);
+            }
+
+            return PartialView("_GenresPartial", genres);
+        }
+
+        [HttpPost]
+        public ActionResult SeriesPartial(int seriesPageSize, int? seriesPageNo, int? authorId, int? genreId)
+        {
+            PartialList<BookSeries> series = new();
+            if (!seriesPageNo.HasValue)
+            {
+                seriesPageNo = 1;
+            }
+
+            if (authorId.HasValue)
+            {
+                series = _seriesService.GetPartialListForAuthor(authorId.Value, seriesPageSize, seriesPageNo.Value);
+            }
+            else if (genreId.HasValue)
+            {
+                series = _seriesService.GetPartialListForGenre(genreId.Value, seriesPageSize, seriesPageNo.Value);
+            }
+
+            return PartialView("_SeriesPartial", series);
         }
 
         [HttpGet]
@@ -194,32 +316,6 @@ namespace TitlesOrganizer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet("/Books/Genres/Details/{id}")]
-        public ActionResult GenreDetails(int id)
-        {
-            GenreDetailsVM genre = _genreService.GetDetails(id, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
-            return View(genre);
-        }
-
-        [HttpGet]
-        public ActionResult Genres()
-        {
-            ListGenreForListVM genres = _genreService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
-            return View(genres);
-        }
-
-        [HttpPost]
-        public ActionResult Genres(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
-        {
-            if (!pageNo.HasValue)
-            {
-                pageNo = 1;
-            }
-
-            ListGenreForListVM genres = _genreService.GetList(sortBy, pageSize, (int)pageNo, searchString);
-            return View(genres);
-        }
-
         [HttpGet]
         public ActionResult Series()
         {
@@ -235,7 +331,7 @@ namespace TitlesOrganizer.Web.Controllers
                 pageNo = 1;
             }
 
-            ListSeriesForListVM series = _seriesService.GetList(sortBy, pageSize, (int)pageNo, searchString);
+            ListSeriesForListVM series = _seriesService.GetList(sortBy, pageSize, pageNo.Value, searchString);
             return View(series);
         }
 
