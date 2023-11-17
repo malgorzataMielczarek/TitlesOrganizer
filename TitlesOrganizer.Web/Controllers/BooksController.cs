@@ -69,6 +69,7 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AuthorDetailsPartial(int id, int booksPageSize = 1, int booksPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1, int genresPageSize = SMALL_PAGE_SIZE, int genresPageNo = 1)
         {
             AuthorDetailsVM author = _authorService.GetDetails(id, booksPageSize, booksPageNo, seriesPageSize, seriesPageNo, genresPageSize, genresPageNo);
@@ -81,9 +82,10 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AuthorsPartial(int authorsPageSize, int? authorsPageNo, int? genreId)
         {
-            PartialList<Author> authors = new();
+            PartialList<Author> authors;
             if (!authorsPageNo.HasValue)
             {
                 authorsPageNo = 1;
@@ -92,6 +94,10 @@ namespace TitlesOrganizer.Web.Controllers
             if (genreId.HasValue)
             {
                 authors = _authorService.GetPartialListForGenre(genreId.Value, authorsPageSize, authorsPageNo.Value);
+            }
+            else
+            {
+                return BadRequest("No object's id was specified");
             }
 
             return PartialView("_AuthorsPartial", authors);
@@ -130,6 +136,7 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult BookDetailsPartial(int id)
         {
             BookDetailsVM book = _bookService.GetDetails(id);
@@ -142,9 +149,10 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult BooksPartial(int booksPageSize, int? booksPageNo, int? authorId, int? genreId)
+        [ValidateAntiForgeryToken]
+        public ActionResult BooksPartial(int booksPageSize, int? booksPageNo, int? authorId, int? genreId, int? seriesId)
         {
-            PartialList<Book> books = new();
+            PartialList<Book> books;
             if (!booksPageNo.HasValue)
             {
                 booksPageNo = 1;
@@ -158,6 +166,14 @@ namespace TitlesOrganizer.Web.Controllers
             {
                 books = _bookService.GetPartialListForGenre(genreId.Value, booksPageSize, booksPageNo.Value);
             }
+            else if (seriesId.HasValue)
+            {
+                books = _bookService.GetPartialListForSeries(seriesId.Value, booksPageSize, booksPageNo.Value);
+            }
+            else
+            {
+                return BadRequest("No object's id was specified");
+            }
 
             return PartialView("_BooksPartial", books);
         }
@@ -170,6 +186,7 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Genres(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
         {
             if (!pageNo.HasValue)
@@ -189,6 +206,7 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult GenreDetailsPartial(int id, int booksPageSize = PAGE_SIZE, int booksPageNo = 1, int authorsPageSize = SMALL_PAGE_SIZE, int authorsPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1)
         {
             GenreDetailsVM genre = _genreService.GetDetails(id, booksPageSize, booksPageNo, authorsPageSize, authorsPageNo, seriesPageSize, seriesPageNo);
@@ -197,9 +215,10 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult GenresPartial(int genresPageSize, int? genresPageNo, int? authorId)
         {
-            PartialList<LiteratureGenre> genres = new();
+            PartialList<LiteratureGenre> genres;
             if (!genresPageNo.HasValue)
             {
                 genresPageNo = 1;
@@ -209,14 +228,54 @@ namespace TitlesOrganizer.Web.Controllers
             {
                 genres = _genreService.GetPartialListForAuthor(authorId.Value, genresPageSize, genresPageNo.Value);
             }
+            else
+            {
+                return BadRequest("No object's id was specified");
+            }
 
             return PartialView("_GenresPartial", genres);
         }
 
+        [HttpGet]
+        public ActionResult Series()
+        {
+            ListSeriesForListVM series = _seriesService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            return View(series);
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Series(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        {
+            if (!pageNo.HasValue)
+            {
+                pageNo = 1;
+            }
+
+            ListSeriesForListVM series = _seriesService.GetList(sortBy, pageSize, pageNo.Value, searchString);
+            return View(series);
+        }
+
+        [HttpGet]
+        public ActionResult SeriesDetails(int id)
+        {
+            SeriesDetailsVM genre = _seriesService.GetDetails(id, PAGE_SIZE, 1);
+            return View(genre);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SeriesDetailsPartial(int id, int booksPageSize = SMALL_PAGE_SIZE, int booksPageNo = 1)
+        {
+            SeriesDetailsVM genre = _seriesService.GetDetails(id, booksPageSize, booksPageNo);
+            return PartialView("SeriesDetails", genre);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SeriesPartial(int seriesPageSize, int? seriesPageNo, int? authorId, int? genreId)
         {
-            PartialList<BookSeries> series = new();
+            PartialList<BookSeries> series;
             if (!seriesPageNo.HasValue)
             {
                 seriesPageNo = 1;
@@ -229,6 +288,10 @@ namespace TitlesOrganizer.Web.Controllers
             else if (genreId.HasValue)
             {
                 series = _seriesService.GetPartialListForGenre(genreId.Value, seriesPageSize, seriesPageNo.Value);
+            }
+            else
+            {
+                return BadRequest("No object's id was specified");
             }
 
             return PartialView("_SeriesPartial", series);
@@ -314,32 +377,6 @@ namespace TitlesOrganizer.Web.Controllers
         {
             _bookService.Delete(id);
             return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public ActionResult Series()
-        {
-            ListSeriesForListVM series = _seriesService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
-            return View(series);
-        }
-
-        [HttpPost]
-        public ActionResult Series(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
-        {
-            if (!pageNo.HasValue)
-            {
-                pageNo = 1;
-            }
-
-            ListSeriesForListVM series = _seriesService.GetList(sortBy, pageSize, pageNo.Value, searchString);
-            return View(series);
-        }
-
-        [HttpGet("/Books/Series/Details/{id}")]
-        public ActionResult SeriesDetails(int id)
-        {
-            SeriesDetailsVM genre = _seriesService.GetDetails(id, SMALL_PAGE_SIZE, 1);
-            return View(genre);
         }
 
         [HttpGet("/Books/CreateNew")]
@@ -442,12 +479,33 @@ namespace TitlesOrganizer.Web.Controllers
             return FormResult.CreateErrorResult("Check entered data.", "/Books/Update");
         }
 
-        [HttpGet]
-        public ActionResult SelectAuthorsForBook(int id)
+        [HttpPost]
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public ActionResult SelectAuthorsForBook(int? id, string? title)
         {
-            ListAuthorForBookVM authors = _authorService.GetListForBook(id, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
+            if (!id.HasValue)
+            {
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    id = _bookService.Upsert(new BookVM() { Title = title.Trim() });
+                }
+                else
+                {
+                    return BadRequest("Enter book title before selecting authors");
+                }
+            }
 
-            return View(authors);
+            if (id.HasValue)
+            {
+                ListAuthorForBookVM authors = _authorService.GetListForBook(id.Value, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
+
+                return PartialView(authors);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to create new book. Try to repeat performed operation after some time.");
+            }
         }
 
         [HttpPost]

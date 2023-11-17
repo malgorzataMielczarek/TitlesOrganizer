@@ -39,9 +39,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             };
         }
 
-        public static IQueryable<IForItemVM<LiteratureGenre, Book>> MapForItem(this IQueryable<LiteratureGenre> sortedList, Book item)
+        public static IEnumerable<IForItemVM<LiteratureGenre, Book>> MapForItem(this IQueryable<LiteratureGenre> sortedList, Book item)
         {
-            return sortedList.Select(it => it.MapForItem(item));
+            return sortedList.Select(it => it.MapForItem(item)).ToList();
         }
 
         public static ListGenreForBookVM MapForItemToList(this IQueryable<LiteratureGenre> genresWithBooks, Book book, Paging paging, Filtering filtering)

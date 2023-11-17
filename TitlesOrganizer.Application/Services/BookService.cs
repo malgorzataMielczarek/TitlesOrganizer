@@ -139,6 +139,20 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
+        public PartialList<Book> GetPartialListForSeries(int seriesId, int pageSize, int pageNo)
+        {
+            var series = _queries.GetBookSeriesWithBooks(seriesId);
+
+            if (series == null || series.Books == null)
+            {
+                return new PartialList<Book>(pageSize); ;
+            }
+            else
+            {
+                return MapToPartialList(series.Books, pageSize, pageNo);
+            }
+        }
+
         public void SelectAuthors(int bookId, List<int> selectedIds)
         {
             var book = _queries.GetBook(bookId);

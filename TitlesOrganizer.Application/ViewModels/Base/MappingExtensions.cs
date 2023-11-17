@@ -6,7 +6,7 @@ namespace TitlesOrganizer.Application.ViewModels.Base
 {
     public static class MappingExtensions
     {
-        public static TList MapForItemToDoubleList<T, TItem, TList>(this IQueryable<IForItemVM<T, TItem>> sortedList, IForListVM<TItem> item, Paging paging, Filtering filtering)
+        public static TList MapForItemToDoubleList<T, TItem, TList>(this IEnumerable<IForItemVM<T, TItem>> sortedList, IForListVM<TItem> item, Paging paging, Filtering filtering)
             where T : class, IBaseModel
             where TItem : class, IBaseModel
             where TList : class, IDoubleListForItemVM<T, TItem>, new()
@@ -25,7 +25,7 @@ namespace TitlesOrganizer.Application.ViewModels.Base
             };
         }
 
-        public static TList MapForItemToList<T, TItem, TList>(this IQueryable<IForItemVM<T, TItem>> sortedList, IForListVM<TItem> item, Paging paging, Filtering filtering)
+        public static TList MapForItemToList<T, TItem, TList>(this IEnumerable<IForItemVM<T, TItem>> sortedList, IForListVM<TItem> item, Paging paging, Filtering filtering)
             where T : class, IBaseModel
             where TItem : class, IBaseModel
             where TList : class, IListForItemVM<T, TItem>, new()

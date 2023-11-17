@@ -52,7 +52,8 @@ namespace TitlesOrganizer.Application.Services
             if (series != null)
             {
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                    .Where(b => b.SeriesId == id);
+                    .Where(b => b.SeriesId == id)
+                    .ToList();
                 var authors = books.SelectMany(b => b.Authors)
                     .DistinctBy(a => a.Id);
                 var genres = books.SelectMany(b => b.Genres)
@@ -173,7 +174,7 @@ namespace TitlesOrganizer.Application.Services
             });
         }
 
-        protected virtual SeriesDetailsVM MapToDetails(BookSeries series, IQueryable<Book> books, int bookPageSize, int bookPageNo, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres)
+        protected virtual SeriesDetailsVM MapToDetails(BookSeries series, IEnumerable<Book> books, int bookPageSize, int bookPageNo, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres)
         {
             return series.MapToDetails(
                 books,

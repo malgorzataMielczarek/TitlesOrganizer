@@ -1,12 +1,12 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListGenreForListVM
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListSeriesForListVM
 
 @{
-    ViewData["Title"] = "Genres";
+    ViewData["Title"] = "Book series";
 }
 
-<h1>Genres</h1>
+<h1>Book series</h1>
 
-<form asp-action="Genres" asp-controller="Books" method="post">
+<form asp-action="Series" asp-controller="Books" method="post">
     <div class="row">
         <div class="mb-1">
             <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">Toggle filters</button>
@@ -19,18 +19,18 @@
             <div class="offcanvas-body">
                 <div class="container list-group list-group-horizontal-md">
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" name="sortBy" asp-for="Filtering.SortBy"
-                        asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
+                        <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
                         <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:Submit();">
-                            <option value="3">3 genres on page</option>
-                            <option value="5">5 genres on page</option>
-                            <option value="10">10 genres on page</option>
-                            <option value="15">15 genres on page</option>
-                            <option value="20">20 genres on page</option>
-                            <option value="50">50 genres on page</option>
-                            <option value="100">100 genres on page</option>
+                            <option value="1">1 book series on page</option>
+                            <option value="3">3 book series on page</option>
+                            <option value="5">5 book series on page</option>
+                            <option value="10">10 book series on page</option>
+                            <option value="15">15 book series on page</option>
+                            <option value="20">20 book series on page</option>
+                            <option value="50">50 book series on page</option>
+                            <option value="100">100 book series on page</option>
                         </select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
@@ -44,27 +44,28 @@
         </div>
     </div>
     <p class="row">
-        <a asp-action="GenreUpsert" class="col">Create New</a>
+        <a asp-action="SeriesUpsert" class="col">Create New</a>
     </p>
     <div class="row">
-        <table class="table" id="GenresGrid">
+        <table class="table" id="SeriesGrid">
             <thead>
                 <tr>
-                    <th>Type</th>
+                    <th>Full name</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-            @foreach (var genre in Model.Values) {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => genre.Description)</td>
-                    <td>
-                        @Html.ActionLink("Edit", "GenreUpsert", new { id = genre.Id }) |
-                        <a class="details" href="javascript:ShowDetails(@genre.Id);">Details</a> |
-                        @Html.ActionLink("Delete", "GenreDelete", new { id = genre.Id })
-                    </td>
-                </tr>
-            }
+                @foreach (var series in Model.Values)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => series.Description)</td>
+                        <td>
+                            @Html.ActionLink("Edit", "SeriesUpsert", new { id = series.Id }) |
+                            <a class="details" href="javascript:ShowDetails(@series.Id);">Details</a> |
+                            @Html.ActionLink("Delete", "SeriesDelete", new { id = series.Id })
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -110,7 +111,7 @@
                 }
             </ul>
         </nav>
-        <input type="hidden" name="pageNo" id="pageNo"/>
+        <input type="hidden" name="pageNo" id="pageNo" />
     </div>
 </form>
 
@@ -130,29 +131,29 @@
 </div>
 @section Scripts {
     <script type="text/javascript">
-        function PagerClick(index){
+        function PagerClick(index) {
             document.getElementById("pageNo").value = index;
             Submit();
         }
 
-        function Submit(){
+        function Submit() {
             document.forms[0].submit();
         }
 
         function ShowDetails(id) {
             var token = $('input[name="__RequestVerificationToken"]').val();
-            $.post("/Books/GenreDetailsPartial", {
+            $.post("/Books/SeriesDetailsPartial", {
                 "id": id,
                 "__RequestVerificationToken": token
             })
-            .done(function (response) {
-                $("#partialModal").find(".modal-body").html(response);
-                $("#partialModal").modal('show');
-            })
-            .fail(function (response) {
-                alert(response.responseText);
-            });
+                .done(function (response) {
+                    $("#partialModal").find(".modal-body").html(response);
+                    $("#partialModal").modal('show');
+                })
+                .fail(function (response) {
+                    alert(response.responseText);
+                });
         }
     </script>
-    <script type="text/javascript" src="~/js/Books/GenreDetailsScript.js"></script>
+    <script type="text/javascript" src="~/js/Books/SeriesDetailsScript.js"></script>
 }

@@ -7,10 +7,12 @@ function ReloadBooks() {
     var authorId = document.getElementById("authorId").value;
     var booksPageSize = document.getElementById("booksPageSize").value;
     var booksPageNo = document.getElementById("booksPageNo").value;
+    var token = $('input[name="__RequestVerificationToken"]').val();
     $.post("/Books/BooksPartial", {
         "booksPageSize": booksPageSize,
         "booksPageNo": booksPageNo,
-        "authorId": authorId
+        "authorId": authorId,
+        "__RequestVerificationToken": token
     })
         .done(function (response) {
             $("#authorDetails").find("#booksPartial").html(response);
@@ -32,10 +34,12 @@ function ReloadGenres() {
     var authorId = document.getElementById("authorId").value;
     var genresPageSize = document.getElementById("genresPageSize").value;
     var genresPageNo = document.getElementById("genresPageNo").value;
+    var token = $('input[name="__RequestVerificationToken"]').val();
     $.post("/Books/GenresPartial", {
         "genresPageSize": genresPageSize,
         "genresPageNo": genresPageNo,
-        "authorId": authorId
+        "authorId": authorId,
+        "__RequestVerificationToken": token
     })
         .done(function (response) {
             $("#authorDetails").find("#genresPartial").html(response);
@@ -57,10 +61,12 @@ function ReloadSeries() {
     var authorId = document.getElementById("authorId").value;
     var seriesPageSize = document.getElementById("seriesPageSize").value;
     var seriesPageNo = document.getElementById("seriesPageNo").value;
+    var token = $('input[name="__RequestVerificationToken"]').val();
     $.post("/Books/SeriesPartial", {
         "seriesPageSize": seriesPageSize,
         "seriesPageNo": seriesPageNo,
-        "authorId": authorId
+        "authorId": authorId,
+        "__RequestVerificationToken": token
     })
         .done(function (response) {
             $("#authorDetails").find("#seriesPartial").html(response);

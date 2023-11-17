@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = @Model.Title;
 }
-
+@Html.AntiForgeryToken()
 <div class="container w-100 p-0" id="authorDetails">
     <h1 class="mb-0 align-bottom text-wrap w-100">@Model.Title</h1>
     <input type="hidden" asp-for="@Model.Id" id="authorId" name="authorId" />

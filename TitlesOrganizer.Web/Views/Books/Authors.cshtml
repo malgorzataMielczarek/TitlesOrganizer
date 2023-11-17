@@ -22,7 +22,7 @@
                         <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:Submit();"></select>
                     </div>
                     <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                        <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:Submit();" action="/Books/Index">
+                        <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:Submit();">
                             <option value="3">3 authors on page</option>
                             <option value="5">5 authors on page</option>
                             <option value="10">10 authors on page</option>
@@ -140,8 +140,11 @@
         }
 
         function ShowDetails(id) {
-            console.log(id);
-            $.post("/Books/AuthorDetailsPartial", { "id": id })
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $.post("/Books/AuthorDetailsPartial", {
+                "id": id,
+                "__RequestVerificationToken": token
+            })
                 .done(function (response) {
                     $("#partialModal").find(".modal-body").html(response);
                     $("#partialModal").modal('show');

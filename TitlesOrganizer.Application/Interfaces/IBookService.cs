@@ -24,7 +24,7 @@ namespace TitlesOrganizer.Application.Interfaces
         PartialList<Book> GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
 
         PartialList<Book> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
-
+        PartialList<Book> GetPartialListForSeries(int seriesId, int pageSize, int pageNo);
         void SelectAuthors(int bookId, List<int> selectedIds);
 
         void SelectGenres(int bookId, List<int> selectedIds);

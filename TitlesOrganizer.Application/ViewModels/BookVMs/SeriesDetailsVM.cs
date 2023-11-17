@@ -19,7 +19,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
     public static partial class MappingExtensions
     {
-        public static SeriesDetailsVM MapToDetails(this BookSeries series, IQueryable<Book> books, Paging booksPaging, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres)
+        public static SeriesDetailsVM MapToDetails(this BookSeries series, IEnumerable<Book> books, Paging booksPaging, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres)
         {
             return new SeriesDetailsVM()
             {
@@ -28,8 +28,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
                 OriginalTitle = series.OriginalTitle ?? string.Empty,
                 Description = series.Description ?? string.Empty,
                 Books = books.MapToPartialList(booksPaging),
-                Authors = authors.Map().ToList(),
-                Genres = genres.Map().ToList()
+                Authors = authors.Map(),
+                Genres = genres.Map()
             };
         }
 
