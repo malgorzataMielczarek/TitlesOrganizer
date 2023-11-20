@@ -27,9 +27,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
                 Title = series.Title,
                 OriginalTitle = series.OriginalTitle ?? string.Empty,
                 Description = series.Description ?? string.Empty,
-                Books = books.MapToPartialList(booksPaging),
-                Authors = authors.Map(),
-                Genres = genres.Map()
+                Books = books.OrderBy(b => b.Title).MapToPartialList(booksPaging),
+                Authors = authors.OrderBy(a => a.LastName).ThenBy(a => a.Name).Map(),
+                Genres = genres.OrderBy(g => g.Name).Map()
             };
         }
 

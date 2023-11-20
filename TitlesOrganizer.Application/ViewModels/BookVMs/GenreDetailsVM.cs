@@ -20,9 +20,9 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             {
                 Id = genre.Id,
                 Title = genre.Name,
-                Books = books.MapToPartialList(booksPaging),
-                Series = series.MapToPartialList(seriesPaging),
-                Authors = authors.MapToPartialList(authorsPaging)
+                Books = books.OrderBy(b => b.Title).MapToPartialList(booksPaging),
+                Series = series.OrderBy(b => b.Title).MapToPartialList(seriesPaging),
+                Authors = authors.OrderBy(a => a.LastName).ThenBy(a => a.Name).MapToPartialList(authorsPaging)
             };
         }
 

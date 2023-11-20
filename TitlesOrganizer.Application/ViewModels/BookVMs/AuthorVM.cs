@@ -45,7 +45,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         {
             var authorVM = mapper.Map<AuthorVM>(authorWithBooks);
             booksPaging.Count = authorWithBooks.Books.Count;
-            authorVM.Books.Values = authorWithBooks.Books.MapToList(ref booksPaging);
+            authorVM.Books.Values = authorWithBooks.Books.OrderBy(b => b.Title).MapToList(ref booksPaging);
             authorVM.Books.Paging = booksPaging;
 
             return authorVM;
@@ -61,7 +61,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             }
             else
             {
-                authorVM.Books.Values = books.MapToList(ref booksPaging).ToList();
+                authorVM.Books.Values = books.OrderBy(b => b.Title).MapToList(ref booksPaging).ToList();
             }
 
             authorVM.Books.Paging = booksPaging;

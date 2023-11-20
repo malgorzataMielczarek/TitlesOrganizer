@@ -5,7 +5,6 @@ using FluentValidation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
@@ -66,8 +65,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static BookVM MapFromBase(this Book bookWithAllRelatedObjects, IMapper mapper)
         {
             var bookVM = mapper.Map<BookVM>(bookWithAllRelatedObjects);
-            bookVM.Authors = bookWithAllRelatedObjects.Authors.Map();
-            bookVM.Genres = bookWithAllRelatedObjects.Genres.Map();
+            bookVM.Authors = bookWithAllRelatedObjects.Authors.OrderBy(a => a.LastName).ThenBy(a => a.Name).Map();
+            bookVM.Genres = bookWithAllRelatedObjects.Genres.OrderBy(g => g.Name).Map();
             bookVM.Series = bookWithAllRelatedObjects.Series?.Map();
 
             return bookVM;
@@ -76,8 +75,8 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static BookVM MapFromBase(this Book book, IMapper mapper, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres, BookSeries? series)
         {
             var bookVM = mapper.Map<BookVM>(book);
-            bookVM.Authors = authors?.Map().ToList() ?? new List<IForListVM<Author>>();
-            bookVM.Genres = genres?.Map().ToList() ?? new List<IForListVM<LiteratureGenre>>();
+            bookVM.Authors = authors?.OrderBy(a => a.LastName).ThenBy(a => a.Name).Map().ToList() ?? new List<IForListVM<Author>>();
+            bookVM.Genres = genres?.OrderBy(g => g.Name).Map().ToList() ?? new List<IForListVM<LiteratureGenre>>();
             bookVM.Series = series?.Map();
 
             return bookVM;

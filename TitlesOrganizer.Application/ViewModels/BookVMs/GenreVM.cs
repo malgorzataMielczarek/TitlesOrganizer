@@ -44,7 +44,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             }
             else
             {
-                genreVM.Books.Values = genreWithBooks.Books.MapToList(ref booksPaging);
+                genreVM.Books.Values = genreWithBooks.Books.OrderBy(b => b.Title).MapToList(ref booksPaging);
             }
 
             genreVM.Books.Paging = booksPaging;
@@ -62,7 +62,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             }
             else
             {
-                genreVM.Books.Values = books.MapToList(ref booksPaging).ToList();
+                genreVM.Books.Values = books.OrderBy(b => b.Title).MapToList(ref booksPaging).ToList();
             }
 
             genreVM.Books.Paging = booksPaging;

@@ -47,7 +47,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         public static SeriesVM MapFromBase(this BookSeries seriesWithBooks, IMapper mapper, Paging booksPaging)
         {
             var seriesVM = mapper.Map<SeriesVM>(seriesWithBooks);
-            seriesVM.Books.Values = seriesWithBooks.Books.MapToList(ref booksPaging);
+            seriesVM.Books.Values = seriesWithBooks.Books.OrderBy(b => b.Title).MapToList(ref booksPaging);
             seriesVM.Books.Paging = booksPaging;
 
             return seriesVM;
@@ -63,7 +63,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             }
             else
             {
-                seriesVM.Books.Values = books.MapToList(ref booksPaging).ToList();
+                seriesVM.Books.Values = books.OrderBy(b => b.Title).MapToList(ref booksPaging).ToList();
             }
 
             seriesVM.Books.Paging = booksPaging;

@@ -59,10 +59,10 @@
                     <div class="offcanvas-body">
                         <div class="container list-group">
                             <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                                <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:SelectAuthorsSubmit();"></select>
+                                <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:$(this.form).trigger('submit')"></select>
                             </div>
                             <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                                <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:SelectAuthorsSubmit();">
+                                <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:$(this.form).trigger('submit')">
                                     <option value="3">3 authors on page</option>
                                     <option value="5">5 authors on page</option>
                                     <option value="10">10 authors on page</option>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="list-group-item flex-fill bg-body-tertiary border-0">
                                 <div class="input-group">
-                                    <input class="form-control" type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:SelectAuthorsSubmit();" />
+                                    <input class="form-control" type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:$(this.form).trigger('submit')" />
                                     <input type="submit" class="btn btn-outline-secondary float-start" value="Search" />
                                 </div>
                             </div>

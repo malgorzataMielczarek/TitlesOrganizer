@@ -530,8 +530,8 @@ namespace TitlesOrganizer.Web.Controllers
 
             if (closeModal)
             {
-                var authors = string.Join(", ", _bookService.GetDetails(bookId).Authors.Select(a => a.Description));
-                return Ok(authors);
+                //var authors = string.Join(", ", .Select(a => a.Description));
+                return Ok(_bookService.GetDetails(bookId).Authors);
             }
             else
             {

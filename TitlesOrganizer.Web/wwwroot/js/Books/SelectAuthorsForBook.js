@@ -18,14 +18,20 @@ function SelectAuthorsSubmit(event) {
     event.preventDefault();
 }
 function HandleSuccessResponse(response) {
-    if (response.startsWith("<form")) {
+    if (!Array.isArray(response) && response.startsWith("<form")) {
         document.querySelector("#partialModal .modal-header > .modal-title").innerText = "Select authors";
         $("#partialModal").find(".modal-body").html(response);
         $("#partialModal").modal('show');
     }
     else {
         $("#partialModal").modal('hide');
-        document.getElementById("authorsDiv").innerText = response;
+        document.getElementById("Authors").value = response;
+        var authors = '';
+        for (var i = 0; i < response.length - 1; i++) {
+            authors += response[i].description + ", ";
+        }
+        authors += response[response.length - 1].description;
+        document.getElementById("authorsDiv").innerText = authors;
     }
 }
 
