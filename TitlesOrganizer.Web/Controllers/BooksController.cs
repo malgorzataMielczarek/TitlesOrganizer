@@ -306,7 +306,7 @@ namespace TitlesOrganizer.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddGenresForBook(int bookId, List<int> genresIds)
+        public ActionResult AddGenresForBook(int bookId, int[] genresIds)
         {
             _bookService.SelectGenres(bookId, genresIds);
             return View(bookId);
@@ -498,9 +498,9 @@ namespace TitlesOrganizer.Web.Controllers
 
             if (id.HasValue)
             {
-                ListAuthorForBookVM authors = _authorService.GetListForBook(id.Value, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
+                var authors = _authorService.GetListForBook(id.Value, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
 
-                return PartialView(authors);
+                return PartialView("_SelectAuthorsForBook", authors);
             }
             else
             {
@@ -508,25 +508,37 @@ namespace TitlesOrganizer.Web.Controllers
             }
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook, int? pageNo)
+        //{
+        //    listAuthorForBook.Paging.CurrentPage = pageNo.HasValue ? pageNo.Value : 1;
+
+        // //_authorService.SelectForBook(listAuthorForBook); ListAuthorForBookVM authors =
+        // _authorService.GetListForBook(listAuthorForBook.Item.Id,
+        // listAuthorForBook.Filtering.SortBy, listAuthorForBook.Paging.PageSize,
+        // listAuthorForBook.Paging.CurrentPage, listAuthorForBook.Filtering.SearchString);
+
+        //    return View(authors);
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook, int? pageNo)
+        public ActionResult FinalizeSelectAuthorsForBook(bool closeModal, int bookId, SortByEnum sortBy, int pageSize, int? pageNo, string? searchString, int[] ids)
         {
-            listAuthorForBook.Paging.CurrentPage = pageNo.HasValue ? pageNo.Value : 1;
+            _bookService.SelectAuthors(bookId, ids);
 
-            //_authorService.SelectForBook(listAuthorForBook);
-            ListAuthorForBookVM authors = _authorService.GetListForBook(listAuthorForBook.Item.Id, listAuthorForBook.Filtering.SortBy, listAuthorForBook.Paging.PageSize, listAuthorForBook.Paging.CurrentPage, listAuthorForBook.Filtering.SearchString);
+            if (closeModal)
+            {
+                var authors = string.Join(", ", _bookService.GetDetails(bookId).Authors.Select(a => a.Description));
+                return Ok(authors);
+            }
+            else
+            {
+                var authors = _authorService.GetListForBook(bookId, sortBy, pageSize, pageNo ?? 1, searchString);
 
-            return View(authors);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult FinalizeSelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook)
-        {
-            //_authorService.SelectForBook(listAuthorForBook);
-
-            return RedirectToAction(nameof(GetUpsertBook), new { id = listAuthorForBook.Item.Id });
+                return PartialView("_SelectAuthorsForBook", authors);
+            }
         }
 
         [HttpPost("/Books/Update/AddAuthor")]

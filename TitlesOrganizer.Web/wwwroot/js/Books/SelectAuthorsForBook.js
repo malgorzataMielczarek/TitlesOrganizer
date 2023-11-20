@@ -1,76 +1,34 @@
-﻿function PagerClick(index) {
+﻿function AuthorsPagerClick(index) {
     document.getElementById("pageNo").value = index;
-    Submit();
 }
 
-function Submit() {
-    document.forms[0].setAttribute("action", "SelectAuthorsForBook");
-    document.forms[0].submit();
+function SelectAuthorsSubmit(event) {
+    $.ajax({
+        url: $(event.target).attr('action'),
+        type: 'POST',
+        data: $(event.target).serialize(),
+        success: function (response) {
+            HandleSuccessResponse(response);
+        },
+        error: function (response) {
+            fhToastr.error(response.responseText);
+        }
+    });
+
+    event.preventDefault();
 }
-
-function AuthorSelectionChanged(checkbox) {
-    var row = $(checkbox).closest("tr")[0];
-    var id = row.querySelector('input[type="hidden"]:first-of-type').value;
-    var fullName = row.querySelector('td:nth-of-type(2)').innerText;
-    var otherBooks = row.querySelector('td:nth-of-type(3)').innerText;
-
-    var selectedTable = document.querySelector("#selectedAuthors > tbody");
-    if (selectedTable) {
-        var selectedRow = $(selectedTable).find('tr > input[type="hidden"][value="' + id + '"]').parent()[0];
-
-        if (checkbox.checked) {
-            if (!selectedRow) {
-                var row = document.createElement("tr");
-
-                var idInput = document.createElement("INPUT");
-                idInput.setAttribute("type", "hidden");
-                idInput.setAttribute("value", id);
-                var lastInput = selectedTable.querySelector('tr:last-of-type > input[type="hidden"]');
-                var name;
-                var identifier;
-                if (lastInput) {
-                    var lastName = lastInput.getAttribute("name");
-                    var numberStart = lastName.indexOf('[') + 1;
-                    var numberEnd = lastName.indexOf(']');
-                    var number = lastName.substring(numberStart, numberEnd);
-                    var newNumber = (parseInt(number) + 1).toString();
-                    name = lastName.replace(number, newNumber);
-                    identifier = lastInput.id.replace(number, newNumber);
-                }
-                else {
-                    name = "SelectedAuthors[0].Id";
-                    identifier = "SelectedAuthors_0__Id"
-                }
-                idInput.setAttribute("name", name);
-                idInput.id = identifier;
-                row.appendChild(idInput);
-
-                var authorTd = document.createElement("td");
-                authorTd.innerText = fullName;
-                row.appendChild(authorTd);
-
-                var otherBooksTd = document.createElement("td");
-                otherBooksTd.innerText = otherBooks;
-                row.appendChild(otherBooksTd);
-
-                selectedTable.appendChild(row);
-            }
-        }
-        else {
-            if (selectedRow) {
-                var nextRows = $(selectedRow).nextAll("tr");
-                selectedTable.removeChild(selectedRow);
-                for (var i = 0; i < nextRows.length; i++) {
-                    var thisInput = nextRows[i].querySelector('input[type="hidden"]');
-                    var thisName = thisInput.getAttribute("name");
-                    var thisNumberStart = thisName.indexOf("[") + 1;
-                    var thisNumberEnd = thisName.indexOf("]");
-                    var thisNumber = thisName.substring(thisNumberStart, thisNumberEnd);
-                    var thisNewNumber = (parseInt(thisNumber) - 1).toString();
-                    thisInput.setAttribute("name", thisName.replace(thisNumber, thisNewNumber));
-                    thisInput.id = thisInput.id.replace(thisNumber, thisNewNumber);
-                }
-            }
-        }
+function HandleSuccessResponse(response) {
+    if (response.startsWith("<form")) {
+        document.querySelector("#partialModal .modal-header > .modal-title").innerText = "Select authors";
+        $("#partialModal").find(".modal-body").html(response);
+        $("#partialModal").modal('show');
     }
+    else {
+        $("#partialModal").modal('hide');
+        document.getElementById("authorsDiv").innerText = response;
+    }
+}
+
+function CloseModal() {
+    document.getElementById("closeModal").value = true;
 }

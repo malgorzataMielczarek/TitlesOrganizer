@@ -118,23 +118,37 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
-        public void SelectBooks(int genreId, List<int> booksIds)
+        public void SelectBooks(int genreId, int[] booksIds)
         {
-            var genre = _queries.GetLiteratureGenre(genreId);
+            var genre = _queries.GetLiteratureGenreWithBooks(genreId);
 
             if (genre != null)
             {
-                var books = new List<Book>();
-                foreach (var id in booksIds)
+                if (genre.Books == null)
                 {
-                    var book = _queries.GetBook(id);
-                    if (book != null)
+                    genre.Books = new List<Book>();
+                }
+                else
+                {
+                    var booksToRemove = genre.Books.Where(b => !booksIds.Contains(b.Id)).ToList();
+                    foreach (var book in booksToRemove)
                     {
-                        books.Add(book);
+                        genre.Books.Remove(book);
                     }
                 }
 
-                genre.Books = books;
+                foreach (var id in booksIds)
+                {
+                    if (!genre.Books.Any(b => b.Id == id))
+                    {
+                        var book = _queries.GetBook(id);
+                        if (book != null)
+                        {
+                            genre.Books.Add(book);
+                        }
+                    }
+                }
+
                 _commands.UpdateLiteratureGenreBooksRelation(genre);
             }
         }

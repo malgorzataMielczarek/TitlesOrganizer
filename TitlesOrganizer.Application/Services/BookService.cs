@@ -153,44 +153,58 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
-        public void SelectAuthors(int bookId, List<int> selectedIds)
+        public void SelectAuthors(int bookId, int[] selectedIds)
         {
-            var book = _queries.GetBook(bookId);
+            var book = _queries.GetBookWithAuthorsGenresAndSeries(bookId);
 
             if (book != null)
             {
-                var authors = new List<Author>();
+                var authorsToRemove = book.Authors.Where(a => !selectedIds.Contains(a.Id)).ToList();
+                foreach (var author in authorsToRemove)
+                {
+                    book.Authors.Remove(author);
+                }
+
                 foreach (var id in selectedIds)
                 {
-                    var author = _queries.GetAuthor(id);
-                    if (author != null)
+                    if (!book.Authors.Any(a => a.Id == id))
                     {
-                        authors.Add(author);
+                        var author = _queries.GetAuthor(id);
+                        if (author != null)
+                        {
+                            book.Authors.Add(author);
+                        }
                     }
                 }
 
-                book.Authors = authors;
                 _commands.UpdateBookAuthorsRelation(book);
             }
         }
 
-        public void SelectGenres(int bookId, List<int> selectedIds)
+        public void SelectGenres(int bookId, int[] selectedIds)
         {
-            var book = _queries.GetBook(bookId);
+            var book = _queries.GetBookWithAuthorsGenresAndSeries(bookId);
 
             if (book != null)
             {
-                var genres = new List<LiteratureGenre>();
+                var genresToRemove = book.Genres.Where(g => !selectedIds.Contains(g.Id)).ToList();
+                foreach (var genre in genresToRemove)
+                {
+                    book.Genres.Remove(genre);
+                }
+
                 foreach (var id in selectedIds)
                 {
-                    var genre = _queries.GetLiteratureGenre(id);
-                    if (genre != null)
+                    if (!book.Genres.Any(g => g.Id == id))
                     {
-                        genres.Add(genre);
+                        var genre = _queries.GetLiteratureGenre(id);
+                        if (genre != null)
+                        {
+                            book.Genres.Add(genre);
+                        }
                     }
                 }
 
-                book.Genres = genres;
                 _commands.UpdateBookGenresRelation(book);
             }
         }

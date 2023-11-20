@@ -20,7 +20,7 @@
             var authors = string.Join(", ", @Model.Authors.Select(a => a.Description));
             if (!string.IsNullOrWhiteSpace(authors))
         {
-            <div class="col-sm-auto col-auto">
+            <div class="col-sm-auto col-auto" id="authorsDiv">
                 @authors
                 <span asp-validation-for="Authors" class="text-danger"></span>
             </div>
@@ -130,6 +130,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title"></h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -191,6 +192,7 @@
             }
         
             jqxhr.done(function (response) {
+                document.querySelector("#partialModal .modal-header > .modal-title").innerText = "Select authors";
                 $("#partialModal").find(".modal-body").html(response);
                 $("#partialModal").modal('show');
             })
@@ -199,6 +201,6 @@
             });
         }
     </script>
-
+    <script type="text/javascript" src="~/js/Books/SelectAuthorsForBook.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

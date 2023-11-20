@@ -120,22 +120,29 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
-        public void SelectBooks(int authorId, List<int> booksIds)
+        public void SelectBooks(int authorId, int[] booksIds)
         {
-            var author = _queries.GetAuthor(authorId);
+            var author = _queries.GetAuthorWithBooks(authorId);
             if (author != null)
             {
-                var books = new List<Book>();
+                var booksToRemove = author.Books.Where(b => !booksIds.Contains(b.Id)).ToList();
+                foreach (var book in booksToRemove)
+                {
+                    author.Books.Remove(book);
+                }
+
                 foreach (var id in booksIds)
                 {
-                    var book = _queries.GetBook(id);
-                    if (book != null)
+                    if (!author.Books.Any(b => b.Id == id))
                     {
-                        books.Add(book);
+                        var book = _queries.GetBook(id);
+                        if (book != null)
+                        {
+                            author.Books.Add(book);
+                        }
                     }
                 }
 
-                author.Books = books;
                 _commands.UpdateAuthorBooksRelation(author);
             }
         }
@@ -228,7 +235,7 @@ namespace TitlesOrganizer.Application.Services
                 new Paging()
                 {
                     CurrentPage = pageNo,
-                    PageSize = pageNo
+                    PageSize = pageSize
                 },
                 new Filtering()
                 {

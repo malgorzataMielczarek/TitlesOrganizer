@@ -1,0 +1,175 @@
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
+<form enctype="multipart/form-data" method="post" id="selectAuthors" asp-action="FinalizeSelectAuthorsForBook" onsubmit="SelectAuthorsSubmit(event);" >
+    <input type="hidden" asp-for="Item.Id" name="bookId" />
+    <input type="hidden" asp-for="Item.Description" />
+    <div class="card w-100">
+        <div class="card-header d-flex w-100 mb-1 bg-body-tertiary border-0 align-items-center">
+            <h5>Previously selected authors</h5>
+        </div>
+        @if (Model.SelectedValues.Count > 0)
+        {
+            <ul class="list-group list-group-flush" id="selectedAuthors">
+                @{
+                    int selectedI = 0;
+                    foreach (var author in Model.SelectedValues)
+                    {
+                        var id = $"selectedAuthor_{selectedI}";
+                        <li class="list-group-item list-group-item-action">
+                            @if (author.IsForItem)
+                            {
+                                <input type="checkbox" class="form-check-input" value="@author.Id" checked id="@id" name="ids" />
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="form-check-input" value="@author.Id" id="@id" name="ids" />
+                            }
+
+                            <label class="form-check-label" for="@id">
+                                @author.Description
+                            </label>
+                        </li>
+                        selectedI++;
+                    }
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="card-body">
+                <small><i>No previously selected authors</i></small>
+            </div>
+        }
+    </div>
+    <div class="card w-100">
+        <div class="card-header d-flex w-100 justify-content-between mb-1 bg-body-tertiary border-0 align-items-center ">
+            <h5>Other authors</h5>
+            <div class="row">
+                <div class="mb-1">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive" title="Toogle filters">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                            <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasResponsiveLabel">Filters</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <div class="container list-group">
+                            <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                                <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:SelectAuthorsSubmit();"></select>
+                            </div>
+                            <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                                <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:SelectAuthorsSubmit();">
+                                    <option value="3">3 authors on page</option>
+                                    <option value="5">5 authors on page</option>
+                                    <option value="10">10 authors on page</option>
+                                    <option value="15">15 authors on page</option>
+                                    <option value="20">20 authors on page</option>
+                                    <option value="50">50 authors on page</option>
+                                    <option value="100">100 authors on page</option>
+                                </select>
+                            </div>
+                            <div class="list-group-item flex-fill bg-body-tertiary border-0">
+                                <div class="input-group">
+                                    <input class="form-control" type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:SelectAuthorsSubmit();" />
+                                    <input type="submit" class="btn btn-outline-secondary float-start" value="Search" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="list-group list-group-flush">
+            @{
+                int otherI = 0;
+                foreach (var author in Model.Values)
+                {
+                    var id = $"otherAuthor_{otherI}";
+                    <li class="list-group-item list-group-item-action">
+                        @if (author.IsForItem)
+                        {
+                            <input type="checkbox" class="form-check-input" value="@author.Id" checked id="@id" name="ids" />
+                        }
+                        else
+                        {
+                            <input type="checkbox" class="form-check-input" value="@author.Id" id="@id" name="ids" />
+                        }
+
+                        <label class="form-check-label" for="@id">
+                            @author.Description
+                        </label>
+                    </li>
+                    otherI++;
+                }
+            }
+            <li class="list-group-item list-group-item-action">
+                <button type="submit" title="Add new author" asp-action="AddNewAuthorForBook" formmethod="post">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                    </svg>
+                </button>
+            </li>
+        </ul>
+        <div class="card-footer justify-content-center">
+            @{
+                var pages = Math.Ceiling(Model.Paging.Count / (double)Model.Paging.PageSize);
+                int numbersNextTo = 2;
+            }
+            <nav aria-label="...">
+                <ul class="pagination">
+                    @if (Model.Paging.CurrentPage > numbersNextTo + 1)
+                    {
+                        <li class="page-item">
+                            <button type="submit" class="page-link" onclick="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </button>
+                        </li>
+                    }
+                    @for (int i = numbersNextTo; i >= 1; i--)
+                    {
+                        if (i < Model.Paging.CurrentPage)
+                        {
+                            <li class="page-item">
+                                <button type="submit" class="page-link" onclick="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage - i))">
+                                    @(Model.Paging.CurrentPage - i)
+                                </button>
+                            </li>
+                        }
+                    }
+                    @if (pages > 1)
+                    {
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">@Model.Paging.CurrentPage</span>
+                        </li>
+                    }
+                    @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
+                    {
+                        <li class="page-item">
+                            <button type="submit" class="page-link" onclick="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage + i))">
+                                @(Model.Paging.CurrentPage + i)
+                            </button>
+                        </li>
+                    }
+                    @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
+                    {
+                        <li class="page-item">
+                            <button type="submit" class="page-link" onclick="javascript:AuthorsPagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            <input type="hidden" name="pageNo" id="pageNo" />
+        </div>
+    </div>
+    <div class="row">
+        <input type="submit" value="Select authors" class="btn btn-primary btn-lg" data-bs-dismiss="modal" onclick="javascript:CloseModal()"/>
+        <input type="hidden" value="false" name="closeModal" id="closeModal" />
+    </div>
+</form>

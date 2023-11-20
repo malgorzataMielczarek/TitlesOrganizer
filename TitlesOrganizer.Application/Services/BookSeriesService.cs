@@ -120,23 +120,30 @@ namespace TitlesOrganizer.Application.Services
             }
         }
 
-        public void SelectBooks(int seriesId, List<int> selectedIds)
+        public void SelectBooks(int seriesId, int[] selectedIds)
         {
-            var series = _queries.GetBookSeries(seriesId);
+            var series = _queries.GetBookSeriesWithBooks(seriesId);
 
             if (series != null)
             {
-                var books = new List<Book>();
+                var booksToDelete = series.Books.Where(s => !selectedIds.Contains(s.Id)).ToList();
+                foreach (var book in booksToDelete)
+                {
+                    series.Books.Remove(book);
+                }
+
                 foreach (var id in selectedIds)
                 {
-                    var book = _queries.GetBook(id);
-                    if (book != null)
+                    if (!series.Books.Any(b => b.Id == id))
                     {
-                        books.Add(book);
+                        var book = _queries.GetBook(id);
+                        if (book != null)
+                        {
+                            series.Books.Add(book);
+                        }
                     }
                 }
 
-                series.Books = books;
                 _commands.UpdateBookSeriesBooksRelation(series);
             }
         }
