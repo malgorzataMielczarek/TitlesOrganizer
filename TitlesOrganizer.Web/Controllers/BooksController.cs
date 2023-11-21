@@ -36,6 +36,31 @@ namespace TitlesOrganizer.Web.Controllers
             _bookValidator = bookValidator;
         }
 
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddNewAuthor(int bookId, string newAuthorName, string newAuthorLastName, SortByEnum sortBy, int pageSize, int? pageNo, string? searchString, int[] ids)
+        {
+            if (string.IsNullOrWhiteSpace(newAuthorName) && string.IsNullOrWhiteSpace(newAuthorLastName))
+            {
+                return BadRequest("Enter name or/and last name of the author.");
+            }
+            else
+            {
+                var author = new AuthorVM { Name = newAuthorName.Trim(), LastName = newAuthorLastName.Trim() };
+                int id = _authorService.Upsert(author);
+                if (id > 0)
+                {
+                    _bookService.SelectAuthors(id, ids.Append(id).ToArray());
+                    var authors = _authorService.GetListForBook(bookId, sortBy, pageSize, pageNo ?? 1, searchString);
+                    return PartialView("_SelectAuthorsForBook", authors);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to add new author. Try to repeat performed operation after some time.");
+                }
+            }
+        }
+
         [HttpGet]
         public ActionResult Authors()
         {
@@ -178,6 +203,25 @@ namespace TitlesOrganizer.Web.Controllers
             return PartialView("_BooksPartial", books);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult FinalizeSelectAuthorsForBook(bool closeModal, int bookId, SortByEnum sortBy, int pageSize, int? pageNo, string? searchString, int[] ids)
+        {
+            _bookService.SelectAuthors(bookId, ids);
+
+            if (closeModal)
+            {
+                //var authors = string.Join(", ", .Select(a => a.Description));
+                return Ok(_bookService.GetDetails(bookId).Authors);
+            }
+            else
+            {
+                var authors = _authorService.GetListForBook(bookId, sortBy, pageSize, pageNo ?? 1, searchString);
+
+                return PartialView("_SelectAuthorsForBook", authors);
+            }
+        }
+
         [HttpGet]
         public ActionResult Genres()
         {
@@ -234,6 +278,35 @@ namespace TitlesOrganizer.Web.Controllers
             }
 
             return PartialView("_GenresPartial", genres);
+        }
+
+        [HttpPost]
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public ActionResult SelectAuthorsForBook(int? id, string? title)
+        {
+            if (!id.HasValue)
+            {
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    id = _bookService.Upsert(new BookVM() { Title = title.Trim() });
+                }
+                else
+                {
+                    return BadRequest("Enter book title before selecting authors");
+                }
+            }
+
+            if (id.HasValue)
+            {
+                var authors = _authorService.GetListForBook(id.Value, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
+
+                return PartialView("_SelectAuthorsForBook", authors);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to create new book. Try to repeat performed operation after some time.");
+            }
         }
 
         [HttpGet]
@@ -297,6 +370,37 @@ namespace TitlesOrganizer.Web.Controllers
             return PartialView("_SeriesPartial", series);
         }
 
+        [HttpPost, FormValidator]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpsertBook(BookVM book)
+        {
+            if (ModelState.IsValid)
+            {
+                int id = _bookService.Upsert(book);
+
+                if (id > 0)
+                {
+                    var savedBook = _bookService.Get(id);
+                    if (savedBook.Authors.IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "Update Book";
+                        return FormResult.CreateErrorResult("Specify the author of the book.");
+                    }
+
+                    if (savedBook.Genres.IsNullOrEmpty())
+                    {
+                        ViewData["Title"] = "Update Book";
+                        return FormResult.CreateErrorResult("Specify the genre of the book.");
+                    }
+
+                    return FormResult.CreateSuccessResult("Book added.", Url.Action("Details", new { id = id }));
+                }
+            }
+
+            ViewData["Title"] = "Update Book";
+            return FormResult.CreateErrorResult("Check entered data.", "/Books/Update");
+        }
+
         [HttpGet]
         public ActionResult AddGenresForBook(int id)
         {
@@ -310,44 +414,6 @@ namespace TitlesOrganizer.Web.Controllers
         {
             _bookService.SelectGenres(bookId, genresIds);
             return View(bookId);
-        }
-
-        [HttpGet]
-        public ActionResult AddNewAuthor()
-        {
-            return View(new AuthorVM());
-        }
-
-        [HttpPost, FormValidator]
-        [ValidateAntiForgeryToken]
-        public ActionResult AddNewAuthor(AuthorVM author)
-        {
-            if (ModelState.IsValid)
-            {
-                if (string.IsNullOrWhiteSpace(author.Name) && string.IsNullOrWhiteSpace(author.LastName))
-                {
-                    return FormResult.CreateErrorResult("Enter name or/and last name of the author.");
-                }
-
-                int id = _authorService.Upsert(author);
-
-                if (id > 0)
-                {
-                    string? redirectUri;
-                    //if (author.BookId == default)
-                    //{
-                    redirectUri = Url.Action(nameof(Authors));
-                    //}
-                    //else
-                    //{
-                    //  redirectUri = Url.Action(nameof(SelectAuthorsForBook), new { id = author.BookId });
-                    //}
-
-                    return FormResult.CreateSuccessResult("New author added.", redirectUri);
-                }
-            }
-
-            return FormResult.CreateErrorResult("Check entered data.");
         }
 
         [HttpGet]
@@ -449,65 +515,6 @@ namespace TitlesOrganizer.Web.Controllers
             return FormResult.CreateErrorResultWithObject(book, "You must specify book title first.", Url.Action(nameof(UpsertBook)));
         }
 
-        [HttpPost, FormValidator]
-        [ValidateAntiForgeryToken]
-        public ActionResult UpsertBook(BookVM book)
-        {
-            if (ModelState.IsValid)
-            {
-                int id = _bookService.Upsert(book);
-
-                if (id > 0)
-                {
-                    if (book.Authors.IsNullOrEmpty())
-                    {
-                        ViewData["Title"] = "Update Book";
-                        return FormResult.CreateErrorResult("Specify the author of the book.");
-                    }
-
-                    if (book.Genres.IsNullOrEmpty())
-                    {
-                        ViewData["Title"] = "Update Book";
-                        return FormResult.CreateErrorResult("Specify the genre of the book.");
-                    }
-
-                    return FormResult.CreateSuccessResult("Book added.", Url.Action("Details", new { id = id }));
-                }
-            }
-
-            ViewData["Title"] = "Update Book";
-            return FormResult.CreateErrorResult("Check entered data.", "/Books/Update");
-        }
-
-        [HttpPost]
-        [HttpPut]
-        [ValidateAntiForgeryToken]
-        public ActionResult SelectAuthorsForBook(int? id, string? title)
-        {
-            if (!id.HasValue)
-            {
-                if (!string.IsNullOrWhiteSpace(title))
-                {
-                    id = _bookService.Upsert(new BookVM() { Title = title.Trim() });
-                }
-                else
-                {
-                    return BadRequest("Enter book title before selecting authors");
-                }
-            }
-
-            if (id.HasValue)
-            {
-                var authors = _authorService.GetListForBook(id.Value, SortByEnum.Ascending, SMALL_PAGE_SIZE, 1, string.Empty);
-
-                return PartialView("_SelectAuthorsForBook", authors);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to create new book. Try to repeat performed operation after some time.");
-            }
-        }
-
         //[HttpPost]
         //[ValidateAntiForgeryToken]
         //public ActionResult SelectAuthorsForBook(ListAuthorForBookVM listAuthorForBook, int? pageNo)
@@ -521,25 +528,6 @@ namespace TitlesOrganizer.Web.Controllers
 
         //    return View(authors);
         //}
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult FinalizeSelectAuthorsForBook(bool closeModal, int bookId, SortByEnum sortBy, int pageSize, int? pageNo, string? searchString, int[] ids)
-        {
-            _bookService.SelectAuthors(bookId, ids);
-
-            if (closeModal)
-            {
-                //var authors = string.Join(", ", .Select(a => a.Description));
-                return Ok(_bookService.GetDetails(bookId).Authors);
-            }
-            else
-            {
-                var authors = _authorService.GetListForBook(bookId, sortBy, pageSize, pageNo ?? 1, searchString);
-
-                return PartialView("_SelectAuthorsForBook", authors);
-            }
-        }
 
         [HttpPost("/Books/Update/AddAuthor")]
         [ValidateAntiForgeryToken]

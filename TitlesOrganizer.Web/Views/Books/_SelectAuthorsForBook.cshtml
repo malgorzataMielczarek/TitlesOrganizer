@@ -1,6 +1,6 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
 <form enctype="multipart/form-data" method="post" id="selectAuthors" asp-action="FinalizeSelectAuthorsForBook" onsubmit="SelectAuthorsSubmit(event);" >
-    <input type="hidden" asp-for="Item.Id" name="bookId" />
+    <input type="hidden" asp-for="Item.Id" name="bookId" id="bookId" />
     <input type="hidden" asp-for="Item.Description" />
     <div class="card w-100">
         <div class="card-header d-flex w-100 mb-1 bg-body-tertiary border-0 align-items-center">
@@ -106,13 +106,16 @@
                     otherI++;
                 }
             }
-            <li class="list-group-item list-group-item-action">
-                <button type="submit" title="Add new author" asp-action="AddNewAuthorForBook" formmethod="post">
+            <li class="list-group-item list-group-item-action input-group">
+                <button type="button" title="Add new author" onclick="javascript:AddNewAuthor(event);">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                     </svg>
                 </button>
+                <input id="newAuthorName" name="newAuthorName" placeholder="Name" onchange="javascript:HideNewAuthorError();" />
+                <input id="newAuthorLastName" name="newAuthorLastName" placeholder="Last Name" onchange="javascript:HideNewAuthorError();" />
+                <span class="text-danger" id="newAuthorError" style="display: none;">Enter name or/and last name of the author.</span>
             </li>
         </ul>
         <div class="card-footer justify-content-center">
@@ -168,7 +171,7 @@
             <input type="hidden" name="pageNo" id="pageNo" />
         </div>
     </div>
-    <div class="row">
+    <div class="row sticky-bottom">
         <input type="submit" value="Select authors" class="btn btn-primary btn-lg" data-bs-dismiss="modal" onclick="javascript:CloseModal()"/>
         <input type="hidden" value="false" name="closeModal" id="closeModal" />
     </div>
