@@ -1,31 +1,31 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListAuthorForBookVM
-<form enctype="multipart/form-data" method="post" id="selectAuthors" asp-action="FinalizeSelectAuthorsForBook" onsubmit="SelectAuthorsSubmit(event);" >
+﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListGenreForBookVM
+<form enctype="multipart/form-data" method="post" id="selectGenres" asp-action="FinalizeSelectGenresForBook" onsubmit="SelectGenresSubmit(event);">
     <input type="hidden" asp-for="Item.Id" name="bookId" id="bookId" />
     <input type="hidden" asp-for="Item.Description" />
     <div class="card w-100">
         <div class="card-header d-flex w-100 mb-1 bg-body-tertiary border-0 align-items-center">
-            <h5>Previously selected authors</h5>
+            <h5>Previously selected genres</h5>
         </div>
         @if (Model.SelectedValues.Count > 0)
         {
             <ul class="list-group list-group-flush" id="selectedAuthors">
                 @{
                     int selectedIndex = 0;
-                    foreach (var author in Model.SelectedValues)
+                    foreach (var genre in Model.SelectedValues)
                     {
-                        var id = $"selectedAuthor_{selectedIndex}";
+                        var id = $"selectedGenre_{selectedIndex}";
                         <li class="list-group-item list-group-item-action">
-                            @if (author.IsForItem)
+                            @if (genre.IsForItem)
                             {
-                                <input type="checkbox" class="form-check-input" value="@author.Id" checked id="@id" name="ids" />
+                                <input type="checkbox" class="form-check-input" value="@genre.Id" checked id="@id" name="ids" />
                             }
                             else
                             {
-                                <input type="checkbox" class="form-check-input" value="@author.Id" id="@id" name="ids" />
+                                <input type="checkbox" class="form-check-input" value="@genre.Id" id="@id" name="ids" />
                             }
 
                             <label class="form-check-label" for="@id">
-                                @author.Description
+                                @genre.Description
                             </label>
                         </li>
                         selectedIndex++;
@@ -36,13 +36,13 @@
         else
         {
             <div class="card-body">
-                <small><i>No previously selected authors</i></small>
+                <small><i>No previously selected genres</i></small>
             </div>
         }
     </div>
     <div class="card w-100">
         <div class="card-header d-flex w-100 justify-content-between mb-1 bg-body-tertiary border-0 align-items-center ">
-            <h5>Other authors</h5>
+            <h5>Other genres</h5>
             <div class="row">
                 <div class="mb-1">
                     <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive" title="Toogle filters">
@@ -59,22 +59,22 @@
                     <div class="offcanvas-body">
                         <div class="container list-group">
                             <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                                <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:$(this.form).trigger('submit')"></select>
+                                <select class="form-select" name="sortBy" asp-for="Filtering.SortBy" asp-items="Html.GetEnumSelectList<TitlesOrganizer.Application.ViewModels.Helpers.SortByEnum>()" onchange="javascript:FormSubmit(event);"></select>
                             </div>
                             <div class="list-group-item flex-fill bg-body-tertiary border-0">
-                                <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:$(this.form).trigger('submit')">
-                                    <option value="3">3 authors on page</option>
-                                    <option value="5">5 authors on page</option>
-                                    <option value="10">10 authors on page</option>
-                                    <option value="15">15 authors on page</option>
-                                    <option value="20">20 authors on page</option>
-                                    <option value="50">50 authors on page</option>
-                                    <option value="100">100 authors on page</option>
+                                <select class="form-select" name="pageSize" asp-for="Paging.PageSize" onchange="javascript:FormSubmit(event);">
+                                    <option value="3">3 genres on page</option>
+                                    <option value="5">5 genres on page</option>
+                                    <option value="10">10 genres on page</option>
+                                    <option value="15">15 genres on page</option>
+                                    <option value="20">20 genres on page</option>
+                                    <option value="50">50 genres on page</option>
+                                    <option value="100">100 genres on page</option>
                                 </select>
                             </div>
                             <div class="list-group-item flex-fill bg-body-tertiary border-0">
                                 <div class="input-group">
-                                    <input class="form-control" type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:$(this.form).trigger('submit')" />
+                                    <input class="form-control" type="search" asp-for="Filtering.SearchString" name="searchString" id="searchString" placeholder="Search..." onchange="javascript:FormSubmit(event);" />
                                     <input type="submit" class="btn btn-outline-secondary float-start" value="Search" />
                                 </div>
                             </div>
@@ -86,36 +86,35 @@
         <ul class="list-group list-group-flush">
             @{
                 int otherIndex = 0;
-                foreach (var author in Model.Values)
+                foreach (var genre in Model.Values)
                 {
-                    var id = $"otherAuthor_{otherIndex}";
+                    var id = $"otherGenre_{otherIndex}";
                     <li class="list-group-item list-group-item-action">
-                        @if (author.IsForItem)
+                        @if (genre.IsForItem)
                         {
-                            <input type="checkbox" class="form-check-input" value="@author.Id" checked id="@id" name="ids" />
+                            <input type="checkbox" class="form-check-input" value="@genre.Id" checked id="@id" name="ids" />
                         }
                         else
                         {
-                            <input type="checkbox" class="form-check-input" value="@author.Id" id="@id" name="ids" />
+                            <input type="checkbox" class="form-check-input" value="@genre.Id" id="@id" name="ids" />
                         }
 
                         <label class="form-check-label" for="@id">
-                            @author.Description
+                            @genre.Description
                         </label>
                     </li>
                     otherIndex++;
                 }
             }
             <li class="list-group-item list-group-item-action input-group">
-                <button type="button" title="Add new author" onclick="javascript:AddNewAuthor(event);">
+                <button type="button" title="Add new genre" onclick="javascript:AddNewGenre(event);">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                     </svg>
                 </button>
-                <input id="newAuthorName" name="newAuthorName" placeholder="Name" onchange="javascript:HideNewAuthorError();" />
-                <input id="newAuthorLastName" name="newAuthorLastName" placeholder="Last Name" onchange="javascript:HideNewAuthorError();" />
-                <span class="text-danger" id="newAuthorError" style="display: none;">Enter name or/and last name of the author.</span>
+                <input id="newGenreName" name="newGenreName" placeholder="Name" onchange="javascript:HideNewGenreError();" />
+                <span class="text-danger" id="newGenreError" style="display: none;">Enter name of the genre.</span>
             </li>
         </ul>
         <div class="card-footer justify-content-center">
@@ -172,7 +171,7 @@
         </div>
     </div>
     <div class="row sticky-bottom">
-        <input type="submit" value="Select authors" class="btn btn-primary btn-lg" data-bs-dismiss="modal" onclick="javascript:CloseModal()"/>
+        <input type="submit" value="Select genres" class="btn btn-primary btn-lg" data-bs-dismiss="modal" onclick="javascript:CloseModal()" />
         <input type="hidden" value="false" name="closeModal" id="closeModal" />
     </div>
 </form>

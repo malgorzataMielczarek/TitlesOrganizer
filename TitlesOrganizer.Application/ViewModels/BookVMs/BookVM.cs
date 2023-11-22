@@ -32,6 +32,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
         [DataType(DataType.MultilineText)]
         public string? Description { get; set; }
 
+        [DisplayName("Book series")]
         public SeriesForListVM? Series { get; set; }
 
         [DisplayName("Volume number")]

@@ -184,13 +184,14 @@ namespace TitlesOrganizer.Application.Services
         public void SelectGenres(int bookId, int[] selectedIds)
         {
             var book = _queries.GetBookWithAuthorsGenresAndSeries(bookId);
-
+            var isModified = false;
             if (book != null)
             {
                 var genresToRemove = book.Genres.Where(g => !selectedIds.Contains(g.Id)).ToList();
                 foreach (var genre in genresToRemove)
                 {
                     book.Genres.Remove(genre);
+                    isModified = true;
                 }
 
                 foreach (var id in selectedIds)
@@ -201,11 +202,15 @@ namespace TitlesOrganizer.Application.Services
                         if (genre != null)
                         {
                             book.Genres.Add(genre);
+                            isModified = true;
                         }
                     }
                 }
 
-                _commands.UpdateBookGenresRelation(book);
+                if (isModified)
+                {
+                    _commands.UpdateBookGenresRelation(book);
+                }
             }
         }
 

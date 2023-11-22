@@ -2,7 +2,7 @@
 
 <h1>@ViewData["Title"]</h1>
 <hr />
-<form enctype="multipart/form-data" method="post" asp-formhelper="true" asp-action="UpsertBook" id="upsertBookForm">
+<form enctype="multipart/form-data" method="post" asp-formhelper="true" asp-action="UpsertBookSave" id="upsertBookForm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
     <div class="form-group row mb-3">
@@ -61,23 +61,20 @@
     </div>
     <div class="form-group row mb-3">
         <label asp-for="Genres" class="col-sm-3 col-form-label"></label>
-        @{
-            var genres = string.Join(", ", Model.Genres.Select(g => g.Description));
-            if (!string.IsNullOrWhiteSpace(genres))
-        {
-            <div class="col-sm-auto col-auto">
-                @genres
-                <span asp-validation-for="Genres" class="text-danger"></span>
+        <div class="col-sm-9">
+            <div class="hstack">
+                @{
+                    var genres = string.Join(", ", @Model.Genres.Select(a => a.Description));
+                }
+                <span id="genres" class="mx-2 align-self-center d-inline-flex flex-wrap justify-content-center text-wrap">@genres</span>
+                <button type="button" onclick="javascript:SelectGenres();" id="ModifyGenres" name="ModifyGenres" class="btn btn-outline-primary btn-lg d-inline" title="Select genres">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
+                        <path d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z" />
+                        <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1v5.086z" />
+                    </svg>
+                </button>
             </div>
-        }
-        }
-        <div class="col-auto">
-            <button type="submit" id="ModifyGenres" name="ModifyGenres" class="btn button btn-outline-primary btn-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
-                    <path d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z" />
-                    <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1v5.086z" />
-                </svg>
-            </button>
+            <span class="text-danger" id="genresError" style="display: none;">Specify the genre of the book.</span>
         </div>
     </div>
     <div class="form-group row mb-3">
@@ -89,19 +86,15 @@
     </div>
     <div class="form-group row mb-3">
         <label asp-for="Series" class="col-sm-3 col-form-label"></label>
-        <input asp-for="Series" type="hidden" />
-        @if (!string.IsNullOrWhiteSpace(Model.Series?.Description))
-        {
-            <div class="col-sm-auto col-auto">
-                @Model.Series.Description
+        <div class="col-sm-9">
+            <div class="hstack">
+                <span id="series" class="mx-2 align-self-center d-inline-flex flex-wrap justify-content-center text-wrap">@Model.Series?.Description</span>
+                <button type="button" onclick="javascript:SelectSeries();" id="ModifySeries" name="ModifySeries" class="btn btn-outline-primary btn-lg d-inline" title="Select book series">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-collection" viewBox="0 0 16 16">
+                        <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z" />
+                    </svg>
+                </button>
             </div>
-        }
-        <div class="col-auto">
-            <button data-form-submit="true" id="ModifySeries" name="ModifySeries" class="btn btn-outline-primary btn-lg" value="Modify series">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-collection" viewBox="0 0 16 16">
-                    <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z" />
-                </svg>
-            </button>
         </div>
     </div>
     <div class="form-group row mb-3">
@@ -112,12 +105,12 @@
         </div>
     </div>
     <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary btn-lg" asp-action="UpsertBook"/>
+        <input type="submit" value="Save" class="btn btn-primary btn-lg" />
     </div>
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Books">Back to list of books</a>
 </div>
 
 <div id="partialModal" class="modal" tabindex="-1" role="dialog">
@@ -137,79 +130,6 @@
 </div>
 
 @section Scripts {
-    <script type="text/javascript">
-        document.addEventListener("submit", (event) => CheckAuthors());
-
-        $("form[formhelper] :submit").on("click", (element) => {
-            var button = element.currentTarget;
-            var action = button.getAttribute("formaction");
-            $(button).parents("form")[0].setAttribute("action", action);
-        });
-
-        var year = document.getElementById("Year");
-        year.addEventListener("click", (event) => YearFirstClicked());
-        year.addEventListener("focus", (event) => YearFirstClicked());
-
-        function CheckAuthors()
-        {
-            var authors = document.getElementById("authors").innerText;
-            if(authors.trim().length > 0)
-            {
-                $("#authorsError").hide();
-            }
-            else
-            {
-                $("#authorsError").show();
-            }
-        }
-
-        function YearFirstClicked() {
-            if (!year.value) {
-                year.value = year.max;
-            }
-        }
-
-        function Submit(actionName) {
-            if ($(document.forms[0]).valid()) {
-                document.forms[0].attributes.action.value = '/Books/' + actionName;
-                document.forms[0].submit();
-            }
-        }
-
-        function SelectAuthors() {
-            var token = $('input[name="__RequestVerificationToken"]').val();
-            var title = document.getElementById("Title").value;
-            var id = document.getElementById("Id").value;
-            var jqxhr;
-            if (id == '0')
-            {
-                jqxhr = $.ajax({
-                    method: "PUT",
-                    url: "/Books/SelectAuthorsForBook",
-                    data: {"title": title, "__RequestVerificationToken": token },
-                    dataType: "html"
-                });
-            }
-            else
-            {
-                jqxhr = $.ajax({
-                    method: "POST",
-                    url: "/Books/SelectAuthorsForBook",
-                    data: { "id": id, "__RequestVerificationToken": token },
-                    dataType: "html"
-                });
-            }
-        
-            jqxhr.done(function (response) {
-                document.querySelector("#partialModal .modal-header > .modal-title").innerText = "Select authors";
-                $("#partialModal").find(".modal-body").html(response);
-                $("#partialModal").modal('show');
-            })
-            .fail(function (response) {
-                fhToastr.error(response.responseText);
-            });
-        }
-    </script>
-    <script type="text/javascript" src="~/js/Books/SelectAuthorsForBook.js"></script>
+    <script type="text/javascript" src="~/js/Books/UpsertBook.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
