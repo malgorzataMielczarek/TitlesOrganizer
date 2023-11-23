@@ -46,27 +46,13 @@
     <p class="row">
         <a asp-action="GenreUpsert" class="col">Create New</a>
     </p>
-    <div class="row">
-        <table class="table" id="GenresGrid">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var genre in Model.Values) {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => genre.Description)</td>
-                    <td>
-                        @Html.ActionLink("Edit", "GenreUpsert", new { id = genre.Id }) |
-                        <a class="details" href="javascript:ShowDetails(@genre.Id);">Details</a> |
-                        @Html.ActionLink("Delete", "GenreDelete", new { id = genre.Id })
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+    <div class="list-group" id="GenresGrid">
+        @foreach (var genre in Model.Values)
+        {
+            <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@genre.Id);" title="Show details">
+                @Html.DisplayFor(modelItem => genre.Description)
+            </button>
+        }
     </div>
     <div class="row justify-content-center">
         @{
