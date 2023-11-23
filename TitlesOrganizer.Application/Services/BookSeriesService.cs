@@ -29,6 +29,7 @@ namespace TitlesOrganizer.Application.Services
             var series = _queries.GetBookSeries(id);
             if (series != null)
             {
+                SelectBooks(id, Array.Empty<int>());
                 _commands.Delete(series);
             }
         }

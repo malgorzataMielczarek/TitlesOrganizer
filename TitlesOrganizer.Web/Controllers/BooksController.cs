@@ -574,6 +574,22 @@ namespace TitlesOrganizer.Web.Controllers
             return View(series);
         }
 
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public ActionResult SeriesDelete(int id)
+        {
+            try
+            {
+                _seriesService.Delete(id);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to delete book series. Try to repeat performed operation after some time.");
+            }
+
+            return Ok("Book series deleted");
+        }
+
         [HttpGet]
         public ActionResult SeriesDetails(int id)
         {
