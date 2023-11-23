@@ -47,11 +47,19 @@
         <a href="/Books/CreateNew" class="col">Create New</a>
     </p>
     <div class="list-group" id="BooksGrid">
-        @foreach (var book in Model.Values)
+        @if (Model.Values.Any())
         {
-            <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@book.Id);" title="Show details">
-                @Html.DisplayFor(modelItem => book.Description)
-            </button>
+            @foreach (var book in Model.Values)
+            {
+                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@book.Id);" title="Show details">
+                    @Html.DisplayFor(modelItem => book.Description)
+                </button>
+            }
+
+        }
+        else
+        {
+            <span><i>No books found</i></span>
         }
     </div>
     <div class="row justify-content-center">
@@ -140,4 +148,5 @@
             });
         }
     </script>
+    <script type="text/javascript" src="~/js/Books/BookDetailsScript.js"></script>
 }

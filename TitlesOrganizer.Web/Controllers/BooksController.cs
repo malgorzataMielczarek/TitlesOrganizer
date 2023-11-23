@@ -216,6 +216,22 @@ namespace TitlesOrganizer.Web.Controllers
             return PartialView("_AuthorsPartial", authors);
         }
 
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public ActionResult BookDelete(int id)
+        {
+            try
+            {
+                _bookService.Delete(id);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to delete book. Try to repeat performed operation after some time.");
+            }
+
+            return Ok("Book deleted");
+        }
+
         [HttpGet]
         public ActionResult BookDetails(int id)
         {
