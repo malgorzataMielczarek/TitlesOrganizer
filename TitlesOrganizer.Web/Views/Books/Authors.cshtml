@@ -46,11 +46,18 @@
         <a asp-action="AuthorUpsert" class="col">Create New</a>
     </p>
     <div class="list-group" id="AuthorsGrid">
-        @foreach (var author in Model.Values)
+        @if (Model.Values.Any())
         {
-            <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@author.Id);" title="Show details">
-                @Html.DisplayFor(modelItem => author.Description)
-            </button>
+            @foreach (var author in Model.Values)
+            {
+                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@author.Id);" title="Show details">
+                    @Html.DisplayFor(modelItem => author.Description)
+                </button>
+            }
+        }
+        else
+        {
+            <span><i>No authors found</i></span>
         }
     </div>
     <div class="row justify-content-center">

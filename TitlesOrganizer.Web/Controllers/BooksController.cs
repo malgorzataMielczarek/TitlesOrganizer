@@ -18,15 +18,15 @@ namespace TitlesOrganizer.Web.Controllers
         private const int PAGE_SIZE = 10;
         private const int SMALL_PAGE_SIZE = 5;
         private readonly IAuthorService _authorService;
-        private readonly IBookService _bookService;
-        private readonly IBookSeriesService _seriesService;
-        private readonly ILiteratureGenreService _genreService;
-        private readonly ILanguageService _languageService;
         private readonly IValidator<AuthorVM> _authorValidator;
+        private readonly IBookService _bookService;
         private readonly IValidator<BookVM> _bookValidator;
+        private readonly ILiteratureGenreService _genreService;
         private readonly IValidator<GenreVM> _genreValidator;
-        private readonly IValidator<SeriesVM> _seriesValidator;
+        private readonly ILanguageService _languageService;
         private readonly ILogger<BooksController> _logger;
+        private readonly IBookSeriesService _seriesService;
+        private readonly IValidator<SeriesVM> _seriesValidator;
 
         public BooksController(ILogger<BooksController> logger, IAuthorService authorService, IBookService bookService, IBookSeriesService bookSeriesService, ILiteratureGenreService literatureGenreService, ILanguageService languageService, IValidator<AuthorVM> authorValidator, IValidator<BookVM> bookValidator, IValidator<GenreVM> genreValidator, IValidator<SeriesVM> seriesValidator)
         {
@@ -133,24 +133,20 @@ namespace TitlesOrganizer.Web.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult Authors()
-        {
-            ListAuthorForListVM authors = _authorService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
-            return View(authors);
-        }
-
-        [HttpPost]
+        [HttpDelete]
         [ValidateAntiForgeryToken]
-        public ActionResult Authors(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        public ActionResult AuthorDelete(int id)
         {
-            if (!pageNo.HasValue)
+            try
             {
-                pageNo = 1;
+                _authorService.Delete(id);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to delete author. Try to repeat performed operation after some time.");
             }
 
-            ListAuthorForListVM authors = _authorService.GetList(sortBy, pageSize, pageNo.Value, searchString);
-            return View(authors);
+            return Ok("Author deleted");
         }
 
         [HttpGet]
@@ -178,6 +174,26 @@ namespace TitlesOrganizer.Web.Controllers
             return PartialView("AuthorDetails", author);
         }
 
+        [HttpGet]
+        public ActionResult Authors()
+        {
+            ListAuthorForListVM authors = _authorService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            return View(authors);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Authors(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        {
+            if (!pageNo.HasValue)
+            {
+                pageNo = 1;
+            }
+
+            ListAuthorForListVM authors = _authorService.GetList(sortBy, pageSize, pageNo.Value, searchString);
+            return View(authors);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AuthorsPartial(int authorsPageSize, int? authorsPageNo, int? genreId)
@@ -198,26 +214,6 @@ namespace TitlesOrganizer.Web.Controllers
             }
 
             return PartialView("_AuthorsPartial", authors);
-        }
-
-        [HttpGet]
-        public ActionResult Books()
-        {
-            ListBookForListVM list = _bookService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
-            return View(list);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Books(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
-        {
-            if (!pageNo.HasValue)
-            {
-                pageNo = 1;
-            }
-
-            ListBookForListVM list = _bookService.GetList(sortBy, pageSize, pageNo.Value, searchString);
-            return View(list);
         }
 
         [HttpGet]
@@ -243,6 +239,26 @@ namespace TitlesOrganizer.Web.Controllers
             }
 
             return PartialView("BookDetails", book);
+        }
+
+        [HttpGet]
+        public ActionResult Books()
+        {
+            ListBookForListVM list = _bookService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
+            return View(list);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Books(SortByEnum sortBy, int pageSize, int? pageNo, string searchString)
+        {
+            if (!pageNo.HasValue)
+            {
+                pageNo = 1;
+            }
+
+            ListBookForListVM list = _bookService.GetList(sortBy, pageSize, pageNo.Value, searchString);
+            return View(list);
         }
 
         [HttpPost]
@@ -332,6 +348,22 @@ namespace TitlesOrganizer.Web.Controllers
         }
 
         [HttpGet]
+        public ActionResult GenreDetails(int id)
+        {
+            GenreDetailsVM genre = _genreService.GetDetails(id, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
+            return View(genre);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GenreDetailsPartial(int id, int booksPageSize = PAGE_SIZE, int booksPageNo = 1, int authorsPageSize = SMALL_PAGE_SIZE, int authorsPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1)
+        {
+            GenreDetailsVM genre = _genreService.GetDetails(id, booksPageSize, booksPageNo, authorsPageSize, authorsPageNo, seriesPageSize, seriesPageNo);
+
+            return PartialView("GenreDetails", genre);
+        }
+
+        [HttpGet]
         public ActionResult Genres()
         {
             ListGenreForListVM genres = _genreService.GetList(SortByEnum.Ascending, PAGE_SIZE, 1, "");
@@ -349,22 +381,6 @@ namespace TitlesOrganizer.Web.Controllers
 
             ListGenreForListVM genres = _genreService.GetList(sortBy, pageSize, pageNo.Value, searchString);
             return View(genres);
-        }
-
-        [HttpGet]
-        public ActionResult GenreDetails(int id)
-        {
-            GenreDetailsVM genre = _genreService.GetDetails(id, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1, SMALL_PAGE_SIZE, 1);
-            return View(genre);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult GenreDetailsPartial(int id, int booksPageSize = PAGE_SIZE, int booksPageNo = 1, int authorsPageSize = SMALL_PAGE_SIZE, int authorsPageNo = 1, int seriesPageSize = SMALL_PAGE_SIZE, int seriesPageNo = 1)
-        {
-            GenreDetailsVM genre = _genreService.GetDetails(id, booksPageSize, booksPageNo, authorsPageSize, authorsPageNo, seriesPageSize, seriesPageNo);
-
-            return PartialView("GenreDetails", genre);
         }
 
         [HttpPost]
