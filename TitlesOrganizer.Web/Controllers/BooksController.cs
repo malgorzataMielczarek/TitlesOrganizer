@@ -363,6 +363,22 @@ namespace TitlesOrganizer.Web.Controllers
             }
         }
 
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public ActionResult GenreDelete(int id)
+        {
+            try
+            {
+                _genreService.Delete(id);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Server encountered unexpected state and failed to delete genre. Try to repeat performed operation after some time.");
+            }
+
+            return Ok("Genre deleted");
+        }
+
         [HttpGet]
         public ActionResult GenreDetails(int id)
         {

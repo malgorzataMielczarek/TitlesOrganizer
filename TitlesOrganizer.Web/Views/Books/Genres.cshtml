@@ -47,11 +47,19 @@
         <a asp-action="GenreUpsert" class="col">Create New</a>
     </p>
     <div class="list-group" id="GenresGrid">
-        @foreach (var genre in Model.Values)
+        @if (Model.Values.Any())
         {
-            <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@genre.Id);" title="Show details">
-                @Html.DisplayFor(modelItem => genre.Description)
-            </button>
+            @foreach (var genre in Model.Values)
+            {
+                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@genre.Id);" title="Show details">
+                    @Html.DisplayFor(modelItem => genre.Description)
+                </button>
+            }
+
+        }
+        else
+        {
+            <span><i>No genres found</i></span>
         }
     </div>
     <div class="row justify-content-center">
