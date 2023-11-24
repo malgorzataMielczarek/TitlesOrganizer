@@ -51,7 +51,7 @@
         {
             @foreach (var genre in Model.Values)
             {
-                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@genre.Id);" title="Show details">
+                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@genre.Id, 'Genre');" title="Show details">
                     @Html.DisplayFor(modelItem => genre.Description)
                 </button>
             }
@@ -61,6 +61,7 @@
         {
             <span><i>No genres found</i></span>
         }
+
     </div>
     <div class="row justify-content-center">
         @{
@@ -77,6 +78,7 @@
                         </a>
                     </li>
                 }
+
                 @for (int i = numbersNextTo; i >= 1; i--)
                 {
                     if (i < Model.Paging.CurrentPage)
@@ -84,16 +86,19 @@
                         <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage - i))">@(Model.Paging.CurrentPage - i)</a></li>
                     }
                 }
+
                 @if (pages > 1)
                 {
                     <li class="page-item active" aria-current="page">
                         <span class="page-link">@Model.Paging.CurrentPage</span>
                     </li>
                 }
+
                 @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                 {
                     <li class="page-item"><a class="page-link" href="javascript:PagerClick(@(Model.Paging.CurrentPage + i))">@(Model.Paging.CurrentPage + i)</a></li>
                 }
+
                 @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                 {
                     <li class="page-item">
@@ -102,6 +107,7 @@
                         </a>
                     </li>
                 }
+
             </ul>
         </nav>
         <input type="hidden" name="pageNo" id="pageNo"/>
@@ -123,30 +129,8 @@
     </div>
 </div>
 @section Scripts {
-    <script type="text/javascript">
-        function PagerClick(index){
-            document.getElementById("pageNo").value = index;
-            Submit();
-        }
-
-        function Submit(){
-            document.forms[0].submit();
-        }
-
-        function ShowDetails(id) {
-            var token = $('input[name="__RequestVerificationToken"]').val();
-            $.post("/Books/GenreDetailsPartial", {
-                "id": id,
-                "__RequestVerificationToken": token
-            })
-                .done(function (response) {
-                    $("#partialModal").find(".modal-body").html(response);
-                    $("#partialModal").modal('show');
-                })
-                .fail(function (response) {
-                    fhToastr.error(response.responseText);
-                });
-        }
-    </script>
-    <script type="text/javascript" src="~/js/Books/GenreDetailsScript.js"></script>
+    <script type="text/javascript" src="~/js/Books/ListView.js"></script>
+    <script type="text/javascript" src="~/js/Books/Delete.js"></script>
+    <script type="text/javascript" src="~/js/Books/PartialList.js"></script>
+    <script type="text/javascript" src="~/js/Books/PartialForGenre.js"></script>
 }

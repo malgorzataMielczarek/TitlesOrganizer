@@ -4,7 +4,7 @@
         <div class="card-header d-flex w-100 justify-content-between mb-1 bg-body-tertiary border-0 align-items-center">
             <h5>Books series</h5>
             <span>
-                <select class="form-select" name="seriesPageSize" id="seriesPageSize" asp-for="Paging.PageSize" onchange="javascript:ReloadSeries();">
+                <select class="form-select" name="seriesPageSize" id="seriesPageSize" asp-for="Paging.PageSize" onchange="javascript:Reload('Series');">
                     <option value="1">1 book series on page</option>
                     <option value="3">3 book series on page</option>
                     <option value="5">5 book series on page</option>
@@ -22,11 +22,12 @@
                 @foreach (var series in Model.Values)
                 {
                     <li class="list-group-item list-group-item-action">
-                        <a type="button" asp-action="SeriesDetails" asp-route-id="@series.Id">
+                        <a type="button" asp-action="SeriesDetails" asp-route-id="@series.Id" title="Show details">
                             @series.Description
                         </a>
                     </li>
                 }
+
             </ul>
         }
         else
@@ -35,6 +36,7 @@
                 <small><i>No associated book series</i></small>
             </div>
         }
+
         <div class="card-footer justify-content-center">
             @{
                 var pages = Math.Ceiling(Model.Paging.Count / (double)Model.Paging.PageSize);
@@ -45,44 +47,49 @@
                     @if (Model.Paging.CurrentPage > numbersNextTo + 1)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:SeriesPagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                            <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                     }
+
                     @for (int i = numbersNextTo; i >= 1; i--)
                     {
                         if (i < Model.Paging.CurrentPage)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="javascript:SeriesPagerClick(@(Model.Paging.CurrentPage - i))">
+                                <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage - i))">
                                     @(Model.Paging.CurrentPage - i)
                                 </a>
                             </li>
                         }
                     }
+
                     @if (pages > 1)
                     {
                         <li class="page-item active" aria-current="page">
                             <span class="page-link">@Model.Paging.CurrentPage</span>
                         </li>
                     }
+
                     @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:SeriesPagerClick(@(Model.Paging.CurrentPage + i))">
+                            <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage + i))">
                                 @(Model.Paging.CurrentPage + i)
                             </a>
                         </li>
                     }
+
                     @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:SeriesPagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                            <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                     }
+
                 </ul>
             </nav>
             <input type="hidden" name="seriesPageNo" id="seriesPageNo" />

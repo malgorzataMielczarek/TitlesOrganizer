@@ -1,5 +1,6 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListGenreForBookVM
-<form enctype="multipart/form-data" method="post" id="selectGenres" asp-action="FinalizeSelectGenresForBook" onsubmit="SelectGenresSubmit(event);">
+
+<form enctype="multipart/form-data" method="post" id="selectGenres" asp-action="FinalizeSelectGenresForBook" onsubmit="SubmitSelect(event, 'Genre');">
     <input type="hidden" asp-for="Item.Id" name="bookId" id="bookId" />
     <input type="hidden" asp-for="Item.Description" />
     <div class="card w-100">

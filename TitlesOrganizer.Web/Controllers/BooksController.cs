@@ -3,6 +3,7 @@
 using FluentValidation;
 using FormHelper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using TitlesOrganizer.Application.Interfaces;
@@ -659,25 +660,52 @@ namespace TitlesOrganizer.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _bookService.Upsert(book);
-
-                if (id > 0)
+                var validationResult = _bookValidator.Validate(book);
+                if (validationResult.IsValid)
                 {
-                    var savedBook = _bookService.Get(id);
-                    if (savedBook.Authors.IsNullOrEmpty())
-                    {
-                        ViewData["Title"] = "Update Book";
-                        return FormResult.CreateErrorResult("Specify the author of the book.");
-                    }
+                    int id = _bookService.Upsert(book);
 
-                    if (savedBook.Genres.IsNullOrEmpty())
+                    if (id > 0)
                     {
-                        ViewData["Title"] = "Update Book";
-                        return FormResult.CreateErrorResult("Specify the genre of the book.");
-                    }
+                        var savedBook = _bookService.Get(id);
+                        if (savedBook.Authors.IsNullOrEmpty())
+                        {
+                            ViewData["Title"] = "Update Book";
+                            return FormResult.CreateErrorResult("Specify the author of the book.");
+                        }
 
-                    return FormResult.CreateSuccessResult("Changes saved.", Url.Action("BookDetails", new { id = id }));
+                        if (savedBook.Genres.IsNullOrEmpty())
+                        {
+                            ViewData["Title"] = "Update Book";
+                            return FormResult.CreateErrorResult("Specify the genre of the book.");
+                        }
+
+                        return FormResult.CreateSuccessResult("Changes saved.", Url.Action("BookDetails", new { id = id }));
+                    }
                 }
+                else
+                {
+                    ViewData["Title"] = "Update Book";
+                    foreach (var err in validationResult.Errors)
+                    {
+                        ModelState.AddModelError(err.PropertyName, err.ErrorMessage);
+                    }
+                    var error = "<ul><li>" +
+                        string.Join("</li><li>", validationResult.Errors.Select(e => e.ErrorMessage)) +
+                        "</li></ul>";
+                    return FormResult.CreateErrorResult(error);
+                }
+            }
+            else
+            {
+                ViewData["Title"] = "Update Book";
+                var error = "<ul><li>" +
+                    string.Join("</li><li>",
+                        ModelState.Values.Where(v => v.ValidationState == ModelValidationState.Invalid)
+                        .SelectMany(v => v.Errors)
+                        .Select(me => me.ErrorMessage)) +
+                    "</li></ul>";
+                return FormResult.CreateErrorResult(error);
             }
 
             ViewData["Title"] = "Update Book";

@@ -51,7 +51,7 @@
         {
             @foreach (var book in Model.Values)
             {
-                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@book.Id);" title="Show details">
+                <button type="button" class="details list-group-item list-group-item-action list-group-item-primary" onclick="javascript:ShowDetails(@book.Id, 'Book');" title="Show details">
                     @Html.DisplayFor(modelItem => book.Description)
                 </button>
             }
@@ -123,30 +123,6 @@
     </div>
 </div>
 @section Scripts {
-    <script type="text/javascript">
-        function PagerClick(index){
-            document.getElementById("pageNo").value = index;
-            Submit();
-        }
-
-        function Submit(){
-            document.forms[0].submit();
-        }
-
-        function ShowDetails(id) {
-            var token = $('input[name="__RequestVerificationToken"]').val();
-            $.post("/Books/BookDetailsPartial", {
-                "id": id,
-                "__RequestVerificationToken": token
-            })
-                .done(function (response) {
-                    $("#partialModal").find(".modal-body").html(response);
-                    $("#partialModal").modal('show');
-                })
-                .fail(function (response) {
-                    fhToastr.error(response.responseText);
-                });
-        }
-    </script>
-    <script type="text/javascript" src="~/js/Books/BookDetailsScript.js"></script>
+    <script type="text/javascript" src="~/js/Books/ListView.js"></script>
+    <script type="text/javascript" src="~/js/Books/Delete.js"></script>
 }

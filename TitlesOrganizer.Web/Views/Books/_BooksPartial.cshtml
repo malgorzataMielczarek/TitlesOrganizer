@@ -4,7 +4,7 @@
         <div class="card-header d-flex w-100 justify-content-between mb-1 bg-body-tertiary border-0 align-items-center">
             <h5>Books</h5>
             <span>
-                <select class="form-select" name="booksPageSize" id="booksPageSize" asp-for="Paging.PageSize" onchange="javascript:ReloadBooks();">
+                <select class="form-select" name="booksPageSize" id="booksPageSize" asp-for="Paging.PageSize" onchange="javascript:Reload('Book');">
                     <option value="1">1 book on page</option>
                     <option value="3">3 books on page</option>
                     <option value="5">5 books on page</option>
@@ -22,7 +22,7 @@
                 @foreach (var book in Model.Values)
                 {
                     <li class="list-group-item list-group-item-action">
-                        <a type="button" asp-action="BookDetails" asp-route-id="@book.Id">
+                        <a type="button" asp-action="BookDetails" asp-route-id="@book.Id" title="Show details">
                             @book.Description
                         </a>
                     </li>
@@ -35,6 +35,7 @@
                 <small><i>No associated books</i></small>
             </div>
         }
+
         <div class="card-footer justify-content-center">
             @{
                 var pages = Math.Ceiling(Model.Paging.Count / (double)Model.Paging.PageSize);
@@ -45,44 +46,49 @@
                     @if (Model.Paging.CurrentPage > numbersNextTo + 1)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                            <a class="page-link" href="javascript:PagerClick('Book', @(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
                     }
+
                     @for (int i = numbersNextTo; i >= 1; i--)
                     {
                         if (i < Model.Paging.CurrentPage)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage - i))">
+                                <a class="page-link" href="javascript:PagerClick('Book', @(Model.Paging.CurrentPage - i))">
                                     @(Model.Paging.CurrentPage - i)
                                 </a>
                             </li>
                         }
                     }
+
                     @if (pages > 1)
                     {
                         <li class="page-item active" aria-current="page">
                             <span class="page-link">@Model.Paging.CurrentPage</span>
                         </li>
                     }
+
                     @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage + i))">
+                            <a class="page-link" href="javascript:PagerClick('Book', @(Model.Paging.CurrentPage + i))">
                                 @(Model.Paging.CurrentPage + i)
                             </a>
                         </li>
                     }
+
                     @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:BooksPagerClick(@(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                            <a class="page-link" href="javascript:PagerClick('Book', @(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                     }
+
                 </ul>
             </nav>
             <input type="hidden" name="booksPageNo" id="booksPageNo" />
