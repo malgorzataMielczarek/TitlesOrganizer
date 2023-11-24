@@ -632,6 +632,77 @@ namespace TitlesOrganizer.Web.Controllers
             return PartialView("_SeriesPartial", series);
         }
 
+        [HttpGet("/Books/AuthorCreateNew")]
+        [HttpGet("/Books/AuthorUpdate/{id?}")]
+        public ActionResult UpsertAuthor(int? id)
+        {
+            AuthorVM author;
+            if (id.HasValue)
+            {
+                ViewData["Title"] = "Update Author";
+                author = _authorService.Get(id.Value, SMALL_PAGE_SIZE, 1);
+            }
+            else
+            {
+                ViewData["Title"] = "Create New Author";
+                author = new AuthorVM();
+            }
+
+            return View("UpsertAuthor", author);
+        }
+
+        [HttpPost, FormValidator]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpsertAuthorSave(AuthorVM author)
+        {
+            if (ModelState.IsValid)
+            {
+                var validationResult = _authorValidator.Validate(author);
+                if (validationResult.IsValid)
+                {
+                    int id = _authorService.Upsert(author);
+
+                    if (id > 0)
+                    {
+                        var savedAuthor = _authorService.Get(id, 1, 1);
+                        if (savedAuthor.Books.Paging.Count > 0)
+                        {
+                            ViewData["Title"] = "Update Author";
+                            return FormResult.CreateErrorResult("Specify the books of the author.");
+                        }
+
+                        return FormResult.CreateSuccessResult("Changes saved.", Url.Action("AuthorDetails", new { id = id }));
+                    }
+                }
+                else
+                {
+                    ViewData["Title"] = "Update Author";
+                    foreach (var err in validationResult.Errors)
+                    {
+                        ModelState.AddModelError(err.PropertyName, err.ErrorMessage);
+                    }
+                    var error = "<ul><li>" +
+                        string.Join("</li><li>", validationResult.Errors.Select(e => e.ErrorMessage)) +
+                        "</li></ul>";
+                    return FormResult.CreateErrorResult(error);
+                }
+            }
+            else
+            {
+                ViewData["Title"] = "Update Author";
+                var error = "<ul><li>" +
+                    string.Join("</li><li>",
+                        ModelState.Values.Where(v => v.ValidationState == ModelValidationState.Invalid)
+                        .SelectMany(v => v.Errors)
+                        .Select(me => me.ErrorMessage)) +
+                    "</li></ul>";
+                return FormResult.CreateErrorResult(error);
+            }
+
+            ViewData["Title"] = "Update Author";
+            return FormResult.CreateErrorResult("Check entered data.");
+        }
+
         [HttpGet("/Books/CreateNew")]
         [HttpGet("/Books/Update/{id?}")]
         public ActionResult UpsertBook(int? id)

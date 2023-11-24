@@ -4,7 +4,7 @@
 <hr />
 <form asp-action="UpsertAuthorSave" enctype="multipart/form-data" method="post" asp-formhelper="true" id="upsertAuthorForm">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input asp-for="Id" type="hidden" />
+    <input asp-for="Id" type="hidden" id="authorId" />
     <div class="form-group row mb-3">
         <label asp-for="Name" class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
@@ -23,30 +23,50 @@
         <label asp-for="Books" class="col-sm-3 col-form-label"></label>
         <div class="col-sm-9">
             <div class="hstack">
-                <div class="mx-2">
-
+                <div class="py-2" id="booksPartial">
+                    <partial name="_BooksPartial.cshtml" model="@Model.Books" />
                 </div>
+                <button type="button" onclick="javascript:Select('Book', 'Author');" id="ModifyAuthors" name="ModifyBooks" class="btn btn-outline-primary btn-lg d-inline" title="Select books">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
+                        <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783" />
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <input type="submit" value="Save" class="btn btn-primary btn-lg" />
     </div>
 </form>
 
-@if (Model.Id == default)
-{
-    <div>
-        <a asp-action="Authors">Back to authors list</a>
+<div>
+    <a class="icon-link" href=@($"/Books/Authors")>
+        Go back to list of authors
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8" />
+        </svg>
+    </a>
+</div>
+
+<div id="partialModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-0">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-}
-else
-{
-    <div>
-        <a asp-action="SelectAuthorsForBook">Back to selecting authors</a> @*asp-route-id="@Model.BookId"*@
-    </div>
-}
+</div>
 
 @section Scripts {
+    <script type="text/javascript" src="~/js/Books/UpsertView.js"></script>
+    <script type="text/javascript" src="~/js/Books/PartialList.js"></script>
+    <script type="text/javascript" src="~/js/Books/PartialForAuthor.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
