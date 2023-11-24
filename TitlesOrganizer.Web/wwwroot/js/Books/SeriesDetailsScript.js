@@ -39,6 +39,6 @@ function ReloadBooks() {
             }
         })
         .fail(function (response) {
-            alert(response.responseText);
+            fhToastr.error(response.responseText);
         });
 }

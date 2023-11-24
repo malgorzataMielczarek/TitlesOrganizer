@@ -39,7 +39,7 @@ function ReloadBooks() {
             }
         })
         .fail(function (response) {
-            alert(response.responseText);
+            fhToastr.error(response.responseText);
         });
 }
 
@@ -66,7 +66,7 @@ function ReloadGenres() {
             }
         })
         .fail(function (response) {
-            alert(response.responseText);
+            fhToastr.error(response.responseText);
         });
 }
 
@@ -93,6 +93,6 @@ function ReloadSeries() {
             }
         })
         .fail(function (response) {
-            alert(response.responseText);
+            fhToastr.error(response.responseText);
         });
 }

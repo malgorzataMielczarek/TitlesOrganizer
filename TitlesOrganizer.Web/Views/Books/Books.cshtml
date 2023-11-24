@@ -139,13 +139,13 @@
                 "id": id,
                 "__RequestVerificationToken": token
             })
-            .done(function (response) {
-                $("#partialModal").find(".modal-body").html(response);
-                $("#partialModal").modal('show');
-            })
-            .fail(function (response) {
-                alert(response.responseText);
-            });
+                .done(function (response) {
+                    $("#partialModal").find(".modal-body").html(response);
+                    $("#partialModal").modal('show');
+                })
+                .fail(function (response) {
+                    fhToastr.error(response.responseText);
+                });
         }
     </script>
     <script type="text/javascript" src="~/js/Books/BookDetailsScript.js"></script>

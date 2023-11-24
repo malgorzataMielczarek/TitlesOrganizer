@@ -17,7 +17,7 @@
         <div class="col-sm-9">
             <div class="hstack">
                 @{
-                    var authors = string.Join(", ", @Model.Authors.Select(a => a.Description));
+                    var authors = string.Join(", ", Model.Authors.Select(a => a.Description));
                 }
                 <span id="authors" class="mx-2 align-self-center d-inline-flex flex-wrap justify-content-center text-wrap">@authors</span>
                 <button type="button" onclick="javascript:SelectAuthors();" id="ModifyAuthors" name="ModifyAuthors" class="btn btn-outline-primary btn-lg d-inline" title="Select authors">
@@ -134,7 +134,8 @@
     </div>
 </div>
 
-@section Scripts {
+@section Scripts
+{
     <script type="text/javascript" src="~/js/Books/UpsertBookScript.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
