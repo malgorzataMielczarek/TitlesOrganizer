@@ -1,4 +1,4 @@
-﻿function PagerClick(partialType, index) {
+﻿function GoToPage(partialType, index) {
     PartialPagerClick(index, "Series", partialType);
 }
 

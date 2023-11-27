@@ -20,7 +20,14 @@ function ReloadPartial(entityType, partialType) {
     var pageNoId = lowPartial + "PageNo";
     var partial = partialType + "Partial";
 
-    var id = document.getElementById(entityId).value;
+    var id = null;
+    if (document.getElementById(entityId)) {
+        id = document.getElementById(entityId).value;
+    }
+    else if (document.getElementById("Id")) {
+        id = document.getElementById("Id").value;
+    }
+
     var pageSize = document.getElementById(pageSizeId).value;
     var pageNo = document.getElementById(pageNoId).value;
     var token = $('input[name="__RequestVerificationToken"]').val();
@@ -32,9 +39,9 @@ function ReloadPartial(entityType, partialType) {
     data["__RequestVerificationToken"] = token;
     $.post(url, data)
         .done(function (response) {
-            $("#" + lowPartial + "Partial")
-                .html(response);
-            if (document.getElementById("partialModal")) {
+            var container = $("#" + lowPartial + "Partial");
+            container.html(response);
+            if (container.closest("#partialModal").length == 1) {
                 $("#partialModal").modal('show');
             }
         })

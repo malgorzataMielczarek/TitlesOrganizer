@@ -1,5 +1,5 @@
 ﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IPartialList<TitlesOrganizer.Domain.Models.BookSeries>
-<form asp-action="SeriesPartial" method="post" id="SeriesForm">
+<div asp-action="SeriesPartial" method="post" id="SeriesForm">
     <div class="card w-100">
         <div class="card-header d-flex w-100 justify-content-between mb-1 bg-body-tertiary border-0 align-items-center">
             <h5>Books series</h5>
@@ -47,7 +47,7 @@
                     @if (Model.Paging.CurrentPage > numbersNextTo + 1)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
+                            <a class="page-link" href="javascript:GoToPage('Series', @(Model.Paging.CurrentPage - numbersNextTo - 1))" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -58,7 +58,7 @@
                         if (i < Model.Paging.CurrentPage)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage - i))">
+                                <a class="page-link" href="javascript:GoToPage('Series', @(Model.Paging.CurrentPage - i))">
                                     @(Model.Paging.CurrentPage - i)
                                 </a>
                             </li>
@@ -75,7 +75,7 @@
                     @for (int i = 1; i <= numbersNextTo && Model.Paging.CurrentPage + i <= pages; i++)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage + i))">
+                            <a class="page-link" href="javascript:GoToPage('Series', @(Model.Paging.CurrentPage + i))">
                                 @(Model.Paging.CurrentPage + i)
                             </a>
                         </li>
@@ -84,7 +84,7 @@
                     @if (Model.Paging.CurrentPage + numbersNextTo + 1 <= pages)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="javascript:PagerClick('Series', @(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
+                            <a class="page-link" href="javascript:GoToPage('Series', @(Model.Paging.CurrentPage + numbersNextTo + 1))" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
@@ -95,4 +95,4 @@
             <input type="hidden" name="seriesPageNo" id="seriesPageNo" />
         </div>
     </div>
-</form>
+</div>

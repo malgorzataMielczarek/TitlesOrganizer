@@ -20,7 +20,7 @@
                     var authors = string.Join(", ", Model.Authors.Select(a => a.Description));
                 }
                 <span id="authors" class="mx-2 align-self-center d-inline-flex flex-wrap justify-content-center text-wrap">@authors</span>
-                <button type="button" onclick="javascript:Select('Author', 'Book');" id="ModifyAuthors" name="ModifyAuthors" class="btn btn-outline-primary btn-lg d-inline" title="Select authors">
+                <button type="button" onclick="javascript:SelectForBook('Author');" id="ModifyAuthors" name="ModifyAuthors" class="btn btn-outline-primary btn-lg d-inline" title="Select authors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
                         <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8Zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816ZM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
                     </svg>
@@ -67,7 +67,7 @@
                     var genres = string.Join(", ", @Model.Genres.Select(a => a.Description));
                 }
                 <span id="genres" class="mx-2 align-self-center d-inline-flex flex-wrap justify-content-center text-wrap">@genres</span>
-                <button type="button" onclick="javascript:Select('Genre', 'Book');" id="ModifyGenres" name="ModifyGenres" class="btn btn-outline-primary btn-lg d-inline" title="Select genres">
+                <button type="button" onclick="javascript:SelectForBook('Genre');" id="ModifyGenres" name="ModifyGenres" class="btn btn-outline-primary btn-lg d-inline" title="Select genres">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
                         <path d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z" />
                         <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1v5.086z" />
@@ -89,7 +89,7 @@
         <div class="col-sm-9">
             <div class="hstack">
                 <span id="series" class="mx-2 align-self-center d-inline-flex flex-wrap justify-content-center text-wrap">@Model.Series?.Description</span>
-                <button type="button" onclick="javascript:Select('Series', 'Book');" id="ModifySeries" name="ModifySeries" class="btn btn-outline-primary btn-lg d-inline" title="Select book series">
+                <button type="button" onclick="javascript:SelectForBook('Series');" id="ModifySeries" name="ModifySeries" class="btn btn-outline-primary btn-lg d-inline" title="Select book series">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-collection" viewBox="0 0 16 16">
                         <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z" />
                     </svg>
