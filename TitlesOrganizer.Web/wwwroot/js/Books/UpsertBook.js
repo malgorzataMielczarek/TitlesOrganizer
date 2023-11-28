@@ -203,3 +203,10 @@ function ShowNewSeriesError(message) {
     document.getElementById("newSeriesError").innerText = message;
     $("#newSeriesError").show();
 }
+
+function SeriesCheckChange(element) {
+    if (element.checked) {
+        element.parentElement.parentElement.querySelectorAll("input:checked").forEach(el => el.checked = false);
+        element.checked = true;
+    }
+}
