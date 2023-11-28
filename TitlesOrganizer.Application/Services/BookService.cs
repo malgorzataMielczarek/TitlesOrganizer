@@ -52,20 +52,13 @@ namespace TitlesOrganizer.Application.Services
 
         public BookDetailsVM GetDetails(int id)
         {
-            var book = _queries.GetBook(id);
+            var book = _queries.GetBookWithAuthorsGenresAndSeries(id);
 
             if (book != null)
             {
-                var authors = _queries.GetAllAuthorsWithBooks()
-                    .Where(a => a.Books.Any(b => b.Id == id)).ToList();
-                var genres = _queries.GetAllLiteratureGenresWithBooks()
-                    .Where(g => g.Books.Any(b => b.Id == id)).ToList();
-                BookSeries? series = null;
-                if (book.SeriesId != null)
-                {
-                    series = _queries.GetBookSeriesWithBooks(book.SeriesId.Value);
-                }
-
+                var authors = book.Authors;
+                var genres = book.Genres;
+                BookSeries? series = book.Series;
                 Language? language = null;
                 if (book.OriginalLanguageCode != null)
                 {

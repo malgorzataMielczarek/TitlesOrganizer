@@ -532,7 +532,7 @@ namespace TitlesOrganizer.Tests.Services
                 Name = "Name",
                 Books = new[] { b1 }
             };
-            var booksIds = new List<int>() { b2.Id, b3.Id };
+            var booksIds = new[] { b2.Id, b3.Id };
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id))
@@ -557,7 +557,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(b3.Id),
                 Times.Once());
             genre.Books.Should()
-                .HaveCount(booksIds.Count).And
+                .HaveCount(2).And
                 .Contain(b2).And
                 .Contain(b3).And
                 .NotContain(b1);
@@ -566,7 +566,7 @@ namespace TitlesOrganizer.Tests.Services
                     It.Is<LiteratureGenre>(
                         g => g.Equals(genre) &&
                         g.Books != null &&
-                        g.Books.Count == booksIds.Count &&
+                        g.Books.Count == 2 &&
                         g.Books.Contains(b2) &&
                         g.Books.Contains(b3) &&
                         !g.Books.Contains(b1))),
@@ -585,7 +585,7 @@ namespace TitlesOrganizer.Tests.Services
                 Name = "Name",
                 Books = new[] { book1 }
             };
-            var booksIds = new List<int>() { 2, 3 };
+            var booksIds = new[] { 2, 3 };
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id))
@@ -627,7 +627,7 @@ namespace TitlesOrganizer.Tests.Services
                 Name = "Name",
                 Books = new[] { book1 }
             };
-            var booksIds = new List<int>();
+            var booksIds = Array.Empty<int>();
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genre.Id))
@@ -661,7 +661,7 @@ namespace TitlesOrganizer.Tests.Services
         {
             int genreId = 1;
             var book1 = Helpers.GetBook(1);
-            var booksIds = new List<int>() { book1.Id };
+            var booksIds = new[] { book1.Id };
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genreId))
@@ -750,10 +750,10 @@ namespace TitlesOrganizer.Tests.Services
 
     internal class LiteratureGenreServiceForTest : LiteratureGenreService
     {
-        public IQueryable<Author>? Authors { get; private set; }
-        public IQueryable<Book>? Books { get; private set; }
-        public IQueryable<LiteratureGenre>? Genres { get; private set; }
-        public IQueryable<BookSeries>? Series { get; private set; }
+        public IEnumerable<Author>? Authors { get; private set; }
+        public IEnumerable<Book>? Books { get; private set; }
+        public IEnumerable<LiteratureGenre>? Genres { get; private set; }
+        public IEnumerable<BookSeries>? Series { get; private set; }
 
         public LiteratureGenreServiceForTest(ILiteratureGenreCommandsRepository literatureGenreCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper) : base(literatureGenreCommandsRepository, bookModuleQueriesRepository, mapper)
         {
@@ -796,7 +796,7 @@ namespace TitlesOrganizer.Tests.Services
             };
         }
 
-        protected override GenreDetailsVM MapGenreDetailsAuthors(GenreDetailsVM genreDetails, IQueryable<Author> authors, int pageSize, int pageNo)
+        protected override GenreDetailsVM MapGenreDetailsAuthors(GenreDetailsVM genreDetails, IEnumerable<Author> authors, int pageSize, int pageNo)
         {
             Authors = authors;
             genreDetails.Authors.Paging = new Paging()
@@ -809,7 +809,7 @@ namespace TitlesOrganizer.Tests.Services
             return genreDetails;
         }
 
-        protected override GenreDetailsVM MapGenreDetailsBooks(GenreDetailsVM genreDetails, IQueryable<Book> books, int pageSize, int pageNo)
+        protected override GenreDetailsVM MapGenreDetailsBooks(GenreDetailsVM genreDetails, IEnumerable<Book> books, int pageSize, int pageNo)
         {
             Books = books;
             genreDetails.Books.Paging = new Paging()
@@ -822,7 +822,7 @@ namespace TitlesOrganizer.Tests.Services
             return genreDetails;
         }
 
-        protected override GenreDetailsVM MapGenreDetailsSeries(GenreDetailsVM genreDetails, IQueryable<BookSeries> series, int pageSize, int pageNo)
+        protected override GenreDetailsVM MapGenreDetailsSeries(GenreDetailsVM genreDetails, IEnumerable<BookSeries> series, int pageSize, int pageNo)
         {
             Series = series;
             genreDetails.Series.Paging = new Paging()
@@ -876,7 +876,7 @@ namespace TitlesOrganizer.Tests.Services
             };
         }
 
-        protected override PartialList<LiteratureGenre> MapToPartialList(IQueryable<LiteratureGenre> genres, int pageSize, int pageNo)
+        protected override PartialList<LiteratureGenre> MapToPartialList(IEnumerable<LiteratureGenre> genres, int pageSize, int pageNo)
         {
             Genres = genres;
 

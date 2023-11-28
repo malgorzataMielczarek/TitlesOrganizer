@@ -602,7 +602,7 @@ namespace TitlesOrganizer.Tests.Services
                 Title = "Title",
                 Books = new[] { book1 }
             };
-            var booksIds = new List<int>() { book2.Id, book3.Id };
+            var booksIds = new[] { book2.Id, book3.Id };
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeries(series.Id))
@@ -627,7 +627,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(book3.Id),
                 Times.Once());
             series.Books.Should()
-                .HaveCount(booksIds.Count).And
+                .HaveCount(2).And
                 .Contain(book2).And
                 .Contain(book3).And
                 .NotContain(book1);
@@ -636,7 +636,7 @@ namespace TitlesOrganizer.Tests.Services
                     It.Is<BookSeries>(s =>
                         s.Equals(series) &&
                         s.Books != null &&
-                        s.Books.Count == booksIds.Count &&
+                        s.Books.Count == 2 &&
                         s.Books.Contains(book2) &&
                         s.Books.Contains(book3) &&
                         !s.Books.Contains(book1))),
@@ -655,7 +655,7 @@ namespace TitlesOrganizer.Tests.Services
                 Title = "Title",
                 Books = new[] { book1 }
             };
-            var booksIds = new List<int>() { 2, 3 };
+            var booksIds = new[] { 2, 3 };
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeries(series.Id))
@@ -701,7 +701,7 @@ namespace TitlesOrganizer.Tests.Services
                 Title = "Title",
                 Books = new[] { book1 }
             };
-            var booksIds = new List<int>();
+            var booksIds = Array.Empty<int>();
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeries(series.Id))
@@ -736,7 +736,7 @@ namespace TitlesOrganizer.Tests.Services
         {
             int seriesId = 1;
             var book1 = new Book() { Id = 1, Title = "Title1" };
-            var booksIds = new List<int>() { book1.Id };
+            var booksIds = new[] { book1.Id };
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeries(seriesId))
@@ -819,10 +819,10 @@ namespace TitlesOrganizer.Tests.Services
 
     internal class BookSeriesServiceForTest : BookSeriesService
     {
-        public IQueryable<Author>? Authors { get; private set; }
-        public IQueryable<Book>? Books { get; private set; }
-        public IQueryable<LiteratureGenre>? Genres { get; private set; }
-        public IQueryable<BookSeries>? Series { get; private set; }
+        public IEnumerable<Author>? Authors { get; private set; }
+        public IEnumerable<Book>? Books { get; private set; }
+        public IEnumerable<LiteratureGenre>? Genres { get; private set; }
+        public IEnumerable<BookSeries>? Series { get; private set; }
 
         public BookSeriesServiceForTest(IBookSeriesCommandsRepository bookSeriesCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper) : base(bookSeriesCommandsRepository, bookModuleQueriesRepository, mapper)
         {
@@ -857,7 +857,7 @@ namespace TitlesOrganizer.Tests.Services
             };
         }
 
-        protected override SeriesDetailsVM MapToDetails(BookSeries series, IQueryable<Book> books, int bookPageSize, int bookPageNo, IQueryable<Author> authors, IQueryable<LiteratureGenre> genres)
+        protected override SeriesDetailsVM MapToDetails(BookSeries series, IEnumerable<Book> books, int bookPageSize, int bookPageNo, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres)
         {
             Books = books;
             Authors = authors;
@@ -920,7 +920,7 @@ namespace TitlesOrganizer.Tests.Services
             };
         }
 
-        protected override PartialList<BookSeries> MapToPartialList(IQueryable<BookSeries> series, int pageSize, int pageNo)
+        protected override PartialList<BookSeries> MapToPartialList(IEnumerable<BookSeries> series, int pageSize, int pageNo)
         {
             Series = series;
 
