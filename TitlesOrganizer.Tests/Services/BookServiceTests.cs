@@ -59,26 +59,17 @@ namespace TitlesOrganizer.Tests.Services
         public void Get_ExistingBookId()
         {
             var book = Helpers.GetBook(1);
-            book.OriginalLanguageCode = "ENG";
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(book.Id)).Returns(book);
             IMapper mapper = new Mock<IMapper>().Object;
-            var langRepo = new Mock<ILanguageRepository>();
-            langRepo.Setup(r => r.GetAllLanguages())
-                .Returns(new[]
-                {
-                    new Language() { Code = "ENG", Name = "English" },
-                    new Language() { Code = "PLN", Name = "Polish" }
-                }.AsQueryable());
-
-            var service = new BookServiceForTest(commandsRepo.Object, queriesRepo.Object, langRepo.Object, mapper);
+            var lang = new Mock<ILanguageRepository>().Object;
+            var service = new BookServiceForTest(commandsRepo.Object, queriesRepo.Object, lang, mapper);
             var result = service.Get(book.Id);
 
             queriesRepo.Verify(r => r.GetBookWithAuthorsGenresAndSeries(book.Id), Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
-            langRepo.Verify(r => r.GetAllLanguages(), Times.Once);
             result.Should().NotBeNull().And.BeOfType<BookVM>();
             result.Id.Should().Be(book.Id);
         }
@@ -104,49 +95,44 @@ namespace TitlesOrganizer.Tests.Services
         }
 
         [Fact]
-        public void GetDetails_ExistingBookIdWithSeriesAndLanguage()
+        public void GetDetails_ExistingBookWithSeriesAndLanguage()
         {
             // Arrange
-            var seriesId = 1;
             var book = Helpers.GetBook(1);
-            book.SeriesId = seriesId;
+            var series = Helpers.GetSeries(1);
+            book.Series = series;
+            book.SeriesId = series.Id;
             book.OriginalLanguageCode = "ENG";
-
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
-            var a3 = Helpers.GetAuthor(3);
-            var a4 = Helpers.GetAuthor(4);
-            a1.Books.Add(Helpers.GetBook(1));
-            a2.Books.Add(Helpers.GetBook(2));
-            a3.Books.Add(Helpers.GetBook(2));
-            a3.Books.Add(Helpers.GetBook(1));
-            var authors = new List<Author>() { a1, a2, a3, a4 }.AsQueryable();
-
-            BookSeries series = Helpers.GetSeries(seriesId);
-            var seriesBooks = new List<Book>() { Helpers.GetBook(1), Helpers.GetBook(2), Helpers.GetBook(3) };
-            series.Books = seriesBooks;
-
-            var g1 = Helpers.GetGenre(1);
-            var g2 = Helpers.GetGenre(2);
-            var g3 = Helpers.GetGenre(3);
-            var g4 = Helpers.GetGenre(4);
-            g1.Books = new List<Book>() { Helpers.GetBook(1) };
-            g2.Books = new List<Book>() { Helpers.GetBook(2) };
-            g3.Books = new List<Book>() { Helpers.GetBook(2), Helpers.GetBook(1) };
-            var genres = new List<LiteratureGenre>() { g1, g2, g3, g4 }.AsQueryable();
-
-            var languages = new List<Language>()
+            var authors = new[]
+            {
+                Helpers.GetAuthor(1),
+                Helpers.GetAuthor(2)
+            };
+            book.Authors = authors;
+            var genres = new[]
+            {
+                Helpers.GetGenre(1),
+                Helpers.GetGenre(2)
+            };
+            book.Genres = genres;
+            var languages = new[]
             {
                 new Language() { Code="PLN", Name="Polish" },
                 new Language() { Code="ENG", Name="English" }
             }.AsQueryable();
+            var seriesWithBooks = Helpers.GetSeries(series.Id);
+            var seriesBooks = new[]
+            {
+                Helpers.GetBook(book.Id),
+                Helpers.GetBook(book.Id + 5),
+                Helpers.GetBook(book.Id + 8)
+            };
+            seriesWithBooks.Books = seriesBooks;
 
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetAllAuthorsWithBooks()).Returns(authors);
-            queriesRepo.Setup(r => r.GetAllLiteratureGenresWithBooks()).Returns(genres);
-            queriesRepo.Setup(r => r.GetBookSeriesWithBooks(seriesId)).Returns(series);
+            queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(book.Id)).Returns(book);
+            queriesRepo.Setup(r => r.GetBookSeriesWithBooks(series.Id)).Returns(seriesWithBooks);
             var langRepo = new Mock<ILanguageRepository>();
             langRepo.Setup(r => r.GetAllLanguages()).Returns(languages);
             IMapper mapper = new Mock<IMapper>().Object;
@@ -157,11 +143,9 @@ namespace TitlesOrganizer.Tests.Services
             var result = service.GetDetails(book.Id);
 
             // Assert
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetAllAuthorsWithBooks(), Times.Once());
-            queriesRepo.Verify(r => r.GetAllLiteratureGenresWithBooks(), Times.Once());
-            queriesRepo.Verify(r => r.GetBookSeriesWithBooks(seriesId), Times.Once());
+            queriesRepo.Verify(r => r.GetBookWithAuthorsGenresAndSeries(book.Id), Times.Once());
             langRepo.Verify(r => r.GetAllLanguages(), Times.Once());
+            queriesRepo.Verify(r => r.GetBookSeriesWithBooks(series.Id), Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             langRepo.VerifyNoOtherCalls();
@@ -174,8 +158,7 @@ namespace TitlesOrganizer.Tests.Services
             service.Authors.Should()
                 .NotBeNullOrEmpty().And
                 .HaveCount(2).And
-                .Equal(a1, a3).And
-                .NotContain(new[] { a2, a4 });
+                .Equal(authors);
             service.Books.Should()
                 .NotBeNullOrEmpty().And
                 .HaveCount(3).And
@@ -183,45 +166,35 @@ namespace TitlesOrganizer.Tests.Services
             service.Genres.Should()
                 .NotBeNullOrEmpty().And
                 .HaveCount(2).And
-                .Equal(g1, g3).And
-                .NotContain(new[] { g2, g4 });
+                .Equal(genres);
             service.Series.Should()
                 .NotBeNull().And
                 .Be(series);
         }
 
         [Fact]
-        public void GetDetails_ExistingBookIdWithoutSeriesAndLanguage()
-        {
-            // Arrange
+        public void GetDetails_ExistingBookWithoutSeriesAndLanguage()
+        {// Arrange
             var book = Helpers.GetBook(1);
+            book.Series = null;
             book.SeriesId = null;
             book.OriginalLanguageCode = null;
-
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
-            var a3 = Helpers.GetAuthor(3);
-            var a4 = Helpers.GetAuthor(4);
-            a1.Books.Add(Helpers.GetBook(1));
-            a2.Books.Add(Helpers.GetBook(2));
-            a3.Books.Add(Helpers.GetBook(2));
-            a3.Books.Add(Helpers.GetBook(1));
-            var authors = new List<Author>() { a1, a2, a3, a4 }.AsQueryable();
-
-            var g1 = Helpers.GetGenre(1);
-            var g2 = Helpers.GetGenre(2);
-            var g3 = Helpers.GetGenre(3);
-            var g4 = Helpers.GetGenre(4);
-            g1.Books = new List<Book>() { Helpers.GetBook(1) };
-            g2.Books = new List<Book>() { Helpers.GetBook(2) };
-            g3.Books = new List<Book>() { Helpers.GetBook(2), Helpers.GetBook(1) };
-            var genres = new List<LiteratureGenre>() { g1, g2, g3, g4 }.AsQueryable();
+            var authors = new[]
+            {
+                Helpers.GetAuthor(1),
+                Helpers.GetAuthor(2)
+            };
+            book.Authors = authors;
+            var genres = new[]
+            {
+                Helpers.GetGenre(1),
+                Helpers.GetGenre(2)
+            };
+            book.Genres = genres;
 
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id)).Returns(book);
-            queriesRepo.Setup(r => r.GetAllAuthorsWithBooks()).Returns(authors);
-            queriesRepo.Setup(r => r.GetAllLiteratureGenresWithBooks()).Returns(genres);
+            queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(book.Id)).Returns(book);
             queriesRepo.Setup(r => r.GetBookSeriesWithBooks(It.IsAny<int>()));
             var langRepo = new Mock<ILanguageRepository>();
             langRepo.Setup(r => r.GetAllLanguages());
@@ -233,11 +206,9 @@ namespace TitlesOrganizer.Tests.Services
             var result = service.GetDetails(book.Id);
 
             // Assert
-            queriesRepo.Verify(r => r.GetBook(book.Id), Times.Once());
-            queriesRepo.Verify(r => r.GetAllAuthorsWithBooks(), Times.Once());
-            queriesRepo.Verify(r => r.GetAllLiteratureGenresWithBooks(), Times.Once());
-            queriesRepo.Verify(r => r.GetBookSeriesWithBooks(It.IsAny<int>()), Times.Never());
+            queriesRepo.Verify(r => r.GetBookWithAuthorsGenresAndSeries(book.Id), Times.Once());
             langRepo.Verify(r => r.GetAllLanguages(), Times.Never());
+            queriesRepo.Verify(r => r.GetBookSeriesWithBooks(It.IsAny<int>()), Times.Never());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             langRepo.VerifyNoOtherCalls();
@@ -246,18 +217,16 @@ namespace TitlesOrganizer.Tests.Services
                 .BeOfType<BookDetailsVM>();
             result.Id.Should().Be(book.Id);
             result.Title.Should().Be(book.Title);
-            result.OriginalLanguage.Should().Be(string.Empty);
+            result.OriginalLanguage.Should().NotBeNull().And.BeEmpty();
             service.Authors.Should()
                 .NotBeNullOrEmpty().And
                 .HaveCount(2).And
-                .Equal(a1, a3).And
-                .NotContain(new[] { a2, a4 });
+                .Equal(authors);
             service.Books.Should().BeNull();
             service.Genres.Should()
                 .NotBeNullOrEmpty().And
                 .HaveCount(2).And
-                .Equal(g1, g3).And
-                .NotContain(new[] { g2, g4 });
+                .Equal(genres);
             service.Series.Should().BeNull();
         }
 
@@ -267,9 +236,7 @@ namespace TitlesOrganizer.Tests.Services
             int bookId = 1;
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(bookId)).Returns((Book?)null);
-            queriesRepo.Setup(r => r.GetAllAuthorsWithBooks());
-            queriesRepo.Setup(r => r.GetAllLiteratureGenresWithBooks());
+            queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(bookId)).Returns((Book?)null);
             queriesRepo.Setup(r => r.GetBookSeriesWithBooks(It.IsAny<int>()));
             var langRepo = new Mock<ILanguageRepository>();
             langRepo.Setup(r => r.GetAllLanguages());
@@ -279,9 +246,7 @@ namespace TitlesOrganizer.Tests.Services
             var result = service.GetDetails(bookId);
 
             // Assert
-            queriesRepo.Verify(r => r.GetBook(bookId), Times.Once());
-            queriesRepo.Verify(r => r.GetAllAuthorsWithBooks(), Times.Never());
-            queriesRepo.Verify(r => r.GetAllLiteratureGenresWithBooks(), Times.Never());
+            queriesRepo.Verify(r => r.GetBookWithAuthorsGenresAndSeries(bookId), Times.Once());
             queriesRepo.Verify(r => r.GetBookSeriesWithBooks(It.IsAny<int>()), Times.Never());
             langRepo.Verify(r => r.GetAllLanguages(), Times.Never());
             queriesRepo.VerifyNoOtherCalls();
@@ -291,8 +256,8 @@ namespace TitlesOrganizer.Tests.Services
                 .NotBeNull().And
                 .BeOfType<BookDetailsVM>();
             result.Id.Should().Be(default);
-            result.Title.Should().Be(string.Empty);
-            result.OriginalLanguage.Should().Be(string.Empty);
+            result.Title.Should().NotBeNull().And.BeEmpty();
+            result.OriginalLanguage.Should().NotBeNull().And.BeEmpty();
             service.Authors.Should().BeNull();
             service.Books.Should().BeNull();
             service.Genres.Should().BeNull();

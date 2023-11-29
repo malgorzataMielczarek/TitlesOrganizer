@@ -60,12 +60,18 @@ namespace TitlesOrganizer.Application.Services
                 var genres = book.Genres;
                 BookSeries? series = book.Series;
                 Language? language = null;
+                IEnumerable<Book>? booksInSeries = null;
                 if (book.OriginalLanguageCode != null)
                 {
                     language = _language.GetAllLanguages().FirstOrDefault(l => l.Code == book.OriginalLanguageCode);
                 }
 
-                return MapToDetails(book, language, authors, genres, series, series?.Books);
+                if (series != null)
+                {
+                    booksInSeries = _queries.GetBookSeriesWithBooks(book.SeriesId!.Value)!.Books;
+                }
+
+                return MapToDetails(book, language, authors, genres, series, booksInSeries);
             }
             else
             {
