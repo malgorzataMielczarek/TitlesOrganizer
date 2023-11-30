@@ -1,12 +1,17 @@
-﻿using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Domain.Models.Abstract;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 
 namespace TitlesOrganizer.Application.ViewModels.Base
 {
-    public class BaseForItemVM<T, TItem> : IForItemVM<T, TItem> where T : class, IBaseModel where TItem : class, IBaseModel
+    public class BaseForItemVM : IForItemVM
     {
-        public virtual bool IsForItem { get; set; } = false;
-        public int Id { get; set; }
         public virtual string Description { get; set; } = string.Empty;
+
+        [ScaffoldColumn(false)]
+        public int Id { get; set; }
+
+        [DisplayName("")]
+        public virtual bool IsForItem { get; set; } = false;
     }
 }

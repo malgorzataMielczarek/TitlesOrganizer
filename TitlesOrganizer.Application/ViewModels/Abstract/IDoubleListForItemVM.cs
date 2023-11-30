@@ -1,9 +1,7 @@
-﻿using TitlesOrganizer.Domain.Models.Abstract;
-
-namespace TitlesOrganizer.Application.ViewModels.Abstract
+﻿namespace TitlesOrganizer.Application.ViewModels.Abstract
 {
-    public interface IDoubleListForItemVM<T, TItem> : IListForItemVM<T, TItem> where T : class, IBaseModel where TItem : class, IBaseModel
+    public interface IDoubleListForItemVM : IListForItemVM
     {
-        List<IForItemVM<T, TItem>> SelectedValues { get; set; }
+        List<IForItemVM> SelectedValues { get; set; }
     }
 }

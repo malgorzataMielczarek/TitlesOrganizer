@@ -1,11 +1,13 @@
-﻿using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Domain.Models.Abstract;
+﻿using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 
 namespace TitlesOrganizer.Application.ViewModels.Base
 {
-    public class BaseForListVM<T> : IForListVM<T> where T : class, IBaseModel
+    public class BaseForListVM : IForListVM
     {
+        [ScaffoldColumn(false)]
         public int Id { get; set; }
+
         public virtual string Description { get; set; } = string.Empty;
     }
 }

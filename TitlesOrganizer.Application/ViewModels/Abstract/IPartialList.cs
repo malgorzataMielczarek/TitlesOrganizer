@@ -1,14 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TitlesOrganizer.Application.ViewModels.Helpers;
-using TitlesOrganizer.Domain.Models.Abstract;
+﻿using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.ViewModels.Abstract
 {
-    public interface IPartialList<T> where T : class, IBaseModel
+    public interface IPartialList
     {
-        List<IForListVM<T>> Values { get; set; }
-
-        [ScaffoldColumn(false)]
         Paging Paging { get; set; }
+        List<IForListVM> Values { get; set; }
     }
 }

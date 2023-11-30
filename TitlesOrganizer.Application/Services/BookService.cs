@@ -2,7 +2,6 @@
 
 using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.ViewModels.Base;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
@@ -60,15 +59,15 @@ namespace TitlesOrganizer.Application.Services
                 var genres = book.Genres;
                 BookSeries? series = book.Series;
                 Language? language = null;
-                IEnumerable<Book>? booksInSeries = null;
+                int? booksInSeries = null;
                 if (book.OriginalLanguageCode != null)
                 {
                     language = _language.GetAllLanguages().FirstOrDefault(l => l.Code == book.OriginalLanguageCode);
                 }
 
-                if (series != null)
+                if (series != null && book.NumberInSeries.HasValue)
                 {
-                    booksInSeries = _queries.GetBookSeriesWithBooks(book.SeriesId!.Value)!.Books;
+                    booksInSeries = _queries.GetBookSeriesWithBooks(book.SeriesId!.Value)!.Books.Count;
                 }
 
                 return MapToDetails(book, language, authors, genres, series, booksInSeries);
@@ -261,7 +260,7 @@ namespace TitlesOrganizer.Application.Services
             return bookWithRelatedObjects.MapFromBase(_mapper);
         }
 
-        protected virtual BookDetailsVM MapToDetails(Book book, Language? language, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres, BookSeries? series, IEnumerable<Book>? booksInSeries)
+        protected virtual BookDetailsVM MapToDetails(Book book, Language? language, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres, BookSeries? series, int? booksInSeries)
         {
             return book.MapToDetails(language, authors, genres, series, booksInSeries);
         }
@@ -309,6 +308,27 @@ namespace TitlesOrganizer.Application.Services
                     CurrentPage = pageNo,
                     PageSize = pageSize
                 });
+        }
+
+        private string InSeries(int? numberInSeries, int? booksInSeries)
+        {
+            var result = new System.Text.StringBuilder();
+            if (numberInSeries.HasValue)
+            {
+                result.Append(numberInSeries);
+                if (booksInSeries.HasValue)
+                {
+                    result.Append(" of ");
+                    result.Append(booksInSeries);
+                }
+
+                result.Append(" in ");
+                return result.ToString();
+            }
+            else
+            {
+                return "Part of ";
+            }
         }
     }
 }

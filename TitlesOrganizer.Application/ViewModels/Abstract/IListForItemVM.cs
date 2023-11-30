@@ -1,20 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TitlesOrganizer.Application.ViewModels.Helpers;
-using TitlesOrganizer.Domain.Models.Abstract;
+﻿using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.ViewModels.Abstract
 {
-    public interface IListForItemVM<T, TItem> where T : class, IBaseModel where TItem : class, IBaseModel
+    public interface IListForItemVM
     {
-        [ScaffoldColumn(false)]
-        IForListVM<TItem> Item { get; set; }
-
-        List<IForItemVM<T, TItem>> Values { get; set; }
-
-        [ScaffoldColumn(false)]
-        Paging Paging { get; set; }
-
-        [ScaffoldColumn(false)]
         Filtering Filtering { get; set; }
+        IForListVM Item { get; set; }
+        Paging Paging { get; set; }
+        List<IForItemVM> Values { get; set; }
     }
 }

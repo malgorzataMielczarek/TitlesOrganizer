@@ -1,13 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TitlesOrganizer.Domain.Models.Abstract;
-
-namespace TitlesOrganizer.Application.ViewModels.Abstract
+﻿namespace TitlesOrganizer.Application.ViewModels.Abstract
 {
-    public interface IForListVM<T> where T : class, IBaseModel
+    public interface IForListVM
     {
-        [ScaffoldColumn(false)]
-        int Id { get; set; }
-
         string Description { get; set; }
+        int Id { get; set; }
     }
 }

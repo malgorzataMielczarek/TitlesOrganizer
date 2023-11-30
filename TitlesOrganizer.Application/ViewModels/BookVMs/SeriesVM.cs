@@ -6,24 +6,24 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.Base;
-using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.BookVMs
 {
-    public class SeriesVM : IUpdateVM<BookSeries>
+    public class SeriesVM
     {
-        public int Id { get; set; }
-
-        public string Title { get; set; } = string.Empty;
-
-        [DisplayName("Original title")]
-        public string? OriginalTitle { get; set; }
+        public IPartialList Books { get; set; } = new PartialList();
 
         [DataType(DataType.MultilineText)]
         public string? Description { get; set; }
 
-        public IPartialList<Book> Books { get; set; } = new PartialList<Book>();
+        [ScaffoldColumn(false)]
+        public int Id { get; set; }
+
+        [DisplayName("Original title")]
+        public string? OriginalTitle { get; set; }
+
+        public string Title { get; set; } = string.Empty;
     }
 
     public class SeriesVMValidator : AbstractValidator<SeriesVM>
@@ -34,41 +34,6 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             RuleFor(s => s.Title).NotNull().NotEmpty().MaximumLength(225);
             RuleFor(s => s.OriginalTitle).MaximumLength(225);
             RuleFor(s => s.Description).MaximumLength(2000);
-        }
-    }
-
-    public static partial class MappingExtensions
-    {
-        public static BookSeries MapToBase(this SeriesVM seriesVM, IMapper mapper)
-        {
-            return mapper.Map<BookSeries>(seriesVM);
-        }
-
-        public static SeriesVM MapFromBase(this BookSeries seriesWithBooks, IMapper mapper, Paging booksPaging)
-        {
-            var seriesVM = mapper.Map<SeriesVM>(seriesWithBooks);
-            seriesVM.Books.Values = seriesWithBooks.Books.OrderBy(b => b.Title).MapToList(ref booksPaging);
-            seriesVM.Books.Paging = booksPaging;
-
-            return seriesVM;
-        }
-
-        public static SeriesVM MapFromBase(this BookSeries series, IMapper mapper, IQueryable<Book> books, Paging booksPaging)
-        {
-            var seriesVM = mapper.Map<SeriesVM>(series);
-            if (books == null)
-            {
-                booksPaging.Count = 0;
-                booksPaging.CurrentPage = 1;
-            }
-            else
-            {
-                seriesVM.Books.Values = books.OrderBy(b => b.Title).MapToList(ref booksPaging).ToList();
-            }
-
-            seriesVM.Books.Paging = booksPaging;
-
-            return seriesVM;
         }
     }
 

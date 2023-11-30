@@ -1,11 +1,14 @@
-﻿using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Domain.Models.Abstract;
+﻿using System.ComponentModel.DataAnnotations;
+using TitlesOrganizer.Application.ViewModels.Abstract;
 
 namespace TitlesOrganizer.Application.ViewModels.Base
 {
-    public class BaseDetailsVM<T> : IDetailsVM<T> where T : class, IBaseModel
+    public class BaseDetailsVM : IDetailsVM
     {
+        [ScaffoldColumn(false)]
         public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
+
+        [ScaffoldColumn(false)]
+        public virtual string Title { get; set; } = string.Empty;
     }
 }
