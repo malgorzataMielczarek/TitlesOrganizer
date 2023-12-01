@@ -5,14 +5,14 @@ using FluentValidation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Application.ViewModels.BookVMs
+namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
 {
     public class SeriesVM
     {
-        public IPartialList Books { get; set; } = new PartialList();
+        public IPartialListVM Books { get; set; } = new PartialListVM();
 
         [DataType(DataType.MultilineText)]
         public string? Description { get; set; }

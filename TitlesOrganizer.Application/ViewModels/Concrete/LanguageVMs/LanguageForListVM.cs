@@ -1,6 +1,6 @@
 ﻿using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Application.ViewModels.LanguageVMs
+namespace TitlesOrganizer.Application.ViewModels.Concrete.LanguageVMs
 {
     public class LanguageForListVM
     {

@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using System.ComponentModel;
 using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Application.ViewModels.BookVMs
+namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
 {
     public class SeriesDetailsVM : BaseDetailsVM
     {
         public List<IForListVM> Authors { get; set; } = new();
 
-        public IPartialList Books { get; set; } = new PartialList();
+        public IPartialListVM Books { get; set; } = new PartialListVM();
 
         public string Description { get; set; } = string.Empty;
 

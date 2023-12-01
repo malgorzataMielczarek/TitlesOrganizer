@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using TitlesOrganizer.Application.Services;
-using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;

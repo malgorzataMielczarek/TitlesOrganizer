@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Models;
 

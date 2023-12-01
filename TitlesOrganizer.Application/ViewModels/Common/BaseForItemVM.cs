@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
 
-namespace TitlesOrganizer.Application.ViewModels.Base
+namespace TitlesOrganizer.Application.ViewModels.Common
 {
     public class BaseForItemVM : IForItemVM
     {

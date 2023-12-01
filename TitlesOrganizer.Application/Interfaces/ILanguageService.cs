@@ -1,4 +1,4 @@
-﻿using TitlesOrganizer.Application.ViewModels.LanguageVMs;
+﻿using TitlesOrganizer.Application.ViewModels.Concrete.LanguageVMs;
 
 namespace TitlesOrganizer.Application.Interfaces
 {

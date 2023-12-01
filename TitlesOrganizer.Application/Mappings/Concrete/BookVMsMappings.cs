@@ -1,12 +1,15 @@
-﻿using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
+﻿using AutoMapper;
+using TitlesOrganizer.Application.Mappings.Abstract;
+using TitlesOrganizer.Application.Mappings.Common;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
 using TitlesOrganizer.Domain.Models.Abstract;
 
-namespace TitlesOrganizer.Application.ViewModels.BookVMs
+namespace TitlesOrganizer.Application.Mappings.Concrete
 {
-    public class BookVMsMappings : BaseMappings
+    public class BookVMsMappings(IMapper _mapper) : BaseMappings(_mapper), IBookVMsMappings
     {
         public override IForListVM Map<T>(T entity)
         {
@@ -42,7 +45,7 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
 
                 case Book book:
                     result.Description = book.Title;
-                    result.IsForItem = (item) switch
+                    result.IsForItem = item switch
                     {
                         Author => IsForItem(book.Authors, item.Id),
                         BookSeries => book.SeriesId == item.Id,
@@ -73,9 +76,30 @@ namespace TitlesOrganizer.Application.ViewModels.BookVMs
             return result;
         }
 
+        public override TDestination Map<TSource, TDestination>(TSource entity)
+        {
+            var isMappingDefined =
+                (entity is Author && (typeof(TDestination) == typeof(AuthorVM) || typeof(TDestination) == typeof(AuthorDetailsVM))) ||
+                (entity is AuthorVM && typeof(TDestination) == typeof(Author)) ||
+                (entity is Book && (typeof(TDestination) == typeof(BookVM) || typeof(TDestination) == typeof(BookDetailsVM))) ||
+                (entity is BookVM && typeof(TDestination) == typeof(Book)) ||
+                (entity is BookSeries && (typeof(TDestination) == typeof(SeriesVM) || typeof(TDestination) == typeof(SeriesDetailsVM))) ||
+                (entity is SeriesVM && typeof(TDestination) == typeof(BookSeries)) ||
+                (entity is LiteratureGenre && (typeof(TDestination) == typeof(GenreVM) || typeof(TDestination) == typeof(GenreDetailsVM))) ||
+                (entity is GenreVM && typeof(TDestination) == typeof(LiteratureGenre));
+            if (isMappingDefined)
+            {
+                return base.Map<TSource, TDestination>(entity);
+            }
+            else
+            {
+                throw new NotImplementedException("Mapping between those types is not defined.");
+            }
+        }
+
         public override IOrderedQueryable<T> Sort<T>(IQueryable<T> entities, SortByEnum sortBy)
         {
-            return (entities) switch
+            return entities switch
             {
                 IQueryable<Author> authors => (IOrderedQueryable<T>)authors.Sort(sortBy, a => a.LastName, a => a.Name),
                 IQueryable<Book> books => (IOrderedQueryable<T>)books.Sort(sortBy, b => b.Title),

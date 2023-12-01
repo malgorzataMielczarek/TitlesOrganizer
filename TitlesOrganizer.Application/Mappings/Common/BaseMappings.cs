@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using TitlesOrganizer.Application.Mappings.Abstract;
 using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models.Abstract;
 
-namespace TitlesOrganizer.Application.ViewModels.Base
+namespace TitlesOrganizer.Application.Mappings.Common
 {
-    public class BaseMappings : IMappings
+    public class BaseMappings(IMapper _mapper) : IMappings
     {
         public static List<T> SkipAndTake<T>(IEnumerable<T> values, ref Paging paging)
         {
@@ -68,26 +70,26 @@ namespace TitlesOrganizer.Application.ViewModels.Base
             return new BaseListVM(limitedList, paging, filtering);
         }
 
-        public List<IForListVM> Map<T>(IQueryable<T> entities, ref Paging paging)
+        public virtual List<IForListVM> Map<T>(IEnumerable<T> entities, ref Paging paging)
             where T : class, IBaseModel
         {
             var list = Map(entities);
             return SkipAndTake(list, ref paging);
         }
 
-        public IPartialList Map<T>(IQueryable<T> entities, Paging paging)
+        public virtual IPartialListVM Map<T>(IEnumerable<T> entities, Paging paging)
             where T : class, IBaseModel
         {
-            return new PartialList()
+            return new PartialListVM()
             {
                 Values = Map(entities, ref paging),
                 Paging = paging
             };
         }
 
-        public virtual TDestination Map<TSource, TDestination>(TSource entity, IMapper mapper)
+        public virtual TDestination Map<TSource, TDestination>(TSource entity)
         {
-            return mapper.Map<TDestination>(entity);
+            return _mapper.Map<TDestination>(entity);
         }
 
         public virtual IDoubleListForItemVM MapToDoubleListForItem<T, ItemT>(IQueryable<T> entities, ItemT item, Paging paging, Filtering filtering)
@@ -117,6 +119,7 @@ namespace TitlesOrganizer.Application.ViewModels.Base
         }
 
         public virtual IOrderedQueryable<T> Sort<T>(IQueryable<T> entities, SortByEnum sortBy)
+            where T : class, IBaseModel
         {
             return entities.Order();
         }

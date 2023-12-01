@@ -1,11 +1,12 @@
 ﻿// Ignore Spelling: Upsert
 
-using AutoMapper;
 using FluentAssertions;
 using Moq;
+using TitlesOrganizer.Application.Mappings.Abstract;
 using TitlesOrganizer.Application.Services;
-using TitlesOrganizer.Application.ViewModels.Base;
-using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Common;
+using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
@@ -24,8 +25,8 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetAuthor(author.Id))
                 .Returns(author);
             commandsRepo.Setup(r => r.Delete(author));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mapping = new Mock<IBookVMsMappings>();
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mapping.Object);
 
             service.Delete(author.Id);
 
@@ -37,6 +38,7 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once);
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+            mapping.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -48,8 +50,8 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetAuthor(author.Id))
                 .Returns((Author?)null);
             commandsRepo.Setup(r => r.Delete(author));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mapping = new Mock<IBookVMsMappings>();
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mapping.Object);
 
             service.Delete(author.Id);
 
@@ -61,19 +63,29 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Never);
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+            mapping.VerifyNoOtherCalls();
         }
 
         [Fact]
         public void Get_ExistingAuthorId()
         {
             int pageSize = 3, pageNo = 2;
-            var author = new Author() { Id = 1 };
+            var id = 1;
+            var books = Helpers.GetBooksList(3);
+            var author = new Author()
+            {
+                Id = id,
+                Books = books
+            };
+            var authorVM = new AuthorVM() { Id = id };
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetAuthorWithBooks(author.Id))
                 .Returns(author);
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mapping = new Mock<IBookVMsMappings>();
+            mapping.Setup(m => m.Map<Author, AuthorVM>(author)).Returns(authorVM);
+            mapping.Setup(m => m.Map(books, It.IsAny<Paging>())).Returns(new PartialListVM());
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mapping.Object);
 
             var result = service.Get(author.Id, pageSize, pageNo);
 
@@ -82,37 +94,57 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
+            mapping.Verify(
+                m => m.Map<Author, AuthorVM>(author),
+                Times.Once());
+            mapping.Verify(
+                m => m.Map(books, It.Is<Paging>(p => p.CurrentPage == pageNo && p.PageSize == pageSize)),
+                Times.Once());
+            mapping.VerifyNoOtherCalls();
             result.Should()
                 .NotBeNull().And
                 .BeOfType<AuthorVM>();
             result.Id.Should().Be(author.Id);
-            result.Books.Paging.PageSize.Should().Be(pageSize);
-            result.Books.Paging.CurrentPage.Should().Be(pageNo);
         }
 
         [Fact]
         public void Get_NotExistingAuthorId()
         {
             int pageSize = 3, pageNo = 2;
-            int authorId = 1;
+            var id = 1;
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetAuthorWithBooks(authorId))
+            queriesRepo.Setup(r => r.GetAuthorWithBooks(id))
                 .Returns((Author?)null);
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mapping = new Mock<IBookVMsMappings>();
+            mapping.Setup(m => m.Map<Author, AuthorVM>(It.IsAny<Author>()));
+            mapping.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()));
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mapping.Object);
 
-            var result = service.Get(authorId, pageSize, pageNo);
+            var result = service.Get(id, pageSize, pageNo);
 
             queriesRepo.Verify(
-                r => r.GetAuthorWithBooks(authorId),
+                r => r.GetAuthorWithBooks(id),
                 Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
+            mapping.Verify(
+                m => m.Map<Author, AuthorVM>(It.IsAny<Author>()),
+                Times.Never());
+            mapping.Verify(
+                m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
+                Times.Never());
+            mapping.VerifyNoOtherCalls();
             result.Should()
                 .NotBeNull().And
                 .BeOfType<AuthorVM>();
             result.Id.Should().Be(default);
+            result.Books.Should()
+                .NotBeNull().And
+                .BeAssignableTo<IPartialListVM>();
+            result.Books.Paging.Should()
+                .NotBeNull().And
+                .BeOfType<Paging>();
             result.Books.Paging.PageSize.Should().Be(pageSize);
             result.Books.Paging.CurrentPage.Should().Be(1);
             result.Books.Paging.Count.Should().Be(0);
@@ -124,6 +156,7 @@ namespace TitlesOrganizer.Tests.Services
             // Arrange
             int booksPageSize = 5, booksPageNo = 2, seriesPageSize = 1, seriesPageNo = 3, genrePageSize = 3, genrePageNo = 4;
             var author = Helpers.GetAuthor(1);
+            var authorDetails = new AuthorDetailsVM() { Id = author.Id };
             var books = Helpers.GetBooksList(10);
             var s1 = Helpers.GetSeries(1);
             var s2 = Helpers.GetSeries(2);
@@ -156,15 +189,31 @@ namespace TitlesOrganizer.Tests.Services
             books[5].Genres = new[] { g1, g3 };
             books[6].Genres = new[] { g2, g4 };
 
+            IEnumerable<Book> booksParam = null;
+            IEnumerable<BookSeries> seriesParam = null;
+            IEnumerable<LiteratureGenre> genresParam = null;
+
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetAuthor(author.Id))
                 .Returns(author);
             queriesRepo.Setup(r => r.GetAllBooksWithAuthorsGenresAndSeries())
                 .Returns(books.AsQueryable());
-            var mapper = new Mock<IMapper>().Object;
 
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            mappings.Setup(m => m.Map<Author, AuthorDetailsVM>(author))
+                .Returns(authorDetails);
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Book>, Paging>((b, p) => booksParam = b)
+                .Returns(new PartialListVM());
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<BookSeries>, Paging>((s, p) => seriesParam = s)
+                .Returns(new PartialListVM());
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<LiteratureGenre>, Paging>((g, p) => genresParam = g)
+                .Returns(new PartialListVM());
+
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             // Act
             var result = service.GetDetails(author.Id, booksPageSize, booksPageNo, seriesPageSize, seriesPageNo, genrePageSize, genrePageNo);
@@ -178,17 +227,24 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<Book>>(),
+                    It.Is<Paging>(p => p.CurrentPage == booksPageNo && p.PageSize == booksPageSize)),
+                Times.Once());
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<BookSeries>>(),
+                    It.Is<Paging>(p => p.CurrentPage == seriesPageNo && p.PageSize == seriesPageSize)),
+                Times.Once());
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(),
+                    It.Is<Paging>(p => p.CurrentPage == genrePageNo && p.PageSize == genrePageSize)),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
             result.Should()
                 .NotBeNull().And
                 .BeOfType<AuthorDetailsVM>();
             result.Id.Should().Be(author.Id);
-            result.Books.Paging.PageSize.Should().Be(booksPageSize);
-            result.Books.Paging.CurrentPage.Should().Be(booksPageNo);
-            result.Series.Paging.PageSize.Should().Be(seriesPageSize);
-            result.Series.Paging.CurrentPage.Should().Be(seriesPageNo);
-            result.Genres.Paging.PageSize.Should().Be(genrePageSize);
-            result.Genres.Paging.CurrentPage.Should().Be(genrePageNo);
-            service.Books.Should()
+            booksParam.Should()
                 .NotBeNull().And
                 .HaveCount(7).And
                 .Contain(books[0]).And
@@ -201,13 +257,13 @@ namespace TitlesOrganizer.Tests.Services
                 .Contain(books[7]).And
                 .Contain(books[8]).And
                 .NotContain(books[9]);
-            service.Series.Should()
+            seriesParam.Should()
                 .NotBeNull().And
                 .HaveCount(2).And
                 .Contain(s1).And
                 .Contain(s2).And
                 .NotContain(s3);
-            service.Genres.Should()
+            genresParam.Should()
                 .NotBeNull().And
                 .HaveCount(3).And
                 .Contain(g1).And
@@ -221,15 +277,20 @@ namespace TitlesOrganizer.Tests.Services
         {
             // Arrange
             int booksPageSize = 5, booksPageNo = 2, seriesPageSize = 1, seriesPageNo = 3, genrePageSize = 3, genrePageNo = 4;
-            int authorId = 1;
+            var authorId = 1;
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetAuthor(authorId))
                 .Returns((Author?)null);
             queriesRepo.Setup(r => r.GetAllBooksWithAuthorsGenresAndSeries());
-            var mapper = new Mock<IMapper>().Object;
 
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            mappings.Setup(m => m.Map<Author, AuthorDetailsVM>(It.IsAny<Author>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()));
+
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             // Act
             var result = service.GetDetails(authorId, booksPageSize, booksPageNo, seriesPageSize, seriesPageNo, genrePageSize, genrePageNo);
@@ -243,7 +304,19 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Never());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
-            result.Should().NotBeNull().And.BeOfType<AuthorDetailsVM>();
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
+                Times.Never());
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()),
+                Times.Never());
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()),
+                Times.Never());
+            mappings.VerifyNoOtherCalls();
+            result.Should()
+                .NotBeNull().And
+                .BeOfType<AuthorDetailsVM>();
             result.Id.Should().Be(default);
             result.Books.Paging.PageSize.Should().Be(booksPageSize);
             result.Books.Paging.CurrentPage.Should().Be(1);
@@ -254,23 +327,30 @@ namespace TitlesOrganizer.Tests.Services
             result.Genres.Paging.PageSize.Should().Be(genrePageSize);
             result.Genres.Paging.CurrentPage.Should().Be(1);
             result.Genres.Paging.Count.Should().Be(0);
-            service.Books.Should().BeNull();
-            service.Series.Should().BeNull();
-            service.Genres.Should().BeNull();
         }
 
         [Theory]
-        [InlineData(5, 5, 1, SortByEnum.Ascending, "Name")]
-        [InlineData(6, 3, 2, SortByEnum.Descending, null)]
-        public void GetList(int count, int pageSize, int pageNo, SortByEnum sort, string? search)
+        [InlineData("Search")]
+        [InlineData(null)]
+        public void GetList(string? search)
         {
+            int count = 3, pageSize = 2, pageNo = 2;
+            SortByEnum sort = SortByEnum.Descending;
             var authors = Helpers.GetAuthorsList(count).AsQueryable();
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetAllAuthors())
                 .Returns(authors);
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            Paging paging = null;
+            Filtering filtering = null;
+            var mappings = new Mock<IBookVMsMappings>();
+            mappings.Setup(m => m.Map(authors, It.IsAny<Paging>(), It.IsAny<Filtering>()))
+                .Callback<IQueryable<Author>, Paging, Filtering>((a, p, f) =>
+                {
+                    paging = p; filtering = f;
+                })
+                .Returns(new BaseListVM());
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.GetList(sort, pageSize, pageNo, search);
 
@@ -279,110 +359,110 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once());
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
-            service.Authors.Should()
-                .NotBeNull().And
-                .HaveCount(count).And
-                .Equal(authors);
+            mappings.Verify(
+                m => m.Map(authors, It.IsAny<Paging>(), It.IsAny<Filtering>()),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
             result.Should()
                 .NotBeNull().And
-                .BeOfType<ListAuthorForListVM>();
-            result.Paging.Should().NotBeNull();
-            result.Paging.PageSize.Should().Be(pageSize);
-            result.Paging.CurrentPage.Should().Be(pageNo);
-            result.Paging.Count.Should().Be(count);
-            result.Filtering.Should().NotBeNull();
-            result.Filtering.SearchString.Should()
+                .BeOfType<BaseListVM>();
+            paging.Should().NotBeNull();
+            paging!.PageSize.Should().Be(pageSize);
+            paging.CurrentPage.Should().Be(pageNo);
+            paging.Count.Should().Be(default);
+            filtering.Should().NotBeNull();
+            filtering!.SearchString.Should()
                 .NotBeNull().And
                 .Be(search ?? string.Empty);
-            result.Filtering.SortBy.Should().Be(sort);
+            filtering.SortBy.Should().Be(sort);
         }
 
         [Theory]
-        [InlineData(5, 1, SortByEnum.Ascending, "Name")]
-        [InlineData(3, 2, SortByEnum.Descending, null)]
-        public void GetListForBook_ExistingBook(int pageSize, int pageNo, SortByEnum sort, string? search)
+        [InlineData("Name")]
+        [InlineData(null)]
+        public void GetListForBook_ExistingBook(string? search)
         {
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
-            var a3 = Helpers.GetAuthor(3);
-            var a4 = Helpers.GetAuthor(4);
-            a1.Books = new[] { b1, b2 };
-            a2.Books = new[] { b1 };
-            a3.Books = new[] { b2 };
-            a4.Books = new List<Book>();
-            var authors = new[] { a1, a2, a3, a4 }.AsQueryable();
-            var book = Helpers.GetBook(b1.Id);
+            int pageSize = 4, pageNo = 2;
+            SortByEnum sort = SortByEnum.Descending;
+            var book = Helpers.GetBook(1);
+            var authors = Helpers.GetAuthorsList(3).AsQueryable();
             var commands = new Mock<IAuthorCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
-            queries.Setup(q => q.GetBook(b1.Id))
+            queries.Setup(q => q.GetBook(book.Id))
                 .Returns(book);
             queries.Setup(q => q.GetAllAuthorsWithBooks())
                 .Returns(authors);
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commands.Object, queries.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            Paging paging = null;
+            Filtering filtering = null;
+            mappings.Setup(m => m.MapToDoubleListForItem(authors, book, It.IsAny<Paging>(), It.IsAny<Filtering>()))
+                .Callback<IQueryable<Author>, Book, Paging, Filtering>((a, b, p, f) =>
+                {
+                    paging = p;
+                    filtering = f;
+                })
+                .Returns(new BaseDoubleListForItemVM());
+            var service = new AuthorService(commands.Object, queries.Object, mappings.Object);
 
-            var result = service.GetListForBook(b1.Id, sort, pageSize, pageNo, search);
+            var result = service.GetListForBook(book.Id, sort, pageSize, pageNo, search);
 
             result.Should()
                 .NotBeNull().And
-                .BeOfType<ListAuthorForBookVM>();
+                .BeOfType<BaseDoubleListForItemVM>();
             queries.Verify(
-                q => q.GetBook(b1.Id),
+                q => q.GetBook(book.Id),
                 Times.Once);
             queries.Verify(
                 q => q.GetAllAuthorsWithBooks(),
                 Times.Once);
             queries.VerifyNoOtherCalls();
             commands.VerifyNoOtherCalls();
-            result.Paging.Should().NotBeNull();
-            result.Paging.CurrentPage.Should().Be(pageNo);
-            result.Paging.PageSize.Should().Be(pageSize);
-            result.Filtering.Should().NotBeNull();
-            result.Filtering.SearchString.Should()
+            mappings.Verify(
+                m => m.MapToDoubleListForItem(authors, book, It.IsAny<Paging>(), It.IsAny<Filtering>()),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
+            paging.Should().NotBeNull();
+            paging!.CurrentPage.Should().Be(pageNo);
+            paging.PageSize.Should().Be(pageSize);
+            filtering.Should().NotBeNull();
+            filtering!.SearchString.Should()
                 .NotBeNull().And
                 .Be(search ?? string.Empty);
-            result.Filtering.SortBy.Should().Be(sort);
-            service.Authors.Should()
-                .NotBeNull().And
-                .Equal(authors);
-            service.Books.Should()
-                .NotBeNullOrEmpty().And
-                .ContainSingle(b => b.Equals(book));
+            filtering.SortBy.Should().Be(sort);
         }
 
         [Theory]
-        [InlineData(5, 1, SortByEnum.Ascending, "Name")]
-        [InlineData(3, 2, SortByEnum.Descending, null)]
-        public void GetListForBook_NotExistingBook(int pageSize, int pageNo, SortByEnum sort, string? search)
+        [InlineData("Name")]
+        [InlineData(null)]
+        public void GetListForBook_NotExistingBook(string? search)
         {
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            int bookId = 3;
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
-            var a3 = Helpers.GetAuthor(3);
-            var a4 = Helpers.GetAuthor(4);
-            a1.Books = new[] { b1, b2 };
-            a2.Books = new[] { b1 };
-            a3.Books = new[] { b2 };
-            a4.Books = new List<Book>();
-            var authors = new[] { a1, a2, a3, a4 }.AsQueryable();
+            int pageSize = 4, pageNo = 2;
+            SortByEnum sort = SortByEnum.Descending;
+            var bookId = 1;
+            var authors = Helpers.GetAuthorsList(3).AsQueryable();
             var commands = new Mock<IAuthorCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetBook(bookId))
                 .Returns((Book?)null);
             queries.Setup(q => q.GetAllAuthorsWithBooks())
                 .Returns(authors);
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commands.Object, queries.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            Paging paging = null;
+            Filtering filtering = null;
+            mappings.Setup(m => m.MapToDoubleListForItem(authors, It.IsAny<Book>(), It.IsAny<Paging>(), It.IsAny<Filtering>()))
+                .Callback<IQueryable<Author>, Book, Paging, Filtering>((a, b, p, f) =>
+                {
+                    paging = p;
+                    filtering = f;
+                })
+                .Returns(new BaseDoubleListForItemVM());
+            var service = new AuthorService(commands.Object, queries.Object, mappings.Object);
 
             var result = service.GetListForBook(bookId, sort, pageSize, pageNo, search);
 
             result.Should()
                 .NotBeNull().And
-                .BeOfType<ListAuthorForBookVM>();
+                .BeOfType<BaseDoubleListForItemVM>();
             queries.Verify(
                 q => q.GetBook(bookId),
                 Times.Once);
@@ -391,21 +471,18 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once);
             queries.VerifyNoOtherCalls();
             commands.VerifyNoOtherCalls();
-            result.Paging.Should().NotBeNull();
-            result.Paging.CurrentPage.Should().Be(pageNo);
-            result.Paging.PageSize.Should().Be(pageSize);
-            result.Filtering.Should().NotBeNull();
-            result.Filtering.SearchString.Should()
+            mappings.Verify(
+                m => m.MapToDoubleListForItem(authors, It.Is<Book>(b => b.Id == default), It.IsAny<Paging>(), It.IsAny<Filtering>()),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
+            paging.Should().NotBeNull();
+            paging!.CurrentPage.Should().Be(pageNo);
+            paging.PageSize.Should().Be(pageSize);
+            filtering.Should().NotBeNull();
+            filtering!.SearchString.Should()
                 .NotBeNull().And
                 .Be(search ?? string.Empty);
-            result.Filtering.SortBy.Should().Be(sort);
-            service.Authors.Should()
-                .NotBeNull().And
-                .Equal(authors);
-            service.Books.Should()
-                .NotBeNullOrEmpty().And
-                .NotContainNulls().And
-                .ContainSingle(b => b.Id == default);
+            filtering.SortBy.Should().Be(sort);
         }
 
         [Fact]
@@ -431,18 +508,24 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(genre);
             query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries())
                 .Returns(books);
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(comm.Object, query.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            IEnumerable<Author> authors = null;
+            Paging paging = null;
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Author>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Author>, Paging>((a, p) =>
+                {
+                    authors = a;
+                    paging = p;
+                })
+                .Returns(new PartialListVM());
+            var service = new AuthorService(comm.Object, query.Object, mappings.Object);
             int pageSize = 2, pageNo = 3;
 
             var result = service.GetPartialListForGenre(genre.Id, pageSize, pageNo);
 
             result.Should()
                 .NotBeNull().And
-                .BeOfType<PartialList<Author>>();
-            result.Paging.Should().NotBeNull();
-            result.Paging.CurrentPage.Should().Be(pageNo);
-            result.Paging.PageSize.Should().Be(pageSize);
+                .BeOfType<PartialListVM>();
             query.Verify(
                 q => q.GetLiteratureGenre(genre.Id),
                 Times.Once);
@@ -451,11 +534,18 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once);
             query.VerifyNoOtherCalls();
             comm.VerifyNoOtherCalls();
-            service.Authors.Should()
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<Author>>(), It.IsAny<Paging>()),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
+            authors.Should()
                 .NotBeNullOrEmpty().And
                 .HaveCount(3).And
                 .Equal(a1, a2, a3).And
                 .NotContain(new[] { a4 });
+            paging.Should().NotBeNull();
+            paging!.CurrentPage.Should().Be(pageNo);
+            paging.PageSize.Should().Be(pageSize);
         }
 
         [Fact]
@@ -467,15 +557,16 @@ namespace TitlesOrganizer.Tests.Services
             query.Setup(q => q.GetLiteratureGenre(genreId))
                 .Returns((LiteratureGenre?)null);
             query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries());
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(comm.Object, query.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Author>>(), It.IsAny<Paging>()));
+            var service = new AuthorService(comm.Object, query.Object, mappings.Object);
             int pageSize = 2, pageNo = 3;
 
             var result = service.GetPartialListForGenre(genreId, pageSize, pageNo);
 
             result.Should()
                 .NotBeNull().And
-                .BeOfType<PartialList<Author>>();
+                .BeAssignableTo<IPartialListVM>();
             result.Paging.Should().NotBeNull();
             result.Paging.CurrentPage.Should().Be(1);
             result.Paging.PageSize.Should().Be(pageSize);
@@ -489,7 +580,10 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Never);
             query.VerifyNoOtherCalls();
             comm.VerifyNoOtherCalls();
-            service.Authors.Should().BeNull();
+            mappings.Verify(
+                m => m.Map(It.IsAny<IEnumerable<Author>>(), It.IsAny<Paging>()),
+                Times.Never());
+            mappings.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -508,9 +602,11 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetAuthorWithBooks(author.Id))
                 .Returns(author);
             queriesRepo.Setup(r => r.GetBook(It.IsAny<int>()));
-            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            Author authorParam = null;
+            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author))
+                .Callback<Author>(a => authorParam = a);
+            var mappings = new Mock<IBookVMsMappings>();
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             service.SelectBooks(author.Id, booksIds);
 
@@ -520,15 +616,14 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Verify(
                 r => r.GetBook(It.IsAny<int>()),
                 Times.Never());
-            author.Books.Should().NotBeNull().And.BeEmpty();
             commandsRepo.Verify(
-                r => r.UpdateAuthorBooksRelation(It.Is<Author>(
-                    a => a.Equals(author) &&
-                    a.Books != null &&
-                    a.Books.Count == 0)),
+                r => r.UpdateAuthorBooksRelation(author),
                 Times.Once());
+            authorParam.Should().NotBeNull();
+            authorParam!.Books.Should().NotBeNull().And.BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+            mappings.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -551,31 +646,30 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(book2);
             queriesRepo.Setup(r => r.GetBook(book3.Id))
                 .Returns(book3);
-            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            Author authorParam = null;
+            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author))
+                .Callback<Author>(a => authorParam = a);
+            var mappings = new Mock<IBookVMsMappings>();
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             service.SelectBooks(author.Id, booksIds);
 
             queriesRepo.Verify(r => r.GetAuthorWithBooks(author.Id), Times.Once());
             queriesRepo.Verify(r => r.GetBook(book2.Id), Times.Once());
             queriesRepo.Verify(r => r.GetBook(book3.Id), Times.Once());
-            author.Books.Should()
+            commandsRepo.Verify(
+                r => r.UpdateAuthorBooksRelation(author),
+                Times.Once());
+            authorParam.Should().NotBeNull();
+            authorParam!.Books.Should()
+                .NotBeNull().And
                 .HaveCount(2).And
                 .Contain(book2).And
                 .Contain(book3).And
                 .NotContain(book1);
-            commandsRepo.Verify(
-                r => r.UpdateAuthorBooksRelation(It.Is<Author>(
-                    a => a.Equals(author) &&
-                    a.Books != null &&
-                    a.Books.Count == 2 &&
-                    a.Books.Contains(book2) &&
-                    a.Books.Contains(book3) &&
-                    !a.Books.Contains(book1))),
-                Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+            mappings.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -596,9 +690,11 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns((Book?)null);
             queriesRepo.Setup(r => r.GetBook(3))
                 .Returns((Book?)null);
-            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            Author authorParam = null;
+            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author))
+                .Callback<Author>(a => authorParam = a);
+            var mappings = new Mock<IBookVMsMappings>();
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             service.SelectBooks(author.Id, booksIds);
 
@@ -607,15 +703,17 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Once());
             queriesRepo.Verify(r => r.GetBook(2), Times.Once());
             queriesRepo.Verify(r => r.GetBook(3), Times.Once());
-            author.Books.Should().NotBeNull().And.BeEmpty();
             commandsRepo.Verify(
                 r => r.UpdateAuthorBooksRelation(It.Is<Author>(
                     a => a.Equals(author) &&
                     a.Books != null &&
                     a.Books.Count == 0)),
                 Times.Once());
+            authorParam.Should().NotBeNull();
+            authorParam!.Books.Should().NotBeNull().And.BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+            mappings.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -631,8 +729,8 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetBook(book1.Id))
                 .Returns(book1);
             commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(It.IsAny<Author>()));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            var mappings = new Mock<IBookVMsMappings>();
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             service.SelectBooks(authorId, booksIds);
 
@@ -647,6 +745,7 @@ namespace TitlesOrganizer.Tests.Services
                 Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
+            mappings.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -657,21 +756,34 @@ namespace TitlesOrganizer.Tests.Services
                 Name = "Name",
                 LastName = "Last Name"
             };
+            var entity = new Author()
+            {
+                Id = author.Id,
+                Name = author.Name,
+                LastName = author.LastName
+            };
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            commandsRepo.Setup(r => r.Insert(It.IsAny<Author>()))
+            commandsRepo.Setup(r => r.Insert(entity))
                 .Returns(1);
-            commandsRepo.Setup(r => r.Update(It.IsAny<Author>()));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            commandsRepo.Setup(r => r.Update(entity));
+            var mappings = new Mock<IBookVMsMappings>();
+            mappings.Setup(m => m.Map<AuthorVM, Author>(author))
+                .Returns(entity);
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.Upsert(author);
 
+            mappings.Verify(
+                m => m.Map<AuthorVM, Author>(author),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
+            entity.Id.Should().Be(default);
             commandsRepo.Verify(
-                r => r.Insert(It.Is<Author>(a => a.Id == default)),
+                r => r.Insert(entity),
                 Times.Once());
             commandsRepo.Verify(
-                r => r.Update(It.IsAny<Author>()),
+                r => r.Update(entity),
                 Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
@@ -687,161 +799,38 @@ namespace TitlesOrganizer.Tests.Services
                 Name = "Name",
                 LastName = "Last Name"
             };
+            var entity = new Author()
+            {
+                Id = author.Id,
+                Name = author.Name,
+                LastName = author.LastName
+            };
             var commandsRepo = new Mock<IAuthorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            commandsRepo.Setup(r => r.Insert(It.IsAny<Author>()))
+            commandsRepo.Setup(r => r.Insert(entity))
                 .Returns(1);
-            commandsRepo.Setup(r => r.Update(It.IsAny<Author>()));
-            var mapper = new Mock<IMapper>().Object;
-            var service = new AuthorServiceForTest(commandsRepo.Object, queriesRepo.Object, mapper);
+            commandsRepo.Setup(r => r.Update(entity));
+            var mappings = new Mock<IBookVMsMappings>();
+            mappings.Setup(m => m.Map<AuthorVM, Author>(author))
+                .Returns(entity);
+            var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.Upsert(author);
 
+            mappings.Verify(
+                m => m.Map<AuthorVM, Author>(author),
+                Times.Once());
+            mappings.VerifyNoOtherCalls();
+            entity.Id.Should().NotBe(default);
             commandsRepo.Verify(
-                r => r.Insert(It.IsAny<Author>()),
+                r => r.Insert(entity),
                 Times.Never());
             commandsRepo.Verify(
-                r => r.Update(It.Is<Author>(a => a.Id == 1)),
+                r => r.Update(entity),
                 Times.Once());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
             result.Should().Be(1);
-        }
-
-        public class AuthorServiceForTest : AuthorService
-        {
-            public IEnumerable<Author>? Authors { get; private set; }
-            public IEnumerable<Book>? Books { get; private set; }
-            public IEnumerable<BookSeries>? Series { get; private set; }
-            public IEnumerable<LiteratureGenre>? Genres { get; private set; }
-
-            public AuthorServiceForTest(IAuthorCommandsRepository authorCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper) : base(authorCommandsRepository, bookModuleQueriesRepository, mapper)
-            {
-            }
-
-            protected override Author Map(AuthorVM author)
-            {
-                return new Author()
-                {
-                    Id = author.Id
-                };
-            }
-
-            protected override AuthorVM Map(Author authorWithBooks, int bookPageSize, int bookPageNo)
-            {
-                return new AuthorVM()
-                {
-                    Id = authorWithBooks.Id,
-                    Books = new PartialList<Book>()
-                    {
-                        Paging = new Paging() { CurrentPage = bookPageNo, PageSize = bookPageSize }
-                    }
-                };
-            }
-
-            protected override AuthorDetailsVM MapToDetails(Author author)
-            {
-                return new AuthorDetailsVM() { Id = author.Id };
-            }
-
-            protected override AuthorDetailsVM MapAuthorDetailsBooks(AuthorDetailsVM authorDetails, IEnumerable<Book> books, int pageSize, int pageNo)
-            {
-                Books = books;
-                authorDetails.Books = new PartialList<Book>()
-                {
-                    Paging = new Paging()
-                    {
-                        PageSize = pageSize,
-                        CurrentPage = pageNo,
-                        Count = books.Count()
-                    }
-                };
-
-                return authorDetails;
-            }
-
-            protected override AuthorDetailsVM MapAuthorDetailsGenres(AuthorDetailsVM authorDetails, IEnumerable<LiteratureGenre> genres, int pageSize, int pageNo)
-            {
-                Genres = genres;
-                authorDetails.Genres = new PartialList<LiteratureGenre>()
-                {
-                    Paging = new Paging()
-                    {
-                        PageSize = pageSize,
-                        CurrentPage = pageNo,
-                        Count = genres.Count()
-                    }
-                };
-
-                return authorDetails;
-            }
-
-            protected override AuthorDetailsVM MapAuthorDetailsSeries(AuthorDetailsVM authorDetails, IEnumerable<BookSeries> series, int pageSize, int pageNo)
-            {
-                Series = series;
-                authorDetails.Series = new PartialList<BookSeries>()
-                {
-                    Paging = new Paging()
-                    {
-                        PageSize = pageSize,
-                        CurrentPage = pageNo,
-                        Count = series.Count()
-                    }
-                };
-
-                return authorDetails;
-            }
-
-            protected override ListAuthorForListVM MapToList(IQueryable<Author> authorList, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-            {
-                Authors = authorList;
-                return new ListAuthorForListVM()
-                {
-                    Paging = new Paging()
-                    {
-                        PageSize = pageSize,
-                        CurrentPage = pageNo,
-                        Count = authorList.Count()
-                    },
-                    Filtering = new Filtering()
-                    {
-                        SortBy = sortBy,
-                        SearchString = searchString
-                    }
-                };
-            }
-
-            protected override ListAuthorForBookVM MapForBook(IQueryable<Author> authorsWithBooks, Book book, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-            {
-                Authors = authorsWithBooks;
-                Books = new List<Book> { book }.AsQueryable();
-                return new ListAuthorForBookVM()
-                {
-                    Paging = new Paging
-                    {
-                        CurrentPage = pageNo,
-                        PageSize = pageSize
-                    },
-                    Filtering = new Filtering
-                    {
-                        SearchString = searchString,
-                        SortBy = sortBy
-                    }
-                };
-            }
-
-            protected override PartialList<Author> MapToPartialList(IEnumerable<Author> authors, int pageSize, int pageNo)
-            {
-                Authors = authors;
-                return new PartialList<Author>
-                {
-                    Paging = new Paging()
-                    {
-                        CurrentPage = pageNo,
-                        PageSize = pageSize
-                    }
-                };
-            }
         }
     }
 }

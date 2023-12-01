@@ -2,7 +2,7 @@
 using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 
-namespace TitlesOrganizer.Application.ViewModels.Base
+namespace TitlesOrganizer.Application.ViewModels.Common
 {
     public class BaseListVM : IListVM
     {

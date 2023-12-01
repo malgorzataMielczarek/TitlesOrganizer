@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Application.ViewModels.BookVMs
+namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
 {
     public class AuthorDetailsVM : BaseDetailsVM
     {
-        public IPartialList Books { get; set; } = new PartialList();
-        public IPartialList Genres { get; set; } = new PartialList();
-        public IPartialList Series { get; set; } = new PartialList();
+        public IPartialListVM Books { get; set; } = new PartialListVM();
+        public IPartialListVM Genres { get; set; } = new PartialListVM();
+        public IPartialListVM Series { get; set; } = new PartialListVM();
     }
 
     public class AuthorDetailsMappings : Profile

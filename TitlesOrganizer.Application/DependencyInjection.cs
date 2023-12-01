@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TitlesOrganizer.Application.Interfaces;
+using TitlesOrganizer.Application.Mappings.Abstract;
+using TitlesOrganizer.Application.Mappings.Concrete;
 using TitlesOrganizer.Application.Services;
-using TitlesOrganizer.Application.ViewModels.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
 
 namespace TitlesOrganizer.Application
 {
@@ -19,6 +21,7 @@ namespace TitlesOrganizer.Application
                 .AddTransient<ILanguageService, LanguageService>();
             // Mapping
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddTransient<IBookVMsMappings, BookVMsMappings>();
 
             // Validation
             services.AddTransient<IValidator<AuthorVM>, AuthorVMValidator>()

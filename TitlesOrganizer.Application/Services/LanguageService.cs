@@ -1,5 +1,5 @@
 ﻿using TitlesOrganizer.Application.Interfaces;
-using TitlesOrganizer.Application.ViewModels.LanguageVMs;
+using TitlesOrganizer.Application.ViewModels.Concrete.LanguageVMs;
 using TitlesOrganizer.Domain.Interfaces;
 
 namespace TitlesOrganizer.Application.Services

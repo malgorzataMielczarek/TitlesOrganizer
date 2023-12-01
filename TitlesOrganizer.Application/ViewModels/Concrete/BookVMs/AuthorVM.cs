@@ -5,14 +5,14 @@ using FluentValidation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using TitlesOrganizer.Application.ViewModels.Abstract;
-using TitlesOrganizer.Application.ViewModels.Base;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Application.ViewModels.BookVMs
+namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
 {
     public class AuthorVM
     {
-        public IPartialList Books { get; set; } = new PartialList();
+        public IPartialListVM Books { get; set; } = new PartialListVM();
 
         [ScaffoldColumn(false)]
         public int Id { get; set; }
