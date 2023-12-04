@@ -3,14 +3,14 @@ using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.ViewModels.Common
 {
-    public class BaseDoubleListForItemVM : BaseListForItemVM, IDoubleListForItemVM
+    public class DoubleListForItemVM : ListForItemVM, IDoubleListForItemVM
     {
-        public BaseDoubleListForItemVM() : base()
+        public DoubleListForItemVM() : base()
         {
             SelectedValues = new();
         }
 
-        public BaseDoubleListForItemVM(List<IForItemVM> values, List<IForItemVM> selectedValues, IForListVM item, Paging paging, Filtering filtering)
+        public DoubleListForItemVM(List<IForItemVM> values, List<IForItemVM> selectedValues, IForListVM item, Paging paging, Filtering filtering)
             : base(values, item, paging, filtering)
         {
             SelectedValues = selectedValues;

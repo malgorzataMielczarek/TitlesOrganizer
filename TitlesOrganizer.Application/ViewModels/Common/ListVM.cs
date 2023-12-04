@@ -4,16 +4,16 @@ using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.ViewModels.Common
 {
-    public class BaseListVM : IListVM
+    public class ListVM : IListVM
     {
-        public BaseListVM(List<IForListVM> values, Paging paging, Filtering filtering)
+        public ListVM(List<IForListVM> values, Paging paging, Filtering filtering)
         {
             Filtering = filtering;
             Paging = paging;
             Values = values;
         }
 
-        public BaseListVM()
+        public ListVM()
         {
             Filtering = new();
             Paging = new();

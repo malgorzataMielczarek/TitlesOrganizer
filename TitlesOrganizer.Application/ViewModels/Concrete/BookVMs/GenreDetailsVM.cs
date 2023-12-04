@@ -5,7 +5,7 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
 {
-    public class GenreDetailsVM : BaseDetailsVM
+    public class GenreDetailsVM : DetailsVM
     {
         public IPartialListVM Authors { get; set; } = new PartialListVM();
         public IPartialListVM Books { get; set; } = new PartialListVM();

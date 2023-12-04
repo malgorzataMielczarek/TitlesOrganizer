@@ -7,7 +7,7 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
 {
-    public class BookDetailsVM : BaseDetailsVM
+    public class BookDetailsVM : DetailsVM
     {
         public List<IForListVM> Authors { get; set; } = new();
 

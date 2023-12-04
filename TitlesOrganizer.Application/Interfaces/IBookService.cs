@@ -1,7 +1,6 @@
-﻿using TitlesOrganizer.Application.ViewModels.Common;
-using TitlesOrganizer.Application.ViewModels.Helpers;
-using TitlesOrganizer.Domain.Models;
+﻿using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
+using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.Interfaces
 {
@@ -13,19 +12,19 @@ namespace TitlesOrganizer.Application.Interfaces
 
         BookDetailsVM GetDetails(int id);
 
-        ListBookForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        IListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListBookForAuthorVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        IDoubleListForItemVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListBookForGenreVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        IDoubleListForItemVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        ListBookForSeriesVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        IListForItemVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        PartialListVM<Book> GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
+        IPartialListVM GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
 
-        PartialListVM<Book> GetPartialListForGenre(int genreId, int pageSize, int pageNo);
+        IPartialListVM GetPartialListForGenre(int genreId, int pageSize, int pageNo);
 
-        PartialListVM<Book> GetPartialListForSeries(int seriesId, int pageSize, int pageNo);
+        IPartialListVM GetPartialListForSeries(int seriesId, int pageSize, int pageNo);
 
         void SelectAuthors(int bookId, int[] selectedIds);
 

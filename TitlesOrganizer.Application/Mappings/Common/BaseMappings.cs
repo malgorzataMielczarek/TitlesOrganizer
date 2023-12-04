@@ -30,7 +30,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
         public virtual IForListVM Map<T>(T entity)
                     where T : class, IBaseModel
         {
-            return new BaseForListVM()
+            return new ForListVM()
             {
                 Id = entity.Id
             };
@@ -48,7 +48,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
             where T : class, IBaseModel
             where ItemT : class, IBaseModel
         {
-            return new BaseForItemVM() { Id = entity.Id };
+            return new ForItemVM() { Id = entity.Id };
         }
 
         public virtual List<IForItemVM> Map<T, ItemT>(IQueryable<T> entities, ItemT item)
@@ -67,7 +67,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
                 .ToList();
             var limitedList = SkipAndTake(values, ref paging);
 
-            return new BaseListVM(limitedList, paging, filtering);
+            return new ListVM(limitedList, paging, filtering);
         }
 
         public virtual List<IForListVM> Map<T>(IEnumerable<T> entities, ref Paging paging)
@@ -102,7 +102,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
             var notSelectedValues = mapped.Where(it => !it.IsForItem && it.Description.Contains(filtering.SearchString));
             var limitedList = SkipAndTake(notSelectedValues, ref paging).ToList();
 
-            return new BaseDoubleListForItemVM(limitedList, selectedValues, Map(item), paging, filtering);
+            return new DoubleListForItemVM(limitedList, selectedValues, Map(item), paging, filtering);
         }
 
         public virtual IListForItemVM MapToListForItem<T, ItemT>(IQueryable<T> entities, ItemT item, Paging paging, Filtering filtering)
@@ -115,7 +115,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
                 .OrderByDescending(it => it.IsForItem);
             var limitedList = SkipAndTake(values, ref paging).ToList();
 
-            return new BaseListForItemVM(limitedList, Map(item), paging, filtering);
+            return new ListForItemVM(limitedList, Map(item), paging, filtering);
         }
 
         public virtual IOrderedQueryable<T> Sort<T>(IQueryable<T> entities, SortByEnum sortBy)

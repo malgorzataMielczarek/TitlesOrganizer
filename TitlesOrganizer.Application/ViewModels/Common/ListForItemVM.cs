@@ -4,17 +4,17 @@ using TitlesOrganizer.Application.ViewModels.Helpers;
 
 namespace TitlesOrganizer.Application.ViewModels.Common
 {
-    public class BaseListForItemVM : IListForItemVM
+    public class ListForItemVM : IListForItemVM
     {
-        public BaseListForItemVM()
+        public ListForItemVM()
         {
             Filtering = new();
-            Item = new BaseForListVM();
+            Item = new ForListVM();
             Paging = new();
             Values = new();
         }
 
-        public BaseListForItemVM(List<IForItemVM> values, IForListVM item, Paging paging, Filtering filtering)
+        public ListForItemVM(List<IForItemVM> values, IForListVM item, Paging paging, Filtering filtering)
         {
             Filtering = filtering;
             Item = item;

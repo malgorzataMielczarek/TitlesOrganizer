@@ -347,9 +347,10 @@ namespace TitlesOrganizer.Tests.Services
             mappings.Setup(m => m.Map(authors, It.IsAny<Paging>(), It.IsAny<Filtering>()))
                 .Callback<IQueryable<Author>, Paging, Filtering>((a, p, f) =>
                 {
-                    paging = p; filtering = f;
+                    paging = p;
+                    filtering = f;
                 })
-                .Returns(new BaseListVM());
+                .Returns(new ListVM());
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.GetList(sort, pageSize, pageNo, search);
@@ -365,7 +366,7 @@ namespace TitlesOrganizer.Tests.Services
             mappings.VerifyNoOtherCalls();
             result.Should()
                 .NotBeNull().And
-                .BeOfType<BaseListVM>();
+                .BeOfType<ListVM>();
             paging.Should().NotBeNull();
             paging!.PageSize.Should().Be(pageSize);
             paging.CurrentPage.Should().Be(pageNo);
@@ -401,14 +402,14 @@ namespace TitlesOrganizer.Tests.Services
                     paging = p;
                     filtering = f;
                 })
-                .Returns(new BaseDoubleListForItemVM());
+                .Returns(new DoubleListForItemVM());
             var service = new AuthorService(commands.Object, queries.Object, mappings.Object);
 
             var result = service.GetListForBook(book.Id, sort, pageSize, pageNo, search);
 
             result.Should()
                 .NotBeNull().And
-                .BeOfType<BaseDoubleListForItemVM>();
+                .BeOfType<DoubleListForItemVM>();
             queries.Verify(
                 q => q.GetBook(book.Id),
                 Times.Once);
@@ -455,14 +456,14 @@ namespace TitlesOrganizer.Tests.Services
                     paging = p;
                     filtering = f;
                 })
-                .Returns(new BaseDoubleListForItemVM());
+                .Returns(new DoubleListForItemVM());
             var service = new AuthorService(commands.Object, queries.Object, mappings.Object);
 
             var result = service.GetListForBook(bookId, sort, pageSize, pageNo, search);
 
             result.Should()
                 .NotBeNull().And
-                .BeOfType<BaseDoubleListForItemVM>();
+                .BeOfType<DoubleListForItemVM>();
             queries.Verify(
                 q => q.GetBook(bookId),
                 Times.Once);
@@ -496,11 +497,11 @@ namespace TitlesOrganizer.Tests.Services
             var a2 = Helpers.GetAuthor(2);
             var a3 = Helpers.GetAuthor(3);
             var a4 = Helpers.GetAuthor(4);
-            b1.Authors = new[] { a1, a2, a3 };
-            b2.Authors = new[] { a1, a3 };
-            b3.Authors = new[] { a3, a4 };
-            b1.Genres = new[] { Helpers.GetGenre(genre.Id) };
-            b2.Genres = new[] { Helpers.GetGenre(genre.Id) };
+            b1.Authors = [a1, a2, a3];
+            b2.Authors = [a1, a3];
+            b3.Authors = [a3, a4];
+            b1.Genres = [Helpers.GetGenre(genre.Id)];
+            b2.Genres = [Helpers.GetGenre(genre.Id)];
             var books = new[] { b1, b2, b3 }.AsQueryable();
             var comm = new Mock<IAuthorCommandsRepository>();
             var query = new Mock<IBookModuleQueriesRepository>();

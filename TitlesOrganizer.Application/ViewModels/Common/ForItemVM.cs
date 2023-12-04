@@ -4,7 +4,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 
 namespace TitlesOrganizer.Application.ViewModels.Common
 {
-    public class BaseForItemVM : IForItemVM
+    public class ForItemVM : IForItemVM
     {
         public virtual string Description { get; set; } = string.Empty;
 

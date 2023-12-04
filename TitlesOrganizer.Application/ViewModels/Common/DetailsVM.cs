@@ -3,7 +3,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 
 namespace TitlesOrganizer.Application.ViewModels.Common
 {
-    public class BaseDetailsVM : IDetailsVM
+    public class DetailsVM : IDetailsVM
     {
         [ScaffoldColumn(false)]
         public int Id { get; set; }
