@@ -1,4 +1,4 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListGenreForBookVM
+﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IDoubleListForItemVM
 
 <form enctype="multipart/form-data" method="post" id="selectGenres" asp-action="FinalizeSelectGenresForBook" onsubmit="SubmitSelectForBook(event, 'Genre');">
     <input type="hidden" asp-for="Item.Id" name="bookId" id="bookId" />

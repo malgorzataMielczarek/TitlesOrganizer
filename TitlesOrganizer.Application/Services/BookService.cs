@@ -11,21 +11,9 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class BookService : IBookService
+    public class BookService(IBookCommandsRepository _commands, IBookModuleQueriesRepository _queries, ILanguageRepository _language, IBookVMsMappings _mappings)
+        : IBookService
     {
-        private readonly IBookCommandsRepository _commands;
-        private readonly ILanguageRepository _language;
-        private readonly IBookVMsMappings _mappings;
-        private readonly IBookModuleQueriesRepository _queries;
-
-        public BookService(IBookCommandsRepository bookCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, ILanguageRepository languageRepository, IBookVMsMappings mappings)
-        {
-            _commands = bookCommandsRepository;
-            _queries = bookModuleQueriesRepository;
-            _mappings = mappings;
-            _language = languageRepository;
-        }
-
         public void Delete(int id)
         {
             var book = _queries.GetBook(id);
@@ -116,14 +104,14 @@ namespace TitlesOrganizer.Application.Services
             return _mappings.MapToDoubleListForItem(books, genre, paging, filtering);
         }
 
-        public IListForItemVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        public IDoubleListForItemVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             var books = _queries.GetAllBooks();
             var series = _queries.GetBookSeries(seriesId) ?? new BookSeries() { Title = string.Empty };
             var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             var filtering = new Filtering() { SortBy = sortBy, SearchString = searchString ?? string.Empty };
 
-            return _mappings.MapToListForItem(books, series, paging, filtering);
+            return _mappings.MapToDoubleListForItem(books, series, paging, filtering);
         }
 
         public IPartialListVM GetPartialListForAuthor(int authorId, int pageSize, int pageNo)

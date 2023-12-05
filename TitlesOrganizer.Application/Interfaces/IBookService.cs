@@ -18,7 +18,7 @@ namespace TitlesOrganizer.Application.Interfaces
 
         IDoubleListForItemVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
-        IListForItemVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
+        IDoubleListForItemVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString);
 
         IPartialListVM GetPartialListForAuthor(int authorId, int pageSize, int pageNo);
 

@@ -1,4 +1,4 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListBookForAuthorVM
+﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IDoubleListForItemVM
 
 <form enctype="multipart/form-data" method="post" id="selectBooks" asp-action="FinalizeSelectBooksForAuthor" onsubmit="javascript:SubmitSelectForAuthor(event, 'Book');">
     <input type="hidden" asp-for="Item.Id" name="authorId" id="authorId" />

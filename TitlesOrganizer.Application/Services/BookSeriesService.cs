@@ -1,7 +1,9 @@
 ﻿// Ignore Spelling: Upsert
 
-using AutoMapper;
 using TitlesOrganizer.Application.Interfaces;
+using TitlesOrganizer.Application.Mappings.Abstract;
+using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
@@ -9,26 +11,15 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class BookSeriesService : IBookSeriesService
+    public class BookSeriesService(IBookSeriesCommandsRepository _commands, IBookModuleQueriesRepository _queries, IBookVMsMappings _mappings)
+        : IBookSeriesService
     {
-        private readonly IBookSeriesCommandsRepository _commands;
-        private readonly IBookModuleQueriesRepository _queries;
-
-        private readonly IMapper _mapper;
-
-        public BookSeriesService(IBookSeriesCommandsRepository bookSeriesCommandsRepository, IBookModuleQueriesRepository bookModuleQueriesRepository, IMapper mapper)
-        {
-            _commands = bookSeriesCommandsRepository;
-            _queries = bookModuleQueriesRepository;
-            _mapper = mapper;
-        }
-
         public void Delete(int id)
         {
             var series = _queries.GetBookSeries(id);
             if (series != null)
             {
-                SelectBooks(id, Array.Empty<int>());
+                SelectBooks(id, []);
                 _commands.Delete(series);
             }
         }
@@ -38,11 +29,17 @@ namespace TitlesOrganizer.Application.Services
             var series = _queries.GetBookSeriesWithBooks(id);
             if (series != null)
             {
-                return Map(series, booksPageSize, booksPageNo);
+                var seriesVM = _mappings.Map<BookSeries, SeriesVM>(series);
+                var paging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
+                seriesVM.Books = _mappings.Map(series.Books, paging);
+                return seriesVM;
             }
             else
             {
-                return new SeriesVM() { Books = new PartialList<Book>(booksPageSize) };
+                return new SeriesVM()
+                {
+                    Books = new PartialListVM(booksPageSize)
+                };
             }
         }
 
@@ -51,55 +48,75 @@ namespace TitlesOrganizer.Application.Services
             var series = _queries.GetBookSeries(id);
             if (series != null)
             {
+                var result = _mappings.Map<BookSeries, SeriesDetailsVM>(series);
+
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                     .Where(b => b.SeriesId == id)
                     .ToList();
+                var paging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
+                result.Books = _mappings.Map(books, paging);
+
                 var authors = books.SelectMany(b => b.Authors)
                     .DistinctBy(a => a.Id);
+                result.Authors = _mappings.Map(authors);
+
                 var genres = books.SelectMany(b => b.Genres)
                     .DistinctBy(g => g.Id);
-                return MapToDetails(series, books, booksPageSize, booksPageNo, authors, genres);
+                result.Genres = _mappings.Map(genres);
+
+                return result;
             }
             else
             {
-                return new SeriesDetailsVM() { Books = new PartialList<Book>(booksPageSize) };
+                return new SeriesDetailsVM()
+                {
+                    Books = new PartialListVM(booksPageSize)
+                };
             }
         }
 
-        public ListSeriesForListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        public IListVM GetList(SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             var series = _queries.GetAllBookSeries();
-            return MapToList(series, sortBy, pageSize, pageNo, searchString ?? string.Empty);
+            var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
+            var filtering = new Filtering() { SortBy = sortBy, SearchString = searchString ?? string.Empty };
+
+            return _mappings.Map(series, paging, filtering);
         }
 
-        public ListSeriesForBookVM GetListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
+        public IListForItemVM GetListForBook(int bookId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             var book = _queries.GetBook(bookId) ?? new Book() { Title = string.Empty };
             var series = _queries.GetAllBookSeriesWithBooks();
+            var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
+            var filtering = new Filtering() { SortBy = sortBy, SearchString = searchString ?? string.Empty };
 
-            return MapForBook(series, book, sortBy, pageSize, pageNo, searchString ?? string.Empty);
+            return _mappings.MapToListForItem(series, book, paging, filtering);
         }
 
-        public PartialList<BookSeries> GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
+        public IPartialListVM GetPartialListForAuthor(int authorId, int pageSize, int pageNo)
         {
             var author = _queries.GetAuthor(authorId);
             if (author != null)
             {
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                    .Where(b => b.Authors.Any(a => a.Id == authorId)).ToList();
+                    .Where(b => b.Authors.Any(a => a.Id == authorId))
+                    .ToList();
                 var series = books
                     .Where(b => b.Series != null)
                     .Select(b => b.Series!)
                     .DistinctBy(s => s.Id);
-                return MapToPartialList(series, pageSize, pageNo);
+                var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
+
+                return _mappings.Map(series, paging);
             }
             else
             {
-                return new PartialList<BookSeries>(pageSize);
+                return new PartialListVM(pageSize);
             }
         }
 
-        public PartialList<BookSeries> GetPartialListForGenre(int genreId, int pageSize, int pageNo)
+        public IPartialListVM GetPartialListForGenre(int genreId, int pageSize, int pageNo)
         {
             var genre = _queries.GetLiteratureGenre(genreId);
             if (genre != null)
@@ -111,12 +128,13 @@ namespace TitlesOrganizer.Application.Services
                     .Where(b => b.Series != null)
                     .Select(b => b.Series!)
                     .DistinctBy(s => s.Id);
+                var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
 
-                return MapToPartialList(series, pageSize, pageNo);
+                return _mappings.Map(series, paging);
             }
             else
             {
-                return new PartialList<BookSeries>(pageSize);
+                return new PartialListVM(pageSize);
             }
         }
 
@@ -150,9 +168,9 @@ namespace TitlesOrganizer.Application.Services
 
         public int Upsert(SeriesVM series)
         {
-            var entity = Map(series);
-            if (entity != null)
+            if (series != null)
             {
+                var entity = _mappings.Map<SeriesVM, BookSeries>(series);
                 if (entity.Id == default)
                 {
                     return _commands.Insert(entity);
@@ -165,74 +183,6 @@ namespace TitlesOrganizer.Application.Services
             }
 
             return -1;
-        }
-
-        protected virtual BookSeries Map(SeriesVM series)
-        {
-            return series.MapToBase(_mapper);
-        }
-
-        protected virtual SeriesVM Map(BookSeries seriesWithBooks, int bookPageSize, int bookPageNo)
-        {
-            return seriesWithBooks.MapFromBase(_mapper, new Paging()
-            {
-                CurrentPage = bookPageNo,
-                PageSize = bookPageSize
-            });
-        }
-
-        protected virtual SeriesDetailsVM MapToDetails(BookSeries series, IEnumerable<Book> books, int bookPageSize, int bookPageNo, IEnumerable<Author> authors, IEnumerable<LiteratureGenre> genres)
-        {
-            return series.MapToDetails(
-                books,
-                new Paging()
-                {
-                    CurrentPage = bookPageNo,
-                    PageSize = bookPageSize
-                },
-                authors,
-                genres);
-        }
-
-        protected virtual ListSeriesForListVM MapToList(IQueryable<BookSeries> series, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            return series.MapToList(
-                new Paging()
-                {
-                    CurrentPage = pageNo,
-                    PageSize = pageSize
-                },
-                new Filtering()
-                {
-                    SearchString = searchString,
-                    SortBy = sortBy
-                });
-        }
-
-        protected virtual ListSeriesForBookVM MapForBook(IQueryable<BookSeries> series, Book book, SortByEnum sortBy, int pageSize, int pageNo, string searchString)
-        {
-            return series.MapForItemToList(
-                book,
-                new Paging()
-                {
-                    CurrentPage = pageNo,
-                    PageSize = pageSize
-                },
-                new Filtering()
-                {
-                    SearchString = searchString,
-                    SortBy = sortBy
-                });
-        }
-
-        protected virtual PartialList<BookSeries> MapToPartialList(IEnumerable<BookSeries> series, int pageSize, int pageNo)
-        {
-            return (PartialList<BookSeries>)series.MapToPartialList(
-                new Paging()
-                {
-                    CurrentPage = pageNo,
-                    PageSize = pageSize
-                });
         }
     }
 }

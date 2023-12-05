@@ -1,4 +1,4 @@
-﻿@model TitlesOrganizer.Application.ViewModels.BookVMs.ListSeriesForBookVM
+﻿@model TitlesOrganizer.Application.ViewModels.Abstract.IListForItemVM
 
 <form enctype="multipart/form-data" method="post" id="selectSeries" asp-action="FinalizeSelectSeriesForBook" onsubmit="SubmitSelectForBook(event, 'Series');">
     <input type="hidden" asp-for="Item.Id" name="bookId" id="bookId" />

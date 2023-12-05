@@ -2,6 +2,7 @@
 using TitlesOrganizer.Application.Mappings.Abstract;
 using TitlesOrganizer.Application.Mappings.Common;
 using TitlesOrganizer.Application.ViewModels.Abstract;
+using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
@@ -11,6 +12,18 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
 {
     public class BookVMsMappings(IMapper _mapper) : BaseMappings(_mapper), IBookVMsMappings
     {
+        public override IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
+        {
+            return (entities) switch
+            {
+                IQueryable<Author> authors => (IQueryable<T>)authors.Where(a => (a.Name + " " + a.LastName).Contains(searchString)),
+                IQueryable<Book> books => (IQueryable<T>)books.Where(b => b.Title.Contains(searchString)),
+                IQueryable<BookSeries> series => (IQueryable<T>)series.Where(s => s.Title.Contains(searchString)),
+                IQueryable<LiteratureGenre> genres => (IQueryable<T>)genres.Where(g => g.Name.Contains(searchString)),
+                _ => entities
+            };
+        }
+
         public override IForListVM Map<T>(T entity)
         {
             var result = base.Map(entity);
@@ -31,49 +44,52 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
 
         public override IForItemVM Map<T, ItemT>(T entity, ItemT item)
         {
-            var result = base.Map(entity, item);
-            switch (entity)
+            return (entity) switch
             {
-                case Author author:
-                    result.Description = $"{author!.Name} {author.LastName}";
-                    if (item is Book)
+                Author author => new ForItemVM()
+                {
+                    Id = author.Id,
+                    Description = author.Name + " " + author.LastName,
+                    IsForItem = (item) switch
                     {
-                        result.IsForItem = IsForItem(author.Books, item.Id);
+                        Book => IsForItem(author.Books, item.Id),
+                        _ => false
                     }
-
-                    break;
-
-                case Book book:
-                    result.Description = book.Title;
-                    result.IsForItem = item switch
+                },
+                Book book => new ForItemVM()
+                {
+                    Id = book.Id,
+                    Description = book.Title,
+                    IsForItem = (item) switch
                     {
                         Author => IsForItem(book.Authors, item.Id),
                         BookSeries => book.SeriesId == item.Id,
                         LiteratureGenre => IsForItem(book.Genres, item.Id),
                         _ => false
-                    };
-                    break;
-
-                case BookSeries bookSeries:
-                    result.Description = bookSeries.Title;
-                    if (item is Book)
-                    {
-                        result.IsForItem = IsForItem(bookSeries.Books, item.Id);
                     }
-
-                    break;
-
-                case LiteratureGenre genre:
-                    result.Description = genre.Name;
-                    if (item is Book)
+                },
+                BookSeries bookSeries => new ForItemVM()
+                {
+                    Id = bookSeries.Id,
+                    Description = bookSeries.Title,
+                    IsForItem = (item) switch
                     {
-                        result.IsForItem = IsForItem(genre.Books, item.Id);
+                        Book => IsForItem(bookSeries.Books, item.Id),
+                        _ => false
                     }
-
-                    break;
-            }
-
-            return result;
+                },
+                LiteratureGenre genre => new ForItemVM()
+                {
+                    Id = genre.Id,
+                    Description = genre.Name,
+                    IsForItem = (item) switch
+                    {
+                        Book => IsForItem(genre.Books, item.Id),
+                        _ => false
+                    }
+                },
+                _ => new ForItemVM() { Id = entity.Id }
+            };
         }
 
         public override TDestination Map<TSource, TDestination>(TSource entity)

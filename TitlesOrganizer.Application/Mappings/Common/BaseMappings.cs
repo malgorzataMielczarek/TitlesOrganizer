@@ -7,7 +7,7 @@ using TitlesOrganizer.Domain.Models.Abstract;
 
 namespace TitlesOrganizer.Application.Mappings.Common
 {
-    public class BaseMappings(IMapper _mapper) : IMappings
+    public abstract class BaseMappings(IMapper _mapper) : IMappings
     {
         public static List<T> SkipAndTake<T>(IEnumerable<T> values, ref Paging paging)
         {
@@ -26,6 +26,9 @@ namespace TitlesOrganizer.Application.Mappings.Common
                 return new List<T>();
             }
         }
+
+        public abstract IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
+            where T : class, IBaseModel;
 
         public virtual IForListVM Map<T>(T entity)
                     where T : class, IBaseModel
@@ -51,9 +54,9 @@ namespace TitlesOrganizer.Application.Mappings.Common
             return new ForItemVM() { Id = entity.Id };
         }
 
-        public virtual List<IForItemVM> Map<T, ItemT>(IQueryable<T> entities, ItemT item)
-            where T : class, IBaseModel
-            where ItemT : class, IBaseModel
+        public virtual List<IForItemVM> Map<T, ItemT>(IEnumerable<T> entities, ItemT item)
+                where T : class, IBaseModel
+                where ItemT : class, IBaseModel
         {
             return entities.Select(it => Map(it, item)).ToList();
         }
@@ -61,13 +64,14 @@ namespace TitlesOrganizer.Application.Mappings.Common
         public virtual IListVM Map<T>(IQueryable<T> entities, Paging paging, Filtering filtering)
             where T : class, IBaseModel
         {
-            var values = Sort(entities, filtering.SortBy)
+            var filtered = Filter(entities, filtering.SearchString);
+            var sorted = Sort(filtered, filtering.SortBy);
+            var limitedList = SkipAndTake(sorted, ref paging);
+            var result = limitedList
                 .Select(it => Map(it))
-                .Where(it => it.Description.Contains(filtering.SearchString))
                 .ToList();
-            var limitedList = SkipAndTake(values, ref paging);
 
-            return new ListVM(limitedList, paging, filtering);
+            return new ListVM(result, paging, filtering);
         }
 
         public virtual List<IForListVM> Map<T>(IEnumerable<T> entities, ref Paging paging)

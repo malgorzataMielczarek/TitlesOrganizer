@@ -604,7 +604,7 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(author);
             queriesRepo.Setup(r => r.GetBook(It.IsAny<int>()));
             Author authorParam = null;
-            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author))
+            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(It.IsAny<Author>()))
                 .Callback<Author>(a => authorParam = a);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -620,8 +620,12 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.Verify(
                 r => r.UpdateAuthorBooksRelation(author),
                 Times.Once());
-            authorParam.Should().NotBeNull();
-            authorParam!.Books.Should().NotBeNull().And.BeEmpty();
+            authorParam.Should()
+                .NotBeNull().And
+                .Be(author);
+            authorParam!.Books.Should()
+                .NotBeNull().And
+                .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
             mappings.VerifyNoOtherCalls();
@@ -648,7 +652,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetBook(book3.Id))
                 .Returns(book3);
             Author authorParam = null;
-            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author))
+            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(It.IsAny<Author>()))
                 .Callback<Author>(a => authorParam = a);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -661,7 +665,9 @@ namespace TitlesOrganizer.Tests.Services
             commandsRepo.Verify(
                 r => r.UpdateAuthorBooksRelation(author),
                 Times.Once());
-            authorParam.Should().NotBeNull();
+            authorParam.Should()
+                .NotBeNull().And
+                .Be(author);
             authorParam!.Books.Should()
                 .NotBeNull().And
                 .HaveCount(2).And
@@ -692,7 +698,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetBook(3))
                 .Returns((Book?)null);
             Author authorParam = null;
-            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(author))
+            commandsRepo.Setup(r => r.UpdateAuthorBooksRelation(It.IsAny<Author>()))
                 .Callback<Author>(a => authorParam = a);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -705,13 +711,14 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Verify(r => r.GetBook(2), Times.Once());
             queriesRepo.Verify(r => r.GetBook(3), Times.Once());
             commandsRepo.Verify(
-                r => r.UpdateAuthorBooksRelation(It.Is<Author>(
-                    a => a.Equals(author) &&
-                    a.Books != null &&
-                    a.Books.Count == 0)),
+                r => r.UpdateAuthorBooksRelation(author),
                 Times.Once());
-            authorParam.Should().NotBeNull();
-            authorParam!.Books.Should().NotBeNull().And.BeEmpty();
+            authorParam.Should()
+                .NotBeNull().And
+                .Be(author);
+            authorParam!.Books.Should()
+                .NotBeNull().And
+                .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
             mappings.VerifyNoOtherCalls();

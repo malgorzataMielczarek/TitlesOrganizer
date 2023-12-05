@@ -11,7 +11,8 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class AuthorService(IAuthorCommandsRepository _commands, IBookModuleQueriesRepository _queries, IBookVMsMappings _mappings) : IAuthorService
+    public class AuthorService(IAuthorCommandsRepository _commands, IBookModuleQueriesRepository _queries, IBookVMsMappings _mappings)
+        : IAuthorService
     {
         public void Delete(int id)
         {

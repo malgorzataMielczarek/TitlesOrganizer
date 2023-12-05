@@ -6,7 +6,10 @@ namespace TitlesOrganizer.Application.Mappings.Abstract
 {
     public interface IMappings
     {
-        List<IForItemVM> Map<T, ItemT>(IQueryable<T> entities, ItemT item)
+        IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
+            where T : class, IBaseModel;
+
+        List<IForItemVM> Map<T, ItemT>(IEnumerable<T> entities, ItemT item)
             where T : class, IBaseModel
             where ItemT : class, IBaseModel;
 
