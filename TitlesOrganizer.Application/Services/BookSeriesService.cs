@@ -16,10 +16,15 @@ namespace TitlesOrganizer.Application.Services
     {
         public void Delete(int id)
         {
-            var series = _queries.GetBookSeries(id);
+            var series = _queries.GetBookSeriesWithBooks(id);
             if (series != null)
             {
-                SelectBooks(id, []);
+                if (series.Books != null && series.Books.Count != 0)
+                {
+                    series.Books.Clear();
+                    _commands.UpdateBookSeriesBooksRelation(series);
+                }
+
                 _commands.Delete(series);
             }
         }

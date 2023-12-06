@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -11,8 +12,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         {
             // Arrange
             int authorsCount = 2, genresCount = 3;
-            var authorsList = Helpers.GetAuthorsList(authorsCount);
-            var genresList = Helpers.GetGenresList(genresCount);
+            var authorsList = BookModuleHelpers.GetAuthorsList(authorsCount);
+            var genresList = BookModuleHelpers.GetGenresList(genresCount);
             var lang = new Language() { Code = "ENG", Name = "English" };
             var book = new Book()
             {
@@ -21,7 +22,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 OriginalTitle = "Book Original Title",
                 Authors = authorsList,
                 Genres = genresList,
-                Series = new BookSeries() { Id = 1, Title = "Series Title", Books = Helpers.GetBooksList(3) },
+                Series = new BookSeries() { Id = 1, Title = "Series Title", Books = BookModuleHelpers.GetBooksList(3) },
                 SeriesId = 1,
                 OriginalLanguageCode = lang.Code,
                 OriginalLanguage = lang,
@@ -56,9 +57,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         {
             // Arrange
             int authorsCount = 2, genresCount = 3;
-            var authorsQueryable = Helpers.GetAuthorsList(authorsCount);
-            var genresQueryble = Helpers.GetGenresList(genresCount);
-            var series = new BookSeries() { Id = 1, Title = "Series Title", Books = Helpers.GetBooksList(3) };
+            var authorsQueryable = BookModuleHelpers.GetAuthorsList(authorsCount);
+            var genresQueryble = BookModuleHelpers.GetGenresList(genresCount);
+            var series = new BookSeries() { Id = 1, Title = "Series Title", Books = BookModuleHelpers.GetBooksList(3) };
             var lang = new Language() { Code = "ENG", Name = "English" };
             var book = new Book()
             {

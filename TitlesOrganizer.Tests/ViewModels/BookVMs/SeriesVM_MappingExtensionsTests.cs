@@ -4,6 +4,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.Common;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -59,8 +60,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesWithBooks_SeriesVM()
         {
             int count = 3, currentPage = 1, pageSize = 2, pageCount = 2;
-            var series = Helpers.GetSeries();
-            series.Books = Helpers.GetBooksList(count);
+            var series = BookModuleHelpers.GetSeries();
+            series.Books = BookModuleHelpers.GetBooksList(count);
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
@@ -85,8 +86,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesWithBooks_SeriesVMWithProperBooks(int currentPage, int firstBookId, string firstBookTitle, int secondBookId, string secondBookTitle)
         {
             int count = 9, pageSize = 2, pageCount = 2;
-            var series = Helpers.GetSeries();
-            series.Books = Helpers.GetBooksList(count);
+            var series = BookModuleHelpers.GetSeries();
+            series.Books = BookModuleHelpers.GetBooksList(count);
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
@@ -104,8 +105,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesWithBooksLastPage_SeriesVMWithProperNumberOfBooks()
         {
             int count = 9, currentPage = 5, pageSize = 2, pageCount = 1;
-            var series = Helpers.GetSeries();
-            series.Books = Helpers.GetBooksList(count);
+            var series = BookModuleHelpers.GetSeries();
+            series.Books = BookModuleHelpers.GetBooksList(count);
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
@@ -119,12 +120,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesAndBooks_SeriesVM()
         {
             int count = 3, currentPage = 1, pageSize = 2, pageCount = 2;
-            var series = Helpers.GetSeries();
+            var series = BookModuleHelpers.GetSeries();
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
 
-            var result = series.MapFromBase(mapper, Helpers.GetBooksList(count).AsQueryable(), paging);
+            var result = series.MapFromBase(mapper, BookModuleHelpers.GetBooksList(count).AsQueryable(), paging);
 
             result.Should().NotBeNull().And.BeOfType<SeriesVM>();
             result.Id.Should().Be(series.Id);
@@ -142,7 +143,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesAndNullBooks_SeriesVM()
         {
             int currentPage = 1, pageSize = 2;
-            var series = Helpers.GetSeries();
+            var series = BookModuleHelpers.GetSeries();
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
@@ -167,12 +168,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesAndBooks_SeriesVMWithProperBooks(int currentPage, int firstBookId, string firstBookTitle, int secondBookId, string secondBookTitle)
         {
             int count = 9, pageSize = 2, pageCount = 2;
-            var series = Helpers.GetSeries();
+            var series = BookModuleHelpers.GetSeries();
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
 
-            var result = series.MapFromBase(mapper, Helpers.GetBooksList(count).AsQueryable(), paging);
+            var result = series.MapFromBase(mapper, BookModuleHelpers.GetBooksList(count).AsQueryable(), paging);
 
             result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
             result.Books.Values[0].Id.Should().Be(firstBookId);
@@ -185,12 +186,12 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookSeriesAndBooksLastPage_SeriesVMWithProperNumberOfBooks()
         {
             int count = 9, currentPage = 5, pageSize = 2, pageCount = 1;
-            var series = Helpers.GetSeries();
+            var series = BookModuleHelpers.GetSeries();
             var paging = new Application.ViewModels.Helpers.Paging() { CurrentPage = currentPage, PageSize = pageSize };
             var config = new MapperConfiguration(cfg => cfg.AddProfile<SeriesMappings>());
             IMapper mapper = config.CreateMapper();
 
-            var result = series.MapFromBase(mapper, Helpers.GetBooksList(count).AsQueryable(), paging);
+            var result = series.MapFromBase(mapper, BookModuleHelpers.GetBooksList(count).AsQueryable(), paging);
 
             result.Books.Values.Should().NotBeNull().And.HaveCount(pageCount);
         }

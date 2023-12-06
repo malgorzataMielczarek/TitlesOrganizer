@@ -1,8 +1,8 @@
 ﻿using TitlesOrganizer.Domain.Models;
 
-namespace TitlesOrganizer.Tests.ViewModels.BookVMs
+namespace TitlesOrganizer.Tests.Helpers
 {
-    public static class Helpers
+    public static class BookModuleHelpers
     {
         public static List<Book> GetBooksList(int count)
         {

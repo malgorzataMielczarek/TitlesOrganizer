@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -14,10 +15,10 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
             var booksPaging = new Paging() { CurrentPage = 1, PageSize = booksCount };
             var seriesPaging = new Paging() { CurrentPage = 1, PageSize = seriesCount };
             var authorsPaging = new Paging() { CurrentPage = 1, PageSize = authorsCount };
-            var genre = Helpers.GetGenre();
-            var booksQueryable = Helpers.GetBooksList(booksCount).AsQueryable();
-            var seriesQueryable = Helpers.GetSeriesList(seriesCount).AsQueryable();
-            var authorsQueryable = Helpers.GetAuthorsList(authorsCount).AsQueryable();
+            var genre = BookModuleHelpers.GetGenre();
+            var booksQueryable = BookModuleHelpers.GetBooksList(booksCount).AsQueryable();
+            var seriesQueryable = BookModuleHelpers.GetSeriesList(seriesCount).AsQueryable();
+            var authorsQueryable = BookModuleHelpers.GetAuthorsList(authorsCount).AsQueryable();
 
             // Act
             var result = genre.MapToDetails(booksQueryable, booksPaging, seriesQueryable, seriesPaging, authorsQueryable, authorsPaging);

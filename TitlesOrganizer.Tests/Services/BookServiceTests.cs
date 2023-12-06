@@ -10,7 +10,7 @@ using TitlesOrganizer.Application.ViewModels.Concrete.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Interfaces;
 using TitlesOrganizer.Domain.Models;
-using TitlesOrganizer.Tests.ViewModels.BookVMs;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.Services
 {
@@ -45,23 +45,23 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void Delete_NotExistingBookId()
         {
-            var book = new Book() { Id = 1, Title = "Title" };
+            var bookId = 1;
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id))
+            queriesRepo.Setup(r => r.GetBook(bookId))
                 .Returns((Book?)null);
-            commandsRepo.Setup(r => r.Delete(book));
+            commandsRepo.Setup(r => r.Delete(It.IsAny<Book>()));
             var mappings = new Mock<IBookVMsMappings>();
             var lang = new Mock<ILanguageRepository>().Object;
             var service = new BookService(commandsRepo.Object, queriesRepo.Object, lang, mappings.Object);
 
-            service.Delete(book.Id);
+            service.Delete(bookId);
 
             queriesRepo.Verify(
-                r => r.GetBook(book.Id),
+                r => r.GetBook(bookId),
                 Times.Once);
             commandsRepo.Verify(
-                r => r.Delete(book),
+                r => r.Delete(It.IsAny<Book>()),
                 Times.Never);
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
@@ -71,10 +71,10 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void Get_ExistingBookIdWithSeries()
         {
-            var book = Helpers.GetBook(1);
-            var authors = Helpers.GetAuthorsList(2);
-            var genres = Helpers.GetGenresList(3);
-            var series = Helpers.GetSeries(2);
+            var book = BookModuleHelpers.GetBook(1);
+            var authors = BookModuleHelpers.GetAuthorsList(2);
+            var genres = BookModuleHelpers.GetGenresList(3);
+            var series = BookModuleHelpers.GetSeries(2);
             book.Authors = authors;
             var mappedAuthors = authors.Select(a => new ForListVM() { Id = a.Id }).ToList<IForListVM>();
             book.Genres = genres;
@@ -136,9 +136,9 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void Get_ExistingBookIdWithoutSeries()
         {
-            var book = Helpers.GetBook(1);
-            var authors = Helpers.GetAuthorsList(2);
-            var genres = Helpers.GetGenresList(3);
+            var book = BookModuleHelpers.GetBook(1);
+            var authors = BookModuleHelpers.GetAuthorsList(2);
+            var genres = BookModuleHelpers.GetGenresList(3);
             book.Authors = authors;
             var mappedAuthors = authors.Select(a => new ForListVM() { Id = a.Id }).ToList<IForListVM>();
             book.Genres = genres;
@@ -248,16 +248,16 @@ namespace TitlesOrganizer.Tests.Services
         public void GetDetails_ExistingBookWithSeriesAndLanguage(int? numberInSeries, string inSeries)
         {
             // Arrange
-            var book = Helpers.GetBook(1);
-            var series = Helpers.GetSeries(1);
+            var book = BookModuleHelpers.GetBook(1);
+            var series = BookModuleHelpers.GetSeries(1);
             book.Series = series;
             book.SeriesId = series.Id;
             book.NumberInSeries = numberInSeries;
             book.OriginalLanguageCode = "ENG";
-            var authors = Helpers.GetAuthorsList(2);
+            var authors = BookModuleHelpers.GetAuthorsList(2);
             book.Authors = authors;
             var mappedAuthors = authors.Select(a => new ForListVM() { Id = a.Id }).ToList<IForListVM>();
-            var genres = Helpers.GetGenresList(2);
+            var genres = BookModuleHelpers.GetGenresList(2);
             book.Genres = genres;
             var mappedGenres = genres.Select(g => new ForListVM() { Id = g.Id }).ToList<IForListVM>();
             var languages = new[]
@@ -265,8 +265,8 @@ namespace TitlesOrganizer.Tests.Services
                 new Language() { Code="PLN", Name="Polish" },
                 new Language() { Code="ENG", Name="English" }
             }.AsQueryable();
-            var seriesWithBooks = Helpers.GetSeries(series.Id);
-            var seriesBooks = Helpers.GetBooksList(3);
+            var seriesWithBooks = BookModuleHelpers.GetSeries(series.Id);
+            var seriesBooks = BookModuleHelpers.GetBooksList(3);
             seriesWithBooks.Books = seriesBooks;
 
             var commandsRepo = new Mock<IBookCommandsRepository>();
@@ -340,14 +340,14 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void GetDetails_ExistingBookWithoutSeriesAndLanguage()
         {// Arrange
-            var book = Helpers.GetBook(1);
+            var book = BookModuleHelpers.GetBook(1);
             book.Series = null;
             book.SeriesId = null;
             book.OriginalLanguageCode = null;
-            var authors = Helpers.GetAuthorsList(2);
+            var authors = BookModuleHelpers.GetAuthorsList(2);
             book.Authors = authors;
             var mappedAuthors = authors.Select(a => new ForListVM() { Id = a.Id }).ToList<IForListVM>();
-            var genres = Helpers.GetGenresList(2);
+            var genres = BookModuleHelpers.GetGenresList(2);
             book.Genres = genres;
             var mappedGenres = genres.Select(g => new ForListVM() { Id = g.Id }).ToList<IForListVM>();
 
@@ -494,7 +494,7 @@ namespace TitlesOrganizer.Tests.Services
         {
             int count = 3, pageSize = 2, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var books = Helpers.GetBooksList(count).AsQueryable();
+            var books = BookModuleHelpers.GetBooksList(count).AsQueryable();
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             Paging paging = null;
@@ -544,18 +544,18 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 4, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var b3 = Helpers.GetBook(3);
-            var b4 = Helpers.GetBook(4);
+            var a1 = BookModuleHelpers.GetAuthor(1);
+            var a2 = BookModuleHelpers.GetAuthor(2);
+            var b1 = BookModuleHelpers.GetBook(1);
+            var b2 = BookModuleHelpers.GetBook(2);
+            var b3 = BookModuleHelpers.GetBook(3);
+            var b4 = BookModuleHelpers.GetBook(4);
             b1.Authors = [a1, a2];
             b2.Authors = [a1];
             b3.Authors = [a2];
             b4.Authors = [];
             var books = new List<Book> { b1, b2, b3, b4 }.AsQueryable();
-            var author = Helpers.GetAuthor(a1.Id);
+            var author = BookModuleHelpers.GetAuthor(a1.Id);
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetAuthor(a1.Id))
@@ -609,13 +609,13 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 4, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
+            var a1 = BookModuleHelpers.GetAuthor(1);
+            var a2 = BookModuleHelpers.GetAuthor(2);
             int authorId = 3;
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var b3 = Helpers.GetBook(3);
-            var b4 = Helpers.GetBook(4);
+            var b1 = BookModuleHelpers.GetBook(1);
+            var b2 = BookModuleHelpers.GetBook(2);
+            var b3 = BookModuleHelpers.GetBook(3);
+            var b4 = BookModuleHelpers.GetBook(4);
             b1.Authors = [a1, a2];
             b2.Authors = [a1];
             b3.Authors = [a2];
@@ -674,18 +674,18 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 4, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var g1 = Helpers.GetGenre(1);
-            var g2 = Helpers.GetGenre(2);
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var b3 = Helpers.GetBook(3);
-            var b4 = Helpers.GetBook(4);
+            var g1 = BookModuleHelpers.GetGenre(1);
+            var g2 = BookModuleHelpers.GetGenre(2);
+            var b1 = BookModuleHelpers.GetBook(1);
+            var b2 = BookModuleHelpers.GetBook(2);
+            var b3 = BookModuleHelpers.GetBook(3);
+            var b4 = BookModuleHelpers.GetBook(4);
             b1.Genres = [g1, g2];
             b2.Genres = [g1];
             b3.Genres = [g2];
             b4.Genres = [];
             var books = new List<Book> { b1, b2, b3, b4 }.AsQueryable();
-            var genre = Helpers.GetGenre(g1.Id);
+            var genre = BookModuleHelpers.GetGenre(g1.Id);
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetLiteratureGenre(g1.Id))
@@ -739,13 +739,13 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 4, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var g1 = Helpers.GetGenre(1);
-            var g2 = Helpers.GetGenre(2);
+            var g1 = BookModuleHelpers.GetGenre(1);
+            var g2 = BookModuleHelpers.GetGenre(2);
             int genreId = 3;
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var b3 = Helpers.GetBook(3);
-            var b4 = Helpers.GetBook(4);
+            var b1 = BookModuleHelpers.GetBook(1);
+            var b2 = BookModuleHelpers.GetBook(2);
+            var b3 = BookModuleHelpers.GetBook(3);
+            var b4 = BookModuleHelpers.GetBook(4);
             b1.Genres = [g1, g2];
             b2.Genres = [g1];
             b3.Genres = [g2];
@@ -804,12 +804,12 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 4, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var s1 = Helpers.GetSeries(1);
-            var s2 = Helpers.GetSeries(2);
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var b3 = Helpers.GetBook(3);
-            var b4 = Helpers.GetBook(4);
+            var s1 = BookModuleHelpers.GetSeries(1);
+            var s2 = BookModuleHelpers.GetSeries(2);
+            var b1 = BookModuleHelpers.GetBook(1);
+            var b2 = BookModuleHelpers.GetBook(2);
+            var b3 = BookModuleHelpers.GetBook(3);
+            var b4 = BookModuleHelpers.GetBook(4);
             b1.Series = s1;
             b1.SeriesId = s1.Id;
             b2.Series = s1;
@@ -819,7 +819,7 @@ namespace TitlesOrganizer.Tests.Services
             b4.Series = null;
             b4.SeriesId = null;
             var books = new List<Book> { b1, b2, b3, b4 }.AsQueryable();
-            var series = Helpers.GetSeries(s1.Id);
+            var series = BookModuleHelpers.GetSeries(s1.Id);
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetBookSeries(s1.Id))
@@ -873,13 +873,13 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 4, pageNo = 2;
             SortByEnum sort = SortByEnum.Descending;
-            var s1 = Helpers.GetSeries(1);
-            var s2 = Helpers.GetSeries(2);
+            var s1 = BookModuleHelpers.GetSeries(1);
+            var s2 = BookModuleHelpers.GetSeries(2);
             var seriesId = 3;
-            var b1 = Helpers.GetBook(1);
-            var b2 = Helpers.GetBook(2);
-            var b3 = Helpers.GetBook(3);
-            var b4 = Helpers.GetBook(4);
+            var b1 = BookModuleHelpers.GetBook(1);
+            var b2 = BookModuleHelpers.GetBook(2);
+            var b3 = BookModuleHelpers.GetBook(3);
+            var b4 = BookModuleHelpers.GetBook(4);
             b1.Series = s1;
             b1.SeriesId = s1.Id;
             b2.Series = s1;
@@ -939,8 +939,8 @@ namespace TitlesOrganizer.Tests.Services
         public void GetPartialListForAuthor_ExistingAuthor()
         {
             int pageSize = 2, pageNo = 3;
-            var author = Helpers.GetAuthor(1);
-            var books = Helpers.GetBooksList(4);
+            var author = BookModuleHelpers.GetAuthor(1);
+            var books = BookModuleHelpers.GetBooksList(4);
             author.Books = books;
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
@@ -1002,8 +1002,8 @@ namespace TitlesOrganizer.Tests.Services
         public void GetPartialListForGenre_ExistingLiteratureGenre()
         {
             int pageSize = 2, pageNo = 3;
-            var genre = Helpers.GetGenre(1);
-            var books = Helpers.GetBooksList(4);
+            var genre = BookModuleHelpers.GetGenre(1);
+            var books = BookModuleHelpers.GetBooksList(4);
             genre.Books = books;
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
@@ -1065,8 +1065,8 @@ namespace TitlesOrganizer.Tests.Services
         public void GetPartialListForSeries_ExistingBookSeries()
         {
             int pageSize = 2, pageNo = 3;
-            var series = Helpers.GetSeries(1);
-            var books = Helpers.GetBooksList(4);
+            var series = BookModuleHelpers.GetSeries(1);
+            var books = BookModuleHelpers.GetBooksList(4);
             series.Books = books;
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
@@ -1127,9 +1127,9 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void SelectAuthors_ExistingBookIdAndExistingAuthorsIds()
         {
-            var a1 = Helpers.GetAuthor(1);
-            var a2 = Helpers.GetAuthor(2);
-            var a3 = Helpers.GetAuthor(3);
+            var a1 = BookModuleHelpers.GetAuthor(1);
+            var a2 = BookModuleHelpers.GetAuthor(2);
+            var a3 = BookModuleHelpers.GetAuthor(3);
             var book = new Book()
             {
                 Id = 1,
@@ -1188,7 +1188,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Authors = [Helpers.GetAuthor(1)]
+                Authors = [BookModuleHelpers.GetAuthor(1)]
             };
             var authorsIds = new[] { 2, 3 };
             var commandsRepo = new Mock<IBookCommandsRepository>();
@@ -1239,7 +1239,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Authors = [Helpers.GetAuthor(1)]
+                Authors = [BookModuleHelpers.GetAuthor(1)]
             };
             var authorsIds = Array.Empty<int>();
             var commandsRepo = new Mock<IBookCommandsRepository>();
@@ -1281,7 +1281,7 @@ namespace TitlesOrganizer.Tests.Services
         public void SelectAuthors_NotExistingBookIdAndAuthorsIds()
         {
             int bookId = 1;
-            var author = Helpers.GetAuthor(1);
+            var author = BookModuleHelpers.GetAuthor(1);
             var authorsIds = new[] { author.Id };
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
@@ -1314,9 +1314,9 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void SelectGenres_ExistingBookIdAndExistingLiteratureGenresIds()
         {
-            var g1 = Helpers.GetGenre(1);
-            var g2 = Helpers.GetGenre(2);
-            var g3 = Helpers.GetGenre(3);
+            var g1 = BookModuleHelpers.GetGenre(1);
+            var g2 = BookModuleHelpers.GetGenre(2);
+            var g3 = BookModuleHelpers.GetGenre(3);
             var book = new Book()
             {
                 Id = 1,
@@ -1375,7 +1375,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Genres = [Helpers.GetGenre(1)]
+                Genres = [BookModuleHelpers.GetGenre(1)]
             };
             var genresIds = new[] { 2, 3 };
             var commandsRepo = new Mock<IBookCommandsRepository>();
@@ -1426,7 +1426,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Genres = [Helpers.GetGenre(1)]
+                Genres = [BookModuleHelpers.GetGenre(1)]
             };
             var genresIds = Array.Empty<int>();
             var commandsRepo = new Mock<IBookCommandsRepository>();
@@ -1468,7 +1468,7 @@ namespace TitlesOrganizer.Tests.Services
         public void SelectGenres_NotExistingBookIdAndLiteratureGenresIds()
         {
             int bookId = 1;
-            var genre = Helpers.GetGenre(1);
+            var genre = BookModuleHelpers.GetGenre(1);
             var genresIds = new[] { genre.Id };
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
@@ -1501,8 +1501,8 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void SelectSeries_ExistingBookIdAndExistingBookSeriesId()
         {
-            var oldSeries = Helpers.GetSeries(1);
-            var newSeries = Helpers.GetSeries(2);
+            var oldSeries = BookModuleHelpers.GetSeries(1);
+            var newSeries = BookModuleHelpers.GetSeries(2);
             var book = new Book()
             {
                 Id = 1,
@@ -1552,7 +1552,7 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void SelectSeries_ExistingBookIdAndNotExistingBookSeriesId()
         {
-            var oldSeries = Helpers.GetSeries(1);
+            var oldSeries = BookModuleHelpers.GetSeries(1);
             var book = new Book()
             {
                 Id = 1,
@@ -1599,7 +1599,7 @@ namespace TitlesOrganizer.Tests.Services
         [Fact]
         public void SelectSeries_ExistingBookIdAndNull()
         {
-            var oldSeries = Helpers.GetSeries(1);
+            var oldSeries = BookModuleHelpers.GetSeries(1);
             var book = new Book()
             {
                 Id = 1,
@@ -1645,7 +1645,7 @@ namespace TitlesOrganizer.Tests.Services
         public void SelectSeries_NotExistingBookIdAndBookSeriesId()
         {
             int bookId = 1;
-            var series = Helpers.GetSeries(1);
+            var series = BookModuleHelpers.GetSeries(1);
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBook(bookId))

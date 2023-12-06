@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void Map_LiteratureGenre_GenreForListVM()
         {
-            var genre = Helpers.GetGenre();
+            var genre = BookModuleHelpers.GetGenre();
 
             var result = genre.Map();
 
@@ -25,7 +26,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void Map_IQueryableLiteratureGenre_IQueryableIForListVMLiteratureGenre()
         {
-            var genres = Helpers.GetGenresList(4).AsQueryable();
+            var genres = BookModuleHelpers.GetGenresList(4).AsQueryable();
 
             var result = genres.Map();
 
@@ -38,7 +39,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void Map_IEnumerableLiteratureGenre_ListIForListVMLiteratureGenre()
         {
-            var genres = Helpers.GetGenresList(4).AsEnumerable();
+            var genres = BookModuleHelpers.GetGenresList(4).AsEnumerable();
 
             var result = genres.Map();
 

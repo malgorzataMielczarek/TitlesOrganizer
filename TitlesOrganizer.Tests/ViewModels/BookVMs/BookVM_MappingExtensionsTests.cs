@@ -3,6 +3,7 @@ using FluentAssertions;
 using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -74,10 +75,10 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         public void MapFromBase_BookWithAllRelatedObjects_BookVM()
         {
             int countOfAuthors = 3, countOfGenres = 5;
-            var book = Helpers.GetBook();
-            book.Authors = Helpers.GetAuthorsList(countOfAuthors);
-            book.Genres = Helpers.GetGenresList(countOfGenres);
-            book.Series = Helpers.GetSeries();
+            var book = BookModuleHelpers.GetBook();
+            book.Authors = BookModuleHelpers.GetAuthorsList(countOfAuthors);
+            book.Genres = BookModuleHelpers.GetGenresList(countOfGenres);
+            book.Series = BookModuleHelpers.GetSeries();
             book.SeriesId = book.Series.Id;
 
             var config = new MapperConfiguration(cfg => cfg.AddProfile<BookMappings>());
@@ -106,10 +107,10 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [InlineData(0, 0)]
         public void MapFromBase_BookAndAuthorsAndLiteratureGenresAndBookSeries_BookVM(int countOfAuthors, int countOfGenres)
         {
-            var book = Helpers.GetBook();
-            var authors = Helpers.GetAuthorsList(countOfAuthors).AsQueryable();
-            var genres = Helpers.GetGenresList(countOfGenres).AsQueryable();
-            var series = Helpers.GetSeries();
+            var book = BookModuleHelpers.GetBook();
+            var authors = BookModuleHelpers.GetAuthorsList(countOfAuthors).AsQueryable();
+            var genres = BookModuleHelpers.GetGenresList(countOfGenres).AsQueryable();
+            var series = BookModuleHelpers.GetSeries();
 
             var config = new MapperConfiguration(cfg => cfg.AddProfile<BookMappings>());
             IMapper mapper = config.CreateMapper();
@@ -133,7 +134,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapFromBase_BookAndNullAuthorsAndNullLiteratureGenresAndNullBookSeries_BookVM()
         {
-            var book = Helpers.GetBook();
+            var book = BookModuleHelpers.GetBook();
 
             var config = new MapperConfiguration(cfg => cfg.AddProfile<BookMappings>());
             IMapper mapper = config.CreateMapper();

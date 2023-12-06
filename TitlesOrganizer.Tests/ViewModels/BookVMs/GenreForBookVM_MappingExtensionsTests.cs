@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_LiteratureGenreWithGivenBook_IForItemVMQueryableLiteratureGenreBook()
         {
-            var book = Helpers.GetBook(1);
+            var book = BookModuleHelpers.GetBook(1);
             var genre = new LiteratureGenre()
             {
                 Id = 1,
@@ -32,8 +33,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_LiteratureGenreWithoutGivenBook_IForItemVMQueryableLiteratureGenreBook()
         {
-            var book = Helpers.GetBook(1);
-            var anotherBook = Helpers.GetBook(2);
+            var book = BookModuleHelpers.GetBook(1);
+            var anotherBook = BookModuleHelpers.GetBook(2);
             var genre = new LiteratureGenre()
             {
                 Id = 1,
@@ -52,9 +53,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableLiteratureGenreAndBookAndPagingAndFiltering_ListGenreForBookVMWithOrderedValues()
         {
-            var book1 = Helpers.GetBook(1);
-            var book2 = Helpers.GetBook(2);
-            var book3 = Helpers.GetBook(3);
+            var book1 = BookModuleHelpers.GetBook(1);
+            var book2 = BookModuleHelpers.GetBook(2);
+            var book3 = BookModuleHelpers.GetBook(3);
             var genres = new List<LiteratureGenre>()
             {
                 new LiteratureGenre()
@@ -103,9 +104,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableLiteratureGenreAndBookAndPagingAndFilteringSortByDescending_ListGenreForBookVMWithValuesInDescOrder()
         {
-            var book1 = Helpers.GetBook(1);
-            var book2 = Helpers.GetBook(2);
-            var book3 = Helpers.GetBook(3);
+            var book1 = BookModuleHelpers.GetBook(1);
+            var book2 = BookModuleHelpers.GetBook(2);
+            var book3 = BookModuleHelpers.GetBook(3);
             var genres = new List<LiteratureGenre>()
             {
                 new LiteratureGenre()

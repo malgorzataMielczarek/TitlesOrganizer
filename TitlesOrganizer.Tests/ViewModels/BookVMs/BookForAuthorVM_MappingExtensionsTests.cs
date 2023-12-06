@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_BookWithGivenAuthor_IForItemVMBookAuthor()
         {
-            var author = Helpers.GetAuthor();
+            var author = BookModuleHelpers.GetAuthor();
             var book = new Book()
             {
                 Id = 1,
@@ -32,14 +33,14 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_BookWithoutGivenAuthor_IForItemVMBookAuthor()
         {
-            var author = Helpers.GetAuthor(1);
+            var author = BookModuleHelpers.GetAuthor(1);
             var book = new Book()
             {
                 Id = 1,
                 Title = "Test",
                 Authors = { author }
             };
-            var otherAuthor = Helpers.GetAuthor(2);
+            var otherAuthor = BookModuleHelpers.GetAuthor(2);
 
             var result = book.MapForItem(otherAuthor);
 
@@ -52,9 +53,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableBooksAndAuthor_ListBookForAuthorVM()
         {
-            var author1 = Helpers.GetAuthor(1);
-            var author2 = Helpers.GetAuthor(2);
-            var author3 = Helpers.GetAuthor(3);
+            var author1 = BookModuleHelpers.GetAuthor(1);
+            var author2 = BookModuleHelpers.GetAuthor(2);
+            var author3 = BookModuleHelpers.GetAuthor(3);
             var books = new List<Book>()
             {
                 new Book(){ Id = 1, Title = "Title", Authors = new List<Author>() { author1 } },
@@ -83,9 +84,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableBooksAndAuthorAndSortByDescending_ListBookForAuthorVMWithValuesInDescendingOrder()
         {
-            var author1 = Helpers.GetAuthor(1);
-            var author2 = Helpers.GetAuthor(2);
-            var author3 = Helpers.GetAuthor(3);
+            var author1 = BookModuleHelpers.GetAuthor(1);
+            var author2 = BookModuleHelpers.GetAuthor(2);
+            var author3 = BookModuleHelpers.GetAuthor(3);
             var books = new List<Book>()
             {
                 new Book(){ Id = 1, Title = "Title", Authors = new List<Author>() { author1 } },

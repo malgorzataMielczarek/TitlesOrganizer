@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_AuthorWithGivenBook_IForItemVMAuthorBook()
         {
-            var book = Helpers.GetBook();
+            var book = BookModuleHelpers.GetBook();
             var author = new Author()
             {
                 Id = 1,
@@ -33,7 +34,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_AuthorWithoutGivenBook_IForItemVMAuthorBook()
         {
-            var book = Helpers.GetBook();
+            var book = BookModuleHelpers.GetBook();
             var author = new Author()
             {
                 Id = 1,
@@ -42,7 +43,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 Books = new List<Book>() { book }
             };
             author.Books.Add(book);
-            var otherBook = Helpers.GetBook(2);
+            var otherBook = BookModuleHelpers.GetBook(2);
 
             var result = author.MapForItem(otherBook);
 
@@ -55,8 +56,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableAuthorWithoutGivenBook_ListAuthorForBookVMWithOrderedValues()
         {
-            var book1 = Helpers.GetBook(1);
-            var book2 = Helpers.GetBook(2);
+            var book1 = BookModuleHelpers.GetBook(1);
+            var book2 = BookModuleHelpers.GetBook(2);
 
             var authors = new List<Author>()
             {
@@ -65,7 +66,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 new Author(){ Id = 3, Name = "Michał", LastName = "Popiołek", Books = new List<Book>() { book1, book2 } },
                 new Author(){ Id = 4, Name = "Piotr", LastName = "Krasowski", Books = new List<Book>() { book1, book2 } }
             }.AsQueryable();
-            var book = Helpers.GetBook(3);
+            var book = BookModuleHelpers.GetBook(3);
             var paging = new Paging() { CurrentPage = 1, PageSize = authors.Count() };
             var filtering = new Filtering();
 
@@ -104,8 +105,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableAuthorWithoutGivenBookAndFilteringSortedByDescending_ListAuthorForBookVMWithValuesInDescendingOrder()
         {
-            var book1 = Helpers.GetBook(1);
-            var book2 = Helpers.GetBook(2);
+            var book1 = BookModuleHelpers.GetBook(1);
+            var book2 = BookModuleHelpers.GetBook(2);
 
             var authors = new List<Author>()
             {
@@ -114,7 +115,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
                 new Author(){ Id = 3, Name = "Michał", LastName = "Popiołek", Books = new List<Book>() { book1, book2 } },
                 new Author(){ Id = 4, Name = "Piotr", LastName = "Krasowski", Books = new List<Book>() { book1, book2 } }
             }.AsQueryable();
-            var book = Helpers.GetBook(3);
+            var book = BookModuleHelpers.GetBook(3);
             var paging = new Paging() { CurrentPage = 1, PageSize = authors.Count() };
             var filtering = new Filtering() { SortBy = SortByEnum.Descending };
 

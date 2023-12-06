@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void Map_BookSeries_SeriesForListVM()
         {
-            var series = Helpers.GetSeries();
+            var series = BookModuleHelpers.GetSeries();
 
             var result = series.Map();
 
@@ -25,7 +26,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void Map_IEnumerableBookSeries_ListIForListVMBookSeries()
         {
-            var series = Helpers.GetSeriesList(4).AsEnumerable();
+            var series = BookModuleHelpers.GetSeriesList(4).AsEnumerable();
 
             var result = series.Map();
 

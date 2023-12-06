@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_BookWithGivenBookSeries_IForItemVMBookBookSeries()
         {
-            var series = Helpers.GetSeries(1);
+            var series = BookModuleHelpers.GetSeries(1);
             var book = new Book()
             {
                 Id = 1,
@@ -33,8 +34,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_BookWithoutGivenBookSeries_IForItemVMBookBookSeries()
         {
-            var series = Helpers.GetSeries(1);
-            var anotherSeries = Helpers.GetSeries(2);
+            var series = BookModuleHelpers.GetSeries(1);
+            var anotherSeries = BookModuleHelpers.GetSeries(2);
             var book = new Book()
             {
                 Id = 1,
@@ -54,7 +55,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableBookAndBookSeriesAndPagingAndFiltering_ListBookForSeriesVMWithOrderedValues()
         {
-            var series = Helpers.GetSeries(1);
+            var series = BookModuleHelpers.GetSeries(1);
             var books = new List<Book>()
             {
                 new Book(){ Id = 1, Title = "Title", SeriesId = series.Id },
@@ -83,7 +84,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableBookAndBookSeriesAndPagingAndFilteringSortByDescending_ListBookForSeriesVMWithValuesInDescOrder()
         {
-            var series = Helpers.GetSeries(1);
+            var series = BookModuleHelpers.GetSeries(1);
             var books = new List<Book>()
             {
                 new Book(){ Id = 1, Title = "Title", SeriesId = series.Id },

@@ -5,6 +5,7 @@ using TitlesOrganizer.Application.ViewModels.Abstract;
 using TitlesOrganizer.Application.ViewModels.BookVMs;
 using TitlesOrganizer.Application.ViewModels.Helpers;
 using TitlesOrganizer.Domain.Models;
+using TitlesOrganizer.Tests.Helpers;
 
 namespace TitlesOrganizer.Tests.ViewModels.BookVMs
 {
@@ -13,7 +14,7 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_BookWithGivenLiteratureGenre_IForItemVMBookLiteratureGenre()
         {
-            var genre = Helpers.GetGenre(1);
+            var genre = BookModuleHelpers.GetGenre(1);
             var book = new Book()
             {
                 Id = 1,
@@ -32,8 +33,8 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItem_BookWithoutGivenLiteratureGenre_IForItemVMBookLiteratureGenre()
         {
-            var genre = Helpers.GetGenre(1);
-            var otherGenre = Helpers.GetGenre(2);
+            var genre = BookModuleHelpers.GetGenre(1);
+            var otherGenre = BookModuleHelpers.GetGenre(2);
             var book = new Book()
             {
                 Id = 1,
@@ -52,9 +53,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableBookLiteratureGenrePagingFiltering_ListBookForGenreVMWithValuesSortedInAscendingOrder()
         {
-            var genre1 = Helpers.GetGenre(1);
-            var genre2 = Helpers.GetGenre(2);
-            var genre3 = Helpers.GetGenre(3);
+            var genre1 = BookModuleHelpers.GetGenre(1);
+            var genre2 = BookModuleHelpers.GetGenre(2);
+            var genre3 = BookModuleHelpers.GetGenre(3);
             var books = new List<Book>()
             {
                 new Book(){ Id = 1, Title = "Title", Genres = new List<LiteratureGenre>() { genre1 } },
@@ -98,9 +99,9 @@ namespace TitlesOrganizer.Tests.ViewModels.BookVMs
         [Fact]
         public void MapForItemToList_IQueryableBookLiteratureGenrePagingFilteringSortByDescending_ListBookForGenreVMWithValuesSortedInDescOrder()
         {
-            var genre1 = Helpers.GetGenre(1);
-            var genre2 = Helpers.GetGenre(2);
-            var genre3 = Helpers.GetGenre(3);
+            var genre1 = BookModuleHelpers.GetGenre(1);
+            var genre2 = BookModuleHelpers.GetGenre(2);
+            var genre3 = BookModuleHelpers.GetGenre(3);
             var books = new List<Book>()
             {
                 new Book(){ Id = 1, Title = "Title", Genres = new List<LiteratureGenre>() { genre1 } },
