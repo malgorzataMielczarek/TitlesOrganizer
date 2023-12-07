@@ -7,7 +7,7 @@ using TitlesOrganizer.Domain.Models.Abstract;
 
 namespace TitlesOrganizer.Application.Mappings.Common
 {
-    public abstract class BaseMappings(IMapper _mapper) : IMappings
+    public class BaseMappings(IMapper _mapper) : IMappings
     {
         public static List<T> SkipAndTake<T>(IEnumerable<T> values, ref Paging paging)
         {
@@ -27,8 +27,11 @@ namespace TitlesOrganizer.Application.Mappings.Common
             }
         }
 
-        public abstract IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
-            where T : class, IBaseModel;
+        public virtual IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
+            where T : class, IBaseModel
+        {
+            return entities;
+        }
 
         public virtual IForListVM Map<T>(T entity)
                     where T : class, IBaseModel
@@ -114,10 +117,27 @@ namespace TitlesOrganizer.Application.Mappings.Common
             where ItemT : class, IBaseModel
         {
             var sorted = Sort(entities, filtering.SortBy);
-            var values = Map(sorted, item)
-                .Where(it => it.IsForItem || it.Description.Contains(filtering.SearchString))
-                .OrderByDescending(it => it.IsForItem);
-            var limitedList = SkipAndTake(values, ref paging).ToList();
+            var values = Map(sorted, item);
+            var selected = values.Where(it => it.IsForItem);
+            int selCount = selected.Count();
+            var other = values
+                .Where(it => !it.IsForItem && it.Description.Contains(filtering.SearchString));
+            int pageSize = paging.PageSize;
+            paging.PageSize -= selCount;
+            if (paging.PageSize <= 0)
+            {
+                paging.PageSize = 1;
+            }
+
+            var limitedList = selected.Concat(SkipAndTake(other, ref paging)).ToList();
+            int pageCount = paging.Count / paging.PageSize;
+            if (pageCount * paging.PageSize < paging.Count)
+            {
+                pageCount++;
+            }
+
+            paging.PageSize = pageSize;
+            paging.Count += selCount * pageCount;
 
             return new ListForItemVM(limitedList, Map(item), paging, filtering);
         }
@@ -125,7 +145,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
         public virtual IOrderedQueryable<T> Sort<T>(IQueryable<T> entities, SortByEnum sortBy)
             where T : class, IBaseModel
         {
-            return entities.Order();
+            return entities.Sort(sortBy, e => e.Id);
         }
     }
 }
