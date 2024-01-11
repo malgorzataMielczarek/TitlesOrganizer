@@ -228,6 +228,9 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.Verify(
+                m => m.Map<Author, AuthorDetailsVM>(author),
+                Times.Once());
+            mappings.Verify(
                 m => m.Map(It.IsAny<IEnumerable<Book>>(),
                     It.Is<Paging>(p => p.CurrentPage == booksPageNo && p.PageSize == booksPageSize)),
                 Times.Once());

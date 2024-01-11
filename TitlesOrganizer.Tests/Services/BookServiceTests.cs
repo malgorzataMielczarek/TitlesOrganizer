@@ -761,7 +761,7 @@ namespace TitlesOrganizer.Tests.Services
             Filtering filtering = null;
             var mappings = new Mock<IBookVMsMappings>();
             mappings.Setup(m => m.MapToDoubleListForItem(books, It.Is<LiteratureGenre>(g => g.Id == default), It.IsAny<Paging>(), It.IsAny<Filtering>()))
-                .Callback<IQueryable<Book>, Author, Paging, Filtering>((b, g, p, f) =>
+                .Callback<IQueryable<Book>, LiteratureGenre, Paging, Filtering>((b, g, p, f) =>
                 {
                     paging = p;
                     filtering = f;
@@ -1155,7 +1155,7 @@ namespace TitlesOrganizer.Tests.Services
             service.SelectAuthors(book.Id, authorsIds);
 
             queriesRepo.Verify(
-                r => r.GetBook(book.Id),
+                r => r.GetBookWithAuthorsGenresAndSeries(book.Id),
                 Times.Once());
             queriesRepo.Verify(
                 r => r.GetAuthor(a2.Id),
@@ -1193,7 +1193,7 @@ namespace TitlesOrganizer.Tests.Services
             var authorsIds = new[] { 2, 3 };
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id))
+            queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(book.Id))
                 .Returns(book);
             queriesRepo.Setup(r => r.GetAuthor(2))
                 .Returns((Author?)null);
@@ -1209,7 +1209,7 @@ namespace TitlesOrganizer.Tests.Services
             service.SelectAuthors(book.Id, authorsIds);
 
             queriesRepo.Verify(
-                r => r.GetBook(book.Id),
+                r => r.GetBookWithAuthorsGenresAndSeries(book.Id),
                 Times.Once());
             queriesRepo.Verify(
                 r => r.GetAuthor(2),
@@ -1244,7 +1244,7 @@ namespace TitlesOrganizer.Tests.Services
             var authorsIds = Array.Empty<int>();
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(book.Id))
+            queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(book.Id))
                 .Returns(book);
             queriesRepo.Setup(r => r.GetAuthor(It.IsAny<int>()));
             Book bookParam = null;
@@ -1257,7 +1257,7 @@ namespace TitlesOrganizer.Tests.Services
             service.SelectAuthors(book.Id, authorsIds);
 
             queriesRepo.Verify(
-                r => r.GetBook(book.Id),
+                r => r.GetBookWithAuthorsGenresAndSeries(book.Id),
                 Times.Once());
             queriesRepo.Verify(
                 r => r.GetAuthor(It.IsAny<int>()),
@@ -1285,7 +1285,7 @@ namespace TitlesOrganizer.Tests.Services
             var authorsIds = new[] { author.Id };
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
-            queriesRepo.Setup(r => r.GetBook(bookId))
+            queriesRepo.Setup(r => r.GetBookWithAuthorsGenresAndSeries(bookId))
                 .Returns((Book?)null);
             queriesRepo.Setup(r => r.GetAuthor(author.Id))
                 .Returns(author);
@@ -1297,7 +1297,7 @@ namespace TitlesOrganizer.Tests.Services
             service.SelectAuthors(bookId, authorsIds);
 
             queriesRepo.Verify(
-                r => r.GetBook(bookId),
+                r => r.GetBookWithAuthorsGenresAndSeries(bookId),
                 Times.Once());
             queriesRepo.Verify(
                 r => r.GetAuthor(It.IsAny<int>()),

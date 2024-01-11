@@ -14,6 +14,8 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
     {
         public override IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
         {
+            searchString ??= string.Empty;
+
             return (entities) switch
             {
                 IQueryable<Author> authors => (IQueryable<T>)authors.Where(a => (a.Name + " " + a.LastName).Contains(searchString)),

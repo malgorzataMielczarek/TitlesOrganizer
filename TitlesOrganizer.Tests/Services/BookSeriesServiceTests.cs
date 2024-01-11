@@ -158,7 +158,7 @@ namespace TitlesOrganizer.Tests.Services
             pagingParam.Should().NotBeNull();
             pagingParam!.PageSize.Should().Be(pageSize);
             pagingParam.CurrentPage.Should().Be(pageNo);
-            pagingParam.Count.Should().Be(booksCount);
+            pagingParam.Count.Should().Be(0);
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.VerifyNoOtherCalls();
@@ -259,9 +259,9 @@ namespace TitlesOrganizer.Tests.Services
             mappings.Setup(m => m.Map<BookSeries, SeriesDetailsVM>(series))
                 .Returns(seriesDetails);
             Paging pagingParam = null;
-            IQueryable<Book> booksParam = null;
-            mappings.Setup(m => m.Map(It.IsAny<IQueryable<Book>>(), It.IsAny<Paging>()))
-                .Callback<IQueryable<Book>, Paging>((b, p) =>
+            IEnumerable<Book> booksParam = null;
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Book>, Paging>((b, p) =>
                 {
                     booksParam = b;
                     pagingParam = p;
@@ -294,7 +294,7 @@ namespace TitlesOrganizer.Tests.Services
                 m => m.Map<BookSeries, SeriesDetailsVM>(series),
                 Times.Once());
             mappings.Verify(
-                m => m.Map(It.IsAny<IQueryable<Book>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
                 Times.Once());
             booksParam.Should()
                 .NotBeNullOrEmpty().And

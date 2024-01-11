@@ -113,7 +113,7 @@ namespace TitlesOrganizer.Tests.Mappings.Common
         {
             int count = 5;
             var rnd = new Random();
-            var entities = Item.GetItemList(count).OrderBy(e => rnd.Next());
+            var entities = Item.GetItemList(count).OrderBy(e => rnd.Next()).ToList().AsEnumerable();
             var item = new Item(8);
             var mapper = new Mock<IMapper>();
             var mappings = new BaseMappings(mapper.Object);
@@ -380,7 +380,7 @@ namespace TitlesOrganizer.Tests.Mappings.Common
         public static List<Item> GetItemList(int count)
         {
             var list = new List<Item>();
-            for (int i = 0; i < count; i++)
+            for (int i = 1; i <= count; i++)
             {
                 list.Add(new Item(i));
             }
@@ -397,6 +397,7 @@ namespace TitlesOrganizer.Tests.Mappings.Common
             {
                 Id = entity.Id,
                 IsForItem = entity.Id % item.Id == 0,
+                Description = "Test" + entity.Id
             };
         }
     }

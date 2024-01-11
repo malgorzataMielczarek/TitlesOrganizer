@@ -713,7 +713,7 @@ namespace TitlesOrganizer.Tests.Services
             mappings.VerifyNoOtherCalls();
             result.Should()
                 .NotBeNull().And
-                .BeOfType<IPartialListVM>();
+                .BeAssignableTo<IPartialListVM>();
             result.Values.Should()
                 .NotBeNull().And
                 .BeEmpty();
