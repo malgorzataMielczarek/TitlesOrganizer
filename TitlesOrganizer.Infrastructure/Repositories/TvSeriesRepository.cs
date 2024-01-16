@@ -45,9 +45,9 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             var director = GetDirectorById(directorId);
             if (series != null && director != null)
             {
-                if (!series.Directors.Contains(director))
+                if (!series.Creators.Contains(director))
                 {
-                    series.Directors.Add(director);
+                    series.Creators.Add(director);
                     _context.SaveChanges();
                 }
 
@@ -75,21 +75,21 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return -1;
         }
 
-        public int AddNewDirector(int seriesId, Director director)
+        public int AddNewCreator(int seriesId, Creator creator)
         {
             var series = GetSeriesById(seriesId);
-            if (!_context.Directors.Contains(director))
+            if (!_context.Creators.Contains(creator))
             {
-                _context.Directors.Add(director);
+                _context.Creators.Add(creator);
             }
 
             if (series != null)
             {
-                series.Directors.Add(director);
+                series.Creators.Add(creator);
 
                 _context.SaveChanges();
 
-                return director.Id;
+                return creator.Id;
             }
 
             return -1;
@@ -198,20 +198,20 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             }
         }
 
-        public void RemoveDirector(int seriesId, int directorId)
+        public void RemoveCreator(int seriesId, int creatorId)
         {
             var series = GetSeriesById(seriesId);
             if (series != null)
             {
-                var director = series.Directors.FirstOrDefault(d => d.Id == directorId);
-                if (director != null)
+                var creator = series.Creators.FirstOrDefault(d => d.Id == creatorId);
+                if (creator != null)
                 {
-                    series.Directors.Remove(director);
-                    director.TvSeries?.Remove(series);
+                    series.Creators.Remove(creator);
+                    creator.TvSeries?.Remove(series);
 
-                    if (director.Movies.IsNullOrEmpty() && director.TvSeries.IsNullOrEmpty())
+                    if (creator.Movies.IsNullOrEmpty() && creator.TvSeries.IsNullOrEmpty() && creator.Books.IsNullOrEmpty())
                     {
-                        _context.Directors.Remove(director);
+                        _context.Creators.Remove(creator);
                     }
 
                     _context.SaveChanges();

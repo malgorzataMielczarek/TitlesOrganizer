@@ -34,9 +34,9 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             var director = GetDirectorById(directorId);
             if (movie != null && director != null)
             {
-                if (!movie.Directors.Contains(director))
+                if (!movie.Creators.Contains(director))
                 {
-                    movie.Directors.Add(director);
+                    movie.Creators.Add(director);
                     _context.SaveChanges();
                 }
 
@@ -75,21 +75,21 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return movie.Id;
         }
 
-        public int AddNewDirector(int movieId, Director director)
+        public int AddNewCreator(int movieId, Creator creator)
         {
             var movie = GetMovieById(movieId);
-            if (!_context.Directors.Contains(director))
+            if (!_context.Creators.Contains(creator))
             {
-                _context.Directors.Add(director);
+                _context.Creators.Add(creator);
             }
 
             if (movie != null)
             {
-                movie.Directors.Add(director);
+                movie.Creators.Add(creator);
 
                 _context.SaveChanges();
 
-                return director.Id;
+                return creator.Id;
             }
 
             return -1;
@@ -148,7 +148,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<MovieSeries> GetAllSeries() => _context.MovieSeries;
 
-        public IQueryable<Director>? GetDirectorsOfSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.SkipWhile(m => m.Directors.IsNullOrEmpty()).SelectMany(m => m.Directors).AsQueryable();
+        public IQueryable<Creator>? GetDirectorsOfSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.SkipWhile(m => m.Creators.IsNullOrEmpty()).SelectMany(m => m.Creators).AsQueryable();
 
         public IQueryable<VideoGenre>? GetGenresOfSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.SkipWhile(m => m.Genres.IsNullOrEmpty()).SelectMany(m => m.Genres).AsQueryable();
 
@@ -178,20 +178,20 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             }
         }
 
-        public void RemoveDirector(int movieId, int directorId)
+        public void RemoveCreator(int movieId, int creatorId)
         {
             var movie = GetMovieById(movieId);
             if (movie != null)
             {
-                var director = movie.Directors.FirstOrDefault(d => d.Id == directorId);
-                if (director != null)
+                var creator = movie.Creators.FirstOrDefault(d => d.Id == creatorId);
+                if (creator != null)
                 {
-                    movie.Directors.Remove(director);
-                    director.Movies?.Remove(movie);
+                    movie.Creators.Remove(creator);
+                    creator.Movies?.Remove(movie);
 
-                    if (director.TvSeries.IsNullOrEmpty() && director.Movies.IsNullOrEmpty())
+                    if (creator.TvSeries.IsNullOrEmpty() && creator.Movies.IsNullOrEmpty() && creator.Books.IsNullOrEmpty())
                     {
-                        _context.Directors.Remove(director);
+                        _context.Creators.Remove(creator);
                     }
 
                     _context.SaveChanges();

@@ -28,13 +28,13 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual IQueryable<T> Filter<T>(IQueryable<T> entities, string searchString)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             return entities;
         }
 
         public virtual IForListVM Map<T>(T entity)
-                    where T : class, IBaseModel
+                    where T : BaseModel
         {
             return new ForListVM()
             {
@@ -43,7 +43,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual List<IForListVM> Map<T>(IEnumerable<T> entities)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             return Sort(entities.AsQueryable(), SortByEnum.Ascending)
                 .Select(it => Map(it))
@@ -51,21 +51,21 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual IForItemVM Map<T, ItemT>(T entity, ItemT item)
-            where T : class, IBaseModel
-            where ItemT : class, IBaseModel
+            where T : BaseModel
+            where ItemT : BaseModel
         {
             return new ForItemVM() { Id = entity.Id };
         }
 
         public virtual List<IForItemVM> Map<T, ItemT>(IEnumerable<T> entities, ItemT item)
-                where T : class, IBaseModel
-                where ItemT : class, IBaseModel
+                where T : BaseModel
+                where ItemT : BaseModel
         {
             return entities.Select(it => Map(it, item)).ToList();
         }
 
         public virtual IListVM Map<T>(IQueryable<T> entities, Paging paging, Filtering filtering)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             var filtered = Filter(entities, filtering.SearchString);
             var sorted = Sort(filtered, filtering.SortBy);
@@ -78,14 +78,14 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual List<IForListVM> Map<T>(IEnumerable<T> entities, ref Paging paging)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             var list = Map(entities);
             return SkipAndTake(list, ref paging);
         }
 
         public virtual IPartialListVM Map<T>(IEnumerable<T> entities, Paging paging)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             return new PartialListVM()
             {
@@ -100,8 +100,8 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual IDoubleListForItemVM MapToDoubleListForItem<T, ItemT>(IQueryable<T> entities, ItemT item, Paging paging, Filtering filtering)
-            where T : class, IBaseModel
-            where ItemT : class, IBaseModel
+            where T : BaseModel
+            where ItemT : BaseModel
         {
             var sorted = Sort(entities, filtering.SortBy);
             var mapped = Map(sorted, item);
@@ -113,8 +113,8 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual IListForItemVM MapToListForItem<T, ItemT>(IQueryable<T> entities, ItemT item, Paging paging, Filtering filtering)
-                                                    where T : class, IBaseModel
-            where ItemT : class, IBaseModel
+            where T : BaseModel
+            where ItemT : BaseModel
         {
             var sorted = Sort(entities, filtering.SortBy);
             var values = Map(sorted, item);
@@ -143,7 +143,7 @@ namespace TitlesOrganizer.Application.Mappings.Common
         }
 
         public virtual IOrderedQueryable<T> Sort<T>(IQueryable<T> entities, SortByEnum sortBy)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             return entities.Sort(sortBy, e => e.Id);
         }

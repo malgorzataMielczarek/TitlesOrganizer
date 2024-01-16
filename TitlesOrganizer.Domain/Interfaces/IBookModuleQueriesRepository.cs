@@ -4,9 +4,9 @@ namespace TitlesOrganizer.Domain.Interfaces
 {
     public interface IBookModuleQueriesRepository
     {
-        IQueryable<Author> GetAllAuthors();
+        IQueryable<Creator> GetAllAuthors();
 
-        IQueryable<Author> GetAllAuthorsWithBooks();
+        IQueryable<Creator> GetAllAuthorsWithBooks();
 
         IQueryable<Book> GetAllBooks();
 
@@ -20,9 +20,9 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<LiteratureGenre> GetAllLiteratureGenresWithBooks();
 
-        Author? GetAuthor(int id);
+        Creator? GetAuthor(int id);
 
-        Author? GetAuthorWithBooks(int id);
+        Creator? GetAuthorWithBooks(int id);
 
         Book? GetBook(int id);
 
@@ -30,7 +30,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         BookSeries? GetBookSeriesWithBooks(int id);
 
-        Book? GetBookWithAuthorsGenresAndSeries(int id);
+        Book? GetBookWithCreatorsGenresAndSeries(int id);
 
         LiteratureGenre? GetLiteratureGenre(int id);
 

@@ -22,17 +22,19 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             }
         }
 
-        public IQueryable<Director> GetAllDirectors() => _context.Directors;
+        public IQueryable<Creator> GetAllDirectors() => _context.Creators
+            .Where(c => c.Profession.HasFlag(Domain.Models.Enums.Profession.Director));
 
         public IQueryable<VideoGenre> GetAllGenres() => _context.VideoGenres;
 
-        public Director? GetDirectorById(int directorId) => _context.Directors.Find(directorId);
+        public Creator? GetDirectorById(int directorId) => _context.Creators
+            .FirstOrDefault(c => c.Id == directorId && c.Profession.HasFlag(Domain.Models.Enums.Profession.Director));
 
         public VideoGenre? GetGenreById(int genreId) => _context.VideoGenres.Find(genreId);
 
-        public int UpdateDirector(Director director)
+        public int UpdateDirector(Creator director)
         {
-            _context.Directors.Update(director);
+            _context.Creators.Update(director);
             if (_context.SaveChanges() == 1)
             {
                 return director.Id;

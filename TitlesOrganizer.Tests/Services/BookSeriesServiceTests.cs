@@ -238,11 +238,11 @@ namespace TitlesOrganizer.Tests.Services
             books[8].Series = BookModuleHelpers.GetSeries(series.Id);
             books[8].SeriesId = series.Id;
 
-            books[1].Authors = new[] { a1, a2 };
-            books[3].Authors = new[] { a2 };
-            books[5].Authors = new[] { a1 };
-            books[6].Authors = new[] { a1, a3 };
-            books[8].Authors = new[] { a2, a1 };
+            books[1].Creators = new[] { a1, a2 };
+            books[3].Creators = new[] { a2 };
+            books[5].Creators = new[] { a1 };
+            books[6].Creators = new[] { a1, a3 };
+            books[8].Creators = new[] { a2, a1 };
 
             books[3].Genres = new[] { g1, g2, g3 };
             books[5].Genres = new[] { g1, g3 };
@@ -267,9 +267,9 @@ namespace TitlesOrganizer.Tests.Services
                     pagingParam = p;
                 })
                 .Returns(new PartialListVM());
-            IEnumerable<Author> authorsParam = null;
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Author>>()))
-                .Callback<IEnumerable<Author>>(a => authorsParam = a)
+            IEnumerable<Creator> authorsParam = null;
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Creator>>()))
+                .Callback<IEnumerable<Creator>>(a => authorsParam = a)
                 .Returns([]);
             IEnumerable<LiteratureGenre> genresParam = null;
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>()))
@@ -313,7 +313,7 @@ namespace TitlesOrganizer.Tests.Services
             pagingParam!.PageSize.Should().Be(booksPageSize);
             pagingParam.CurrentPage.Should().Be(booksPageNo);
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<Author>>()),
+                m => m.Map(It.IsAny<IEnumerable<Creator>>()),
                 Times.Once());
             authorsParam.Should()
                 .NotBeNull().And
@@ -353,7 +353,7 @@ namespace TitlesOrganizer.Tests.Services
             var mappings = new Mock<IBookVMsMappings>();
             mappings.Setup(m => m.Map<BookSeries, SeriesDetailsVM>(It.IsAny<BookSeries>()));
             mappings.Setup(m => m.Map(It.IsAny<IQueryable<Book>>(), It.IsAny<Paging>()));
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Author>>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Creator>>()));
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>()));
             var service = new BookSeriesService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -374,7 +374,7 @@ namespace TitlesOrganizer.Tests.Services
                 m => m.Map(It.IsAny<IQueryable<Book>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<Author>>()),
+                m => m.Map(It.IsAny<IEnumerable<Creator>>()),
                 Times.Never());
             mappings.Verify(
                 m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>()),
@@ -555,8 +555,8 @@ namespace TitlesOrganizer.Tests.Services
             var b1 = BookModuleHelpers.GetBook(1);
             var b2 = BookModuleHelpers.GetBook(2);
             var b3 = BookModuleHelpers.GetBook(3);
-            b1.Authors = [author];
-            b2.Authors = [author];
+            b1.Creators = [author];
+            b2.Creators = [author];
             var s1 = BookModuleHelpers.GetSeries(1);
             var s2 = BookModuleHelpers.GetSeries(2);
             var s3 = BookModuleHelpers.GetSeries(3);
@@ -621,7 +621,7 @@ namespace TitlesOrganizer.Tests.Services
             var comm = new Mock<IBookSeriesCommandsRepository>();
             var query = new Mock<IBookModuleQueriesRepository>();
             query.Setup(q => q.GetAuthor(authorId))
-                .Returns((Author?)null);
+                .Returns((Creator?)null);
             query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries());
             var mappings = new Mock<IBookVMsMappings>();
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()));

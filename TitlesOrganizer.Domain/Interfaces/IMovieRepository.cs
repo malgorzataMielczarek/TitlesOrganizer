@@ -12,7 +12,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         int AddMovie(Movie movie);
 
-        int AddNewDirector(int movieId, Director director);
+        int AddNewCreator(int movieId, Creator creator);
 
         int AddNewGenre(int movieId, VideoGenre genre);
 
@@ -26,7 +26,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<MovieSeries> GetAllSeries();
 
-        IQueryable<Director>? GetDirectorsOfSeries(int seriesId);
+        IQueryable<Creator>? GetDirectorsOfSeries(int seriesId);
 
         IQueryable<VideoGenre>? GetGenresOfSeries(int seriesId);
 
@@ -46,7 +46,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         void RemoveCountry(int movieId, string countryCode);
 
-        void RemoveDirector(int movieId, int directorId);
+        void RemoveCreator(int movieId, int creatorId);
 
         void RemoveGenre(int movieId, int genreId);
 

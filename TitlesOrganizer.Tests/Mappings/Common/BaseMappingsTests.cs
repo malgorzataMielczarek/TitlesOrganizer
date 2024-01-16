@@ -373,7 +373,7 @@ namespace TitlesOrganizer.Tests.Mappings.Common
         }
     }
 
-    internal class Item(int id) : IBaseModel
+    internal class Item(int id) : BaseModel
     {
         public int Id { get; set; } = id;
 

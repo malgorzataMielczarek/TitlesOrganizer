@@ -67,7 +67,7 @@ namespace TitlesOrganizer.Application.Services
                 var booksPaging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
                 result.Books = _mappings.Map(books, booksPaging);
 
-                var authors = books.SelectMany(b => b.Authors)
+                var authors = books.SelectMany(b => b.Creators)
                     .DistinctBy(a => a.Id);
                 var authorsPaging = new Paging() { CurrentPage = authorsPageNo, PageSize = authorsPageSize };
                 result.Authors = _mappings.Map(authors, authorsPaging);
@@ -117,7 +117,7 @@ namespace TitlesOrganizer.Application.Services
             if (author != null)
             {
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
-                .Where(b => b.Authors.Any(a => a.Id == authorId))
+                .Where(b => b.Creators.Any(a => a.Id == authorId))
                 .ToList();
                 var genres = books
                 .SelectMany(b => b.Genres)

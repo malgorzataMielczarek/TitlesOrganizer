@@ -18,7 +18,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
 
             return (entities) switch
             {
-                IQueryable<Author> authors => (IQueryable<T>)authors.Where(a => (a.Name + " " + a.LastName).Contains(searchString)),
+                IQueryable<Creator> authors => (IQueryable<T>)authors.Where(a => (a.Name + " " + a.LastName).Contains(searchString)),
                 IQueryable<Book> books => (IQueryable<T>)books.Where(b => b.Title.Contains(searchString)),
                 IQueryable<BookSeries> series => (IQueryable<T>)series.Where(s => s.Title.Contains(searchString)),
                 IQueryable<LiteratureGenre> genres => (IQueryable<T>)genres.Where(g => g.Name.Contains(searchString)),
@@ -31,7 +31,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
             var result = base.Map(entity);
             switch (entity)
             {
-                case Author author:
+                case Creator author:
                     result.Description = $"{author!.Name} {author.LastName}"; break;
                 case Book book:
                     result.Description = book.Title; break;
@@ -48,7 +48,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
         {
             return (entity) switch
             {
-                Author author => new ForItemVM()
+                Creator author => new ForItemVM()
                 {
                     Id = author.Id,
                     Description = author.Name + " " + author.LastName,
@@ -64,7 +64,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                     Description = book.Title,
                     IsForItem = (item) switch
                     {
-                        Author => IsForItem(book.Authors, item.Id),
+                        Creator => IsForItem(book.Creators, item.Id),
                         BookSeries => book.SeriesId == item.Id,
                         LiteratureGenre => IsForItem(book.Genres, item.Id),
                         _ => false
@@ -97,8 +97,8 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
         public override TDestination Map<TSource, TDestination>(TSource entity)
         {
             var isMappingDefined =
-                (entity is Author && (typeof(TDestination) == typeof(AuthorVM) || typeof(TDestination) == typeof(AuthorDetailsVM))) ||
-                (entity is AuthorVM && typeof(TDestination) == typeof(Author)) ||
+                (entity is Creator && (typeof(TDestination) == typeof(AuthorVM) || typeof(TDestination) == typeof(AuthorDetailsVM))) ||
+                (entity is AuthorVM && typeof(TDestination) == typeof(Creator)) ||
                 (entity is Book && (typeof(TDestination) == typeof(BookVM) || typeof(TDestination) == typeof(BookDetailsVM))) ||
                 (entity is BookVM && typeof(TDestination) == typeof(Book)) ||
                 (entity is BookSeries && (typeof(TDestination) == typeof(SeriesVM) || typeof(TDestination) == typeof(SeriesDetailsVM))) ||
@@ -119,7 +119,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
         {
             return entities switch
             {
-                IQueryable<Author> authors => (IOrderedQueryable<T>)authors.Sort(sortBy, a => a.LastName, a => a.Name),
+                IQueryable<Creator> authors => (IOrderedQueryable<T>)authors.Sort(sortBy, a => a.LastName, a => a.Name),
                 IQueryable<Book> books => (IOrderedQueryable<T>)books.Sort(sortBy, b => b.Title),
                 IQueryable<BookSeries> series => (IOrderedQueryable<T>)series.Sort(sortBy, s => s.Title),
                 IQueryable<LiteratureGenre> genre => (IOrderedQueryable<T>)genre.Sort(sortBy, g => g.Name),
@@ -128,7 +128,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
         }
 
         private bool IsForItem<T>(ICollection<T>? collection, int id)
-            where T : class, IBaseModel
+            where T : BaseModel
         {
             if (collection == null)
             {

@@ -30,9 +30,9 @@ namespace TitlesOrganizer.Tests.Helpers
             };
         }
 
-        public static List<Author> GetAuthorsList(int count)
+        public static List<Creator> GetAuthorsList(int count)
         {
-            var authors = new List<Author>();
+            var authors = new List<Creator>();
             for (int i = 1; i <= count; i++)
             {
                 authors.Add(GetAuthor(i));
@@ -41,9 +41,9 @@ namespace TitlesOrganizer.Tests.Helpers
             return authors;
         }
 
-        public static Author GetAuthor(int index = 1)
+        public static Creator GetAuthor(int index = 1)
         {
-            return new Author()
+            return new Creator()
             {
                 Id = index,
                 Name = "Name" + index,

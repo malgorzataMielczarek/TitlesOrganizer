@@ -42,7 +42,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         public void UpdateBookAuthorsRelation(Book book)
         {
             _context.Attach(book);
-            _context.Entry(book).Collection(nameof(Book.Authors)).IsModified = true;
+            _context.Entry(book).Collection(nameof(Book.Creators)).IsModified = true;
             _context.SaveChanges();
         }
 

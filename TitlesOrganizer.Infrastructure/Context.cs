@@ -6,11 +6,10 @@ namespace TitlesOrganizer.Infrastructure
 {
     public class Context : IdentityDbContext
     {
-        public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<BookSeries> BookSeries { get; set; }
         public DbSet<Country> Countries { get; set; }
-        public DbSet<Director> Directors { get; set; }
+        public DbSet<Creator> Creators { get; set; }
         public DbSet<Episode> Episodes { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<LiteratureGenre> LiteratureGenres { get; set; }
@@ -37,8 +36,8 @@ namespace TitlesOrganizer.Infrastructure
                 .WithMany();
 
             // Data types
-            modelBuilder.Entity<Author>().Property(a => a.Name).HasMaxLength(50);
-            modelBuilder.Entity<Author>().Property(a => a.LastName).HasMaxLength(50);
+            modelBuilder.Entity<Creator>().Property(a => a.Name).HasMaxLength(50);
+            modelBuilder.Entity<Creator>().Property(a => a.LastName).HasMaxLength(50);
 
             modelBuilder.Entity<Book>().Property(b => b.Title).HasMaxLength(450);
             modelBuilder.Entity<Book>().Property(b => b.OriginalTitle).HasMaxLength(450);
@@ -51,9 +50,6 @@ namespace TitlesOrganizer.Infrastructure
 
             modelBuilder.Entity<Country>().Property(c => c.Code).HasColumnType("char(3)").HasMaxLength(3);
             modelBuilder.Entity<Country>().Property(c => c.Name).HasColumnType("varchar(25)").HasMaxLength(25);
-
-            modelBuilder.Entity<Director>().Property(d => d.Name).HasMaxLength(50);
-            modelBuilder.Entity<Director>().Property(d => d.LastName).HasMaxLength(50);
 
             modelBuilder.Entity<Episode>().Property(e => e.Title).HasMaxLength(450);
             modelBuilder.Entity<Episode>().Property(e => e.OriginalTitle).HasMaxLength(450);

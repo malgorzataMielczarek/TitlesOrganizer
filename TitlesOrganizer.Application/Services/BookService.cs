@@ -26,12 +26,12 @@ namespace TitlesOrganizer.Application.Services
 
         public BookVM Get(int id)
         {
-            var book = _queries.GetBookWithAuthorsGenresAndSeries(id);
+            var book = _queries.GetBookWithCreatorsGenresAndSeries(id);
 
             if (book != null)
             {
                 var bookVM = _mappings.Map<Book, BookVM>(book);
-                bookVM.Authors = _mappings.Map(book.Authors);
+                bookVM.Authors = _mappings.Map(book.Creators);
                 bookVM.Genres = _mappings.Map(book.Genres);
                 if (book.Series != null)
                 {
@@ -48,12 +48,12 @@ namespace TitlesOrganizer.Application.Services
 
         public BookDetailsVM GetDetails(int id)
         {
-            var book = _queries.GetBookWithAuthorsGenresAndSeries(id);
+            var book = _queries.GetBookWithCreatorsGenresAndSeries(id);
 
             if (book != null)
             {
                 var bookDetails = _mappings.Map<Book, BookDetailsVM>(book);
-                bookDetails.Authors = _mappings.Map(book.Authors);
+                bookDetails.Authors = _mappings.Map(book.Creators);
                 bookDetails.Genres = _mappings.Map(book.Genres);
                 if (book.OriginalLanguageCode != null)
                 {
@@ -87,7 +87,7 @@ namespace TitlesOrganizer.Application.Services
         public IDoubleListForItemVM GetListForAuthor(int authorId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             var books = _queries.GetAllBooksWithAuthorsGenresAndSeries();
-            var author = _queries.GetAuthor(authorId) ?? new Author();
+            var author = _queries.GetAuthor(authorId) ?? new Creator();
             var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             var filtering = new Filtering() { SortBy = sortBy, SearchString = searchString ?? string.Empty };
 
@@ -161,24 +161,24 @@ namespace TitlesOrganizer.Application.Services
 
         public void SelectAuthors(int bookId, int[] selectedIds)
         {
-            var book = _queries.GetBookWithAuthorsGenresAndSeries(bookId);
+            var book = _queries.GetBookWithCreatorsGenresAndSeries(bookId);
 
             if (book != null)
             {
-                var authorsToRemove = book.Authors.Where(a => !selectedIds.Contains(a.Id)).ToList();
+                var authorsToRemove = book.Creators.Where(a => !selectedIds.Contains(a.Id)).ToList();
                 foreach (var author in authorsToRemove)
                 {
-                    book.Authors.Remove(author);
+                    book.Creators.Remove(author);
                 }
 
                 foreach (var id in selectedIds)
                 {
-                    if (!book.Authors.Any(a => a.Id == id))
+                    if (!book.Creators.Any(a => a.Id == id))
                     {
                         var author = _queries.GetAuthor(id);
                         if (author != null)
                         {
-                            book.Authors.Add(author);
+                            book.Creators.Add(author);
                         }
                     }
                 }
@@ -189,7 +189,7 @@ namespace TitlesOrganizer.Application.Services
 
         public void SelectGenres(int bookId, int[] selectedIds)
         {
-            var book = _queries.GetBookWithAuthorsGenresAndSeries(bookId);
+            var book = _queries.GetBookWithCreatorsGenresAndSeries(bookId);
             var isModified = false;
             if (book != null)
             {

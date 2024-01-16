@@ -24,10 +24,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<Author>>().And
+                .BeAssignableTo<IQueryable<Creator>>().And
                 .HaveCount(2).And
                 .NotContainNulls().And
-                .AllBeOfType<Author>().And
+                .AllBeOfType<Creator>().And
                 .SatisfyRespectively(
                 first =>
                 {
@@ -56,10 +56,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<Author>>().And
+                .BeAssignableTo<IQueryable<Creator>>().And
                 .HaveCount(5).And
                 .NotContainNulls().And
-                .AllBeOfType<Author>().And
+                .AllBeOfType<Creator>().And
                 .Equal(authors);
         }
 
@@ -228,7 +228,7 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
         [Fact]
         public void Filter_IQueryableIBaseModelAndSearchString_GivenIQuerable()
         {
-            var baseModels = Helpers.BookModuleHelpers.GetGenresList(5).AsQueryable<IBaseModel>();
+            var baseModels = Helpers.BookModuleHelpers.GetGenresList(5).AsQueryable<BaseModel>();
             var searchString = "Name1";
             var mapper = new Mock<IMapper>().Object;
             var mapping = new BookVMsMappings(mapper);
@@ -237,10 +237,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<IBaseModel>>().And
+                .BeAssignableTo<IQueryable<BaseModel>>().And
                 .HaveCount(5).And
                 .NotContainNulls().And
-                .AllBeAssignableTo<IBaseModel>().And
+                .AllBeAssignableTo<BaseModel>().And
                 .Equal(baseModels);
         }
 
@@ -335,7 +335,7 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
         public void Map_BookAndAuthor_IForItemVM(int authorId, bool isForAuthor)
         {
             var book = Helpers.BookModuleHelpers.GetBook(3);
-            book.Authors = Helpers.BookModuleHelpers.GetAuthorsList(3);
+            book.Creators = Helpers.BookModuleHelpers.GetAuthorsList(3);
             var author = Helpers.BookModuleHelpers.GetAuthor(authorId);
             var mapper = new Mock<IMapper>().Object;
             var mapping = new BookVMsMappings(mapper);

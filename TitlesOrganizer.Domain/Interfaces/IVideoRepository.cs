@@ -6,15 +6,15 @@ namespace TitlesOrganizer.Domain.Interfaces
     {
         void DeleteGenre(int genreId);
 
-        IQueryable<Director> GetAllDirectors();
+        IQueryable<Creator> GetAllDirectors();
 
         IQueryable<VideoGenre> GetAllGenres();
 
-        Director? GetDirectorById(int directorId);
+        Creator? GetDirectorById(int directorId);
 
         VideoGenre? GetGenreById(int genreId);
 
-        int UpdateDirector(Director director);
+        int UpdateDirector(Creator director);
 
         int UpdateGenre(VideoGenre genre);
     }

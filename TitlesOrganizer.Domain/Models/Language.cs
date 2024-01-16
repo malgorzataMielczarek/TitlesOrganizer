@@ -1,12 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using TitlesOrganizer.Domain.Models.Abstract;
 
 namespace TitlesOrganizer.Domain.Models
 {
-    public class Language
+    public class Language : DictionaryModel
     {
-        [Key]
-        public required string Code { get; set; }
-
-        public required string Name { get; set; }
     }
 }

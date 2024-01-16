@@ -2,7 +2,7 @@
 
 namespace TitlesOrganizer.Domain.Interfaces.Base
 {
-    public interface ICommandsRepository<T> where T : class, IBaseModel
+    public interface ICommandsRepository<T> where T : BaseModel
     {
         void Delete(T item);
 

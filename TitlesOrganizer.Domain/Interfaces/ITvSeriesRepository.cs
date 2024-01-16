@@ -12,7 +12,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         int AddExistingGenre(int seriesId, int genreId);
 
-        int AddNewDirector(int seriesId, Director director);
+        int AddNewCreator(int seriesId, Creator creator);
 
         int AddNewGenre(int seriesId, VideoGenre genre);
 
@@ -46,7 +46,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         void RemoveCountry(int seriesId, string countryCode);
 
-        void RemoveDirector(int seriesId, int directorId);
+        void RemoveCreator(int seriesId, int creatorId);
 
         void RemoveGenre(int seriesId, int genreId);
 

@@ -16,7 +16,7 @@ namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
     {
         public AuthorDetailsMappings()
         {
-            CreateMap<Author, AuthorDetailsVM>()
+            CreateMap<Creator, AuthorDetailsVM>()
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(source => $"{source.Name} {source.LastName}"))
                 .ForMember(dest => dest.Books, opt => opt.Ignore());
         }

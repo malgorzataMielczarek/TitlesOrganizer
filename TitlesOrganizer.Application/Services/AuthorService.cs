@@ -11,7 +11,7 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Application.Services
 {
-    public class AuthorService(IAuthorCommandsRepository _commands, IBookModuleQueriesRepository _queries, IBookVMsMappings _mappings)
+    public class AuthorService(ICreatorCommandsRepository _commands, IBookModuleQueriesRepository _queries, IBookVMsMappings _mappings)
         : IAuthorService
     {
         public void Delete(int id)
@@ -30,7 +30,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (author != null)
             {
-                var authorVM = _mappings.Map<Author, AuthorVM>(author);
+                var authorVM = _mappings.Map<Creator, AuthorVM>(author);
                 var paging = new Paging() { CurrentPage = bookPageNo, PageSize = bookPageSize };
                 authorVM.Books = _mappings.Map(author.Books, paging);
                 return authorVM;
@@ -50,9 +50,9 @@ namespace TitlesOrganizer.Application.Services
 
             if (author != null)
             {
-                var result = _mappings.Map<Author, AuthorDetailsVM>(author);
+                var result = _mappings.Map<Creator, AuthorDetailsVM>(author);
 
-                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries().Where(b => b.Authors.Select(a => a.Id).Contains(id)).ToList();
+                var books = _queries.GetAllBooksWithAuthorsGenresAndSeries().Where(b => b.Creators.Select(a => a.Id).Contains(id)).ToList();
                 var booksPaging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
                 result.Books = _mappings.Map(books, booksPaging);
 
@@ -105,7 +105,7 @@ namespace TitlesOrganizer.Application.Services
                     .Where(b => b.Genres.Any(g => g.Id == genreId))
                     .ToList();
                 var authors = books
-                    .SelectMany(b => b.Authors)
+                    .SelectMany(b => b.Creators)
                     .DistinctBy(a => a.Id);
                 var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
 
@@ -140,7 +140,7 @@ namespace TitlesOrganizer.Application.Services
                     }
                 }
 
-                _commands.UpdateAuthorBooksRelation(author);
+                _commands.UpdateCreatorCollectionRelation(author, nameof(Creator.Books));
             }
         }
 
@@ -148,7 +148,7 @@ namespace TitlesOrganizer.Application.Services
         {
             if (author != null)
             {
-                var entity = _mappings.Map<AuthorVM, Author>(author);
+                var entity = _mappings.Map<AuthorVM, Creator>(author);
                 if (author.Id == default)
                 {
                     return _commands.Insert(entity);
