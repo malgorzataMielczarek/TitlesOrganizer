@@ -3,8 +3,8 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Domain.Interfaces
 {
-    public interface ILiteratureGenreCommandsRepository : ICommandsRepository<LiteratureGenre>
+    public interface ILiteratureGenreCommandsRepository : ICommandsRepository<Genre>
     {
-        void UpdateLiteratureGenreBooksRelation(LiteratureGenre genre);
+        void UpdateLiteratureGenreBooksRelation(Genre genre);
     }
 }

@@ -2,12 +2,12 @@
 
 namespace TitlesOrganizer.Domain.Models
 {
-    public class Episode : BaseTitleModel
+    public class Episode : WorkModel
     {
         public int Number { get; set; }
-        public int? AbsoluteNo { get; set; }
+        public int? AbsoluteNumber { get; set; }
         public int SeasonId { get; set; }
 
-        public Season Season { get; set; } = null!;
+        public virtual Season Season { get; set; } = null!;
     }
 }

@@ -12,13 +12,13 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             _context = context;
         }
 
-        public void Delete(LiteratureGenre genre)
+        public void Delete(Genre genre)
         {
             _context.LiteratureGenres.Remove(genre);
             _context.SaveChanges();
         }
 
-        public int Insert(LiteratureGenre genre)
+        public int Insert(Genre genre)
         {
             _context.LiteratureGenres.Add(genre);
             _context.SaveChanges();
@@ -26,17 +26,17 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return genre.Id;
         }
 
-        public void Update(LiteratureGenre genre)
+        public void Update(Genre genre)
         {
             _context.Attach(genre);
-            _context.Entry(genre).Property(nameof(LiteratureGenre.Name)).IsModified = true;
+            _context.Entry(genre).Property(nameof(Genre.Name)).IsModified = true;
             _context.SaveChanges();
         }
 
-        public void UpdateLiteratureGenreBooksRelation(LiteratureGenre genre)
+        public void UpdateLiteratureGenreBooksRelation(Genre genre)
         {
             _context.Attach(genre);
-            _context.Entry(genre).Collection(nameof(LiteratureGenre.Books)).IsModified = true;
+            _context.Entry(genre).Collection(nameof(Genre.Books)).IsModified = true;
             _context.SaveChanges();
         }
     }

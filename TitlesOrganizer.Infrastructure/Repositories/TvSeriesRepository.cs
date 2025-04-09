@@ -95,7 +95,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return -1;
         }
 
-        public int AddNewGenre(int seriesId, VideoGenre genre)
+        public int AddNewGenre(int seriesId, Genre genre)
         {
             if (!_context.VideoGenres.Contains(genre))
             {

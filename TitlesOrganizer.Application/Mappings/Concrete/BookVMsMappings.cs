@@ -19,9 +19,9 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
             return (entities) switch
             {
                 IQueryable<Creator> authors => (IQueryable<T>)authors.Where(a => (a.Name + " " + a.LastName).Contains(searchString)),
-                IQueryable<Book> books => (IQueryable<T>)books.Where(b => b.Title.Contains(searchString)),
-                IQueryable<BookSeries> series => (IQueryable<T>)series.Where(s => s.Title.Contains(searchString)),
-                IQueryable<LiteratureGenre> genres => (IQueryable<T>)genres.Where(g => g.Name.Contains(searchString)),
+                IQueryable<Book> books => (IQueryable<T>)books.Where(b => b.Titles.Any(wt => wt.Title.Contains(searchString))),
+                IQueryable<Series> series => (IQueryable<T>)series.Where(s => s.Books.Any()).Where(s => s.Titles.Any(wt => wt.Title.Contains(searchString))),
+                IQueryable<Genre> genres => (IQueryable<T>)genres.Where(g => g.Name.Contains(searchString)),
                 _ => entities
             };
         }
@@ -33,11 +33,9 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
             {
                 case Creator author:
                     result.Description = $"{author!.Name} {author.LastName}"; break;
-                case Book book:
-                    result.Description = book.Title; break;
-                case BookSeries bookSeries:
-                    result.Description = bookSeries.Title; break;
-                case LiteratureGenre genre:
+                case WorkModel work:
+                    result.Description = work.Titles.OrderBy(wt => wt.Level).ThenBy(wt => wt.Id).FirstOrDefault()?.Title ?? string.Empty; break;
+                case Genre genre:
                     result.Description = genre.Name; break;
             }
 
@@ -65,12 +63,12 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                     IsForItem = (item) switch
                     {
                         Creator => IsForItem(book.Creators, item.Id),
-                        BookSeries => book.SeriesId == item.Id,
-                        LiteratureGenre => IsForItem(book.Genres, item.Id),
+                        Series => book.SeriesId == item.Id,
+                        Genre => IsForItem(book.Genres, item.Id),
                         _ => false
                     }
                 },
-                BookSeries bookSeries => new ForItemVM()
+                Series bookSeries => new ForItemVM()
                 {
                     Id = bookSeries.Id,
                     Description = bookSeries.Title,
@@ -80,7 +78,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                         _ => false
                     }
                 },
-                LiteratureGenre genre => new ForItemVM()
+                Genre genre => new ForItemVM()
                 {
                     Id = genre.Id,
                     Description = genre.Name,
@@ -101,10 +99,10 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                 (entity is AuthorVM && typeof(TDestination) == typeof(Creator)) ||
                 (entity is Book && (typeof(TDestination) == typeof(BookVM) || typeof(TDestination) == typeof(BookDetailsVM))) ||
                 (entity is BookVM && typeof(TDestination) == typeof(Book)) ||
-                (entity is BookSeries && (typeof(TDestination) == typeof(SeriesVM) || typeof(TDestination) == typeof(SeriesDetailsVM))) ||
-                (entity is SeriesVM && typeof(TDestination) == typeof(BookSeries)) ||
-                (entity is LiteratureGenre && (typeof(TDestination) == typeof(GenreVM) || typeof(TDestination) == typeof(GenreDetailsVM))) ||
-                (entity is GenreVM && typeof(TDestination) == typeof(LiteratureGenre));
+                (entity is Series && (typeof(TDestination) == typeof(SeriesVM) || typeof(TDestination) == typeof(SeriesDetailsVM))) ||
+                (entity is SeriesVM && typeof(TDestination) == typeof(Series)) ||
+                (entity is Genre && (typeof(TDestination) == typeof(GenreVM) || typeof(TDestination) == typeof(GenreDetailsVM))) ||
+                (entity is GenreVM && typeof(TDestination) == typeof(Genre));
             if (isMappingDefined)
             {
                 return base.Map<TSource, TDestination>(entity);
@@ -121,8 +119,8 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
             {
                 IQueryable<Creator> authors => (IOrderedQueryable<T>)authors.Sort(sortBy, a => a.LastName, a => a.Name),
                 IQueryable<Book> books => (IOrderedQueryable<T>)books.Sort(sortBy, b => b.Title),
-                IQueryable<BookSeries> series => (IOrderedQueryable<T>)series.Sort(sortBy, s => s.Title),
-                IQueryable<LiteratureGenre> genre => (IOrderedQueryable<T>)genre.Sort(sortBy, g => g.Name),
+                IQueryable<Series> series => (IOrderedQueryable<T>)series.Sort(sortBy, s => s.Title),
+                IQueryable<Genre> genre => (IOrderedQueryable<T>)genre.Sort(sortBy, g => g.Name),
                 _ => entities.Order()
             };
         }

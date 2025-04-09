@@ -30,7 +30,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (genre != null)
             {
-                var genreVM = _mappings.Map<LiteratureGenre, GenreVM>(genre);
+                var genreVM = _mappings.Map<Genre, GenreVM>(genre);
                 if (genre.Books != null)
                 {
                     var paging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
@@ -59,7 +59,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (genre != null)
             {
-                var result = _mappings.Map<LiteratureGenre, GenreDetailsVM>(genre);
+                var result = _mappings.Map<Genre, GenreDetailsVM>(genre);
 
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                     .Where(b => b.Genres.Any(g => g.Id == id))
@@ -170,7 +170,7 @@ namespace TitlesOrganizer.Application.Services
         {
             if (genre != null)
             {
-                var entity = _mappings.Map<GenreVM, LiteratureGenre>(genre);
+                var entity = _mappings.Map<GenreVM, Genre>(genre);
                 if (entity.Id == default)
                 {
                     return _commands.Insert(entity);

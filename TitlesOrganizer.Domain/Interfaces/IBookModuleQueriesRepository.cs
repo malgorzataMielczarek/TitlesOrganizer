@@ -12,13 +12,13 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<Book> GetAllBooksWithAuthorsGenresAndSeries();
 
-        IQueryable<BookSeries> GetAllBookSeries();
+        IQueryable<Series> GetAllBookSeries();
 
-        IQueryable<BookSeries> GetAllBookSeriesWithBooks();
+        IQueryable<Series> GetAllBookSeriesWithBooks();
 
-        IQueryable<LiteratureGenre> GetAllLiteratureGenres();
+        IQueryable<Genre> GetAllLiteratureGenres();
 
-        IQueryable<LiteratureGenre> GetAllLiteratureGenresWithBooks();
+        IQueryable<Genre> GetAllLiteratureGenresWithBooks();
 
         Creator? GetAuthor(int id);
 
@@ -26,14 +26,14 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         Book? GetBook(int id);
 
-        BookSeries? GetBookSeries(int id);
+        Series? GetBookSeries(int id);
 
-        BookSeries? GetBookSeriesWithBooks(int id);
+        Series? GetBookSeriesWithBooks(int id);
 
         Book? GetBookWithCreatorsGenresAndSeries(int id);
 
-        LiteratureGenre? GetLiteratureGenre(int id);
+        Genre? GetLiteratureGenre(int id);
 
-        LiteratureGenre? GetLiteratureGenreWithBooks(int id);
+        Genre? GetLiteratureGenreWithBooks(int id);
     }
 }

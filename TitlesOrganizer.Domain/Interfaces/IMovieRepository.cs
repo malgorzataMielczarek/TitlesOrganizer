@@ -14,9 +14,9 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         int AddNewCreator(int movieId, Creator creator);
 
-        int AddNewGenre(int movieId, VideoGenre genre);
+        int AddNewGenre(int movieId, Genre genre);
 
-        int AddSeries(MovieSeries series);
+        int AddSeries(Series series);
 
         void DeleteMovie(int movieId);
 
@@ -24,11 +24,11 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<Movie> GetAllMovies();
 
-        IQueryable<MovieSeries> GetAllSeries();
+        IQueryable<Series> GetAllSeries();
 
         IQueryable<Creator>? GetDirectorsOfSeries(int seriesId);
 
-        IQueryable<VideoGenre>? GetGenresOfSeries(int seriesId);
+        IQueryable<Genre>? GetGenresOfSeries(int seriesId);
 
         Movie? GetMovieById(int movieId);
 
@@ -38,11 +38,11 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<Movie>? GetMoviesInSeries(int seriesId);
 
-        IQueryable<MovieSeries>? GetSeriesByDirector(int directorId);
+        IQueryable<Series>? GetSeriesByDirector(int directorId);
 
-        IQueryable<MovieSeries>? GetSeriesByGenre(int genreId);
+        IQueryable<Series>? GetSeriesByGenre(int genreId);
 
-        MovieSeries? GetSeriesById(int seriesId);
+        Series? GetSeriesById(int seriesId);
 
         void RemoveCountry(int movieId, string countryCode);
 
@@ -52,6 +52,6 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         int UpdateMovie(Movie movie);
 
-        int UpdateSeries(MovieSeries series);
+        int UpdateSeries(Series series);
     }
 }

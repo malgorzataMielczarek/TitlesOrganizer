@@ -2,13 +2,13 @@
 
 namespace TitlesOrganizer.Domain.Models
 {
-    public class TvSeries : BaseTitleModel
+    public class TvSeries : WorkModel
     {
         public int? ExpectedLength { get; set; }
 
-        public ICollection<Season> Seasons { get; set; } = new List<Season>();
-        public ICollection<VideoGenre> Genres { get; set; } = new List<VideoGenre>();
-        public virtual ICollection<Creator> Creators { get; set; } = new List<Creator>();
-        public virtual ICollection<Country> Countries { get; set; } = new List<Country>();
+        public virtual ICollection<Season> Seasons { get; set; } = [];
+        public virtual ICollection<Genre> Genres { get; set; } = [];
+        public virtual ICollection<Creator> Creators { get; set; } = [];
+        public virtual ICollection<Country> Countries { get; set; } = [];
     }
 }

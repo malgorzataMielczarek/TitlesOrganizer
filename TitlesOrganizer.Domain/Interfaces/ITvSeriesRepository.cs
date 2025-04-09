@@ -14,7 +14,7 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         int AddNewCreator(int seriesId, Creator creator);
 
-        int AddNewGenre(int seriesId, VideoGenre genre);
+        int AddNewGenre(int seriesId, Genre genre);
 
         int AddSeason(Season season);
 

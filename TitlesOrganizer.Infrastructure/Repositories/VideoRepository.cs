@@ -25,12 +25,12 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         public IQueryable<Creator> GetAllDirectors() => _context.Creators
             .Where(c => c.Profession.HasFlag(Domain.Models.Enums.Profession.Director));
 
-        public IQueryable<VideoGenre> GetAllGenres() => _context.VideoGenres;
+        public IQueryable<Genre> GetAllGenres() => _context.VideoGenres;
 
         public Creator? GetDirectorById(int directorId) => _context.Creators
             .FirstOrDefault(c => c.Id == directorId && c.Profession.HasFlag(Domain.Models.Enums.Profession.Director));
 
-        public VideoGenre? GetGenreById(int genreId) => _context.VideoGenres.Find(genreId);
+        public Genre? GetGenreById(int genreId) => _context.VideoGenres.Find(genreId);
 
         public int UpdateDirector(Creator director)
         {
@@ -43,7 +43,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return -1;
         }
 
-        public int UpdateGenre(VideoGenre genre)
+        public int UpdateGenre(Genre genre)
         {
             _context.VideoGenres.Update(genre);
             if (_context.SaveChanges() == 1)

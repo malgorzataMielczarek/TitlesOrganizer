@@ -129,10 +129,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<BookSeries>>().And
+                .BeAssignableTo<IQueryable<Series>>().And
                 .HaveCount(3).And
                 .NotContainNulls().And
-                .AllBeOfType<BookSeries>().And
+                .AllBeOfType<Series>().And
                 .SatisfyRespectively(
                 first =>
                 {
@@ -164,10 +164,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<BookSeries>>().And
+                .BeAssignableTo<IQueryable<Series>>().And
                 .HaveCount(5).And
                 .NotContainNulls().And
-                .AllBeOfType<BookSeries>().And
+                .AllBeOfType<Series>().And
                 .Equal(series);
         }
 
@@ -183,10 +183,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<LiteratureGenre>>().And
+                .BeAssignableTo<IQueryable<Genre>>().And
                 .HaveCount(3).And
                 .NotContainNulls().And
-                .AllBeOfType<LiteratureGenre>().And
+                .AllBeOfType<Genre>().And
                 .SatisfyRespectively(
                 first =>
                 {
@@ -218,10 +218,10 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
 
             result.Should()
                 .NotBeNullOrEmpty().And
-                .BeAssignableTo<IQueryable<LiteratureGenre>>().And
+                .BeAssignableTo<IQueryable<Genre>>().And
                 .HaveCount(5).And
                 .NotContainNulls().And
-                .AllBeOfType<LiteratureGenre>().And
+                .AllBeOfType<Genre>().And
                 .Equal(genres);
         }
 

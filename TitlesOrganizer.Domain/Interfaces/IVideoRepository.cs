@@ -8,14 +8,14 @@ namespace TitlesOrganizer.Domain.Interfaces
 
         IQueryable<Creator> GetAllDirectors();
 
-        IQueryable<VideoGenre> GetAllGenres();
+        IQueryable<Genre> GetAllGenres();
 
         Creator? GetDirectorById(int directorId);
 
-        VideoGenre? GetGenreById(int genreId);
+        Genre? GetGenreById(int genreId);
 
         int UpdateDirector(Creator director);
 
-        int UpdateGenre(VideoGenre genre);
+        int UpdateGenre(Genre genre);
     }
 }

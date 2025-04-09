@@ -97,7 +97,7 @@ namespace TitlesOrganizer.Application.Services
         public IDoubleListForItemVM GetListForGenre(int genreId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             var books = _queries.GetAllBooksWithAuthorsGenresAndSeries();
-            var genre = _queries.GetLiteratureGenre(genreId) ?? new LiteratureGenre() { Name = string.Empty };
+            var genre = _queries.GetLiteratureGenre(genreId) ?? new Genre() { Name = string.Empty };
             var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             var filtering = new Filtering() { SortBy = sortBy, SearchString = searchString ?? string.Empty };
 
@@ -107,7 +107,7 @@ namespace TitlesOrganizer.Application.Services
         public IDoubleListForItemVM GetListForSeries(int seriesId, SortByEnum sortBy, int pageSize, int pageNo, string? searchString)
         {
             var books = _queries.GetAllBooks();
-            var series = _queries.GetBookSeries(seriesId) ?? new BookSeries() { Title = string.Empty };
+            var series = _queries.GetBookSeries(seriesId) ?? new Series() { Title = string.Empty };
             var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
             var filtering = new Filtering() { SortBy = sortBy, SearchString = searchString ?? string.Empty };
 
@@ -226,7 +226,7 @@ namespace TitlesOrganizer.Application.Services
 
             if (book != null)
             {
-                BookSeries? series = null;
+                Series? series = null;
                 if (selectedId.HasValue)
                 {
                     series = _queries.GetBookSeries(selectedId.Value);

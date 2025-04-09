@@ -12,13 +12,13 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             _context = context;
         }
 
-        public void Delete(BookSeries series)
+        public void Delete(Series series)
         {
             _context.BookSeries.Remove(series);
             _context.SaveChanges();
         }
 
-        public int Insert(BookSeries series)
+        public int Insert(Series series)
         {
             _context.BookSeries.Add(series);
             _context.SaveChanges();
@@ -26,19 +26,19 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return series.Id;
         }
 
-        public void Update(BookSeries series)
+        public void Update(Series series)
         {
             _context.Attach(series);
-            _context.Entry(series).Property(nameof(BookSeries.Description)).IsModified = true;
-            _context.Entry(series).Property(nameof(BookSeries.Title)).IsModified = true;
-            _context.Entry(series).Property(nameof(BookSeries.OriginalTitle)).IsModified = true;
+            _context.Entry(series).Property(nameof(Series.Description)).IsModified = true;
+            _context.Entry(series).Property(nameof(Series.Title)).IsModified = true;
+            _context.Entry(series).Property(nameof(Series.OriginalTitle)).IsModified = true;
             _context.SaveChanges();
         }
 
-        public void UpdateBookSeriesBooksRelation(BookSeries series)
+        public void UpdateBookSeriesBooksRelation(Series series)
         {
             _context.Attach(series);
-            _context.Entry(series).Collection(nameof(BookSeries.Books)).IsModified = true;
+            _context.Entry(series).Collection(nameof(Series.Books)).IsModified = true;
             _context.SaveChanges();
         }
     }

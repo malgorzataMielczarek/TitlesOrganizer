@@ -3,8 +3,8 @@ using TitlesOrganizer.Domain.Models;
 
 namespace TitlesOrganizer.Domain.Interfaces
 {
-    public interface IBookSeriesCommandsRepository : ICommandsRepository<BookSeries>
+    public interface IBookSeriesCommandsRepository : ICommandsRepository<Series>
     {
-        void UpdateBookSeriesBooksRelation(BookSeries series);
+        void UpdateBookSeriesBooksRelation(Series series);
     }
 }

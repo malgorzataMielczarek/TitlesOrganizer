@@ -16,7 +16,7 @@ namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
     {
         public GenreDetailsMappings()
         {
-            CreateMap<LiteratureGenre, GenreDetailsVM>()
+            CreateMap<Genre, GenreDetailsVM>()
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(source => source.Name))
                 .ForMember(dest => dest.Books, opt => opt.Ignore());
         }

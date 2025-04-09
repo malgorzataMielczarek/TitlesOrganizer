@@ -51,9 +51,9 @@ namespace TitlesOrganizer.Tests.Helpers
             };
         }
 
-        public static List<LiteratureGenre> GetGenresList(int count)
+        public static List<Genre> GetGenresList(int count)
         {
-            var genres = new List<LiteratureGenre>();
+            var genres = new List<Genre>();
             for (int i = 1; i <= count; i++)
             {
                 genres.Add(GetGenre(i));
@@ -62,18 +62,18 @@ namespace TitlesOrganizer.Tests.Helpers
             return genres;
         }
 
-        public static LiteratureGenre GetGenre(int index = 1)
+        public static Genre GetGenre(int index = 1)
         {
-            return new LiteratureGenre()
+            return new Genre()
             {
                 Id = index,
                 Name = "Name" + index
             };
         }
 
-        public static List<BookSeries> GetSeriesList(int count)
+        public static List<Series> GetSeriesList(int count)
         {
-            var seriesList = new List<BookSeries>();
+            var seriesList = new List<Series>();
             for (int i = 1; i <= count; i++)
             {
                 seriesList.Add(GetSeries(i));
@@ -82,9 +82,9 @@ namespace TitlesOrganizer.Tests.Helpers
             return seriesList;
         }
 
-        public static BookSeries GetSeries(int index = 1)
+        public static Series GetSeries(int index = 1)
         {
-            return new BookSeries()
+            return new Series()
             {
                 Id = index,
                 Title = "Title" + index,

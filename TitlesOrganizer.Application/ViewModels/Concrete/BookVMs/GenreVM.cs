@@ -32,7 +32,7 @@ namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
     {
         public GenreMappings()
         {
-            CreateMap<GenreVM, LiteratureGenre>()
+            CreateMap<GenreVM, Genre>()
                 .ForMember(dest => dest.Books, opt => opt.Ignore())
                 .ReverseMap()
                 .ForMember(dest => dest.Books, opt => opt.Ignore());

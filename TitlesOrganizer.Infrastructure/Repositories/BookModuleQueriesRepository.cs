@@ -22,18 +22,18 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Book> GetAllBooks() => _context.Books;
 
-        public IQueryable<BookSeries> GetAllBookSeries() => _context.BookSeries;
+        public IQueryable<Series> GetAllBookSeries() => _context.BookSeries;
 
-        public IQueryable<BookSeries> GetAllBookSeriesWithBooks() => _context.BookSeries.Include(s => s.Books);
+        public IQueryable<Series> GetAllBookSeriesWithBooks() => _context.BookSeries.Include(s => s.Books);
 
         public IQueryable<Book> GetAllBooksWithAuthorsGenresAndSeries() => _context.Books
             .Include(b => b.Creators.Where(c => c.Profession.HasFlag(Domain.Models.Enums.Profession.Author)))
             .Include(b => b.Genres)
             .Include(b => b.Series);
 
-        public IQueryable<LiteratureGenre> GetAllLiteratureGenres() => _context.LiteratureGenres;
+        public IQueryable<Genre> GetAllLiteratureGenres() => _context.LiteratureGenres;
 
-        public IQueryable<LiteratureGenre> GetAllLiteratureGenresWithBooks() => _context.LiteratureGenres.Include(g => g.Books);
+        public IQueryable<Genre> GetAllLiteratureGenresWithBooks() => _context.LiteratureGenres.Include(g => g.Books);
 
         public Creator? GetAuthor(int id) => _context.Creators
             .FirstOrDefault(c => c.Id == id &&
@@ -46,9 +46,9 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public Book? GetBook(int id) => _context.Books.FirstOrDefault(b => b.Id == id);
 
-        public BookSeries? GetBookSeries(int id) => _context.BookSeries.FirstOrDefault(s => s.Id == id);
+        public Series? GetBookSeries(int id) => _context.BookSeries.FirstOrDefault(s => s.Id == id);
 
-        public BookSeries? GetBookSeriesWithBooks(int id) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == id);
+        public Series? GetBookSeriesWithBooks(int id) => _context.BookSeries.Include(s => s.Books).FirstOrDefault(s => s.Id == id);
 
         public Book? GetBookWithCreatorsGenresAndSeries(int id) => _context.Books
             .Include(b => b.Creators)
@@ -56,8 +56,8 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             .Include(b => b.Series)
             .FirstOrDefault(b => b.Id == id);
 
-        public LiteratureGenre? GetLiteratureGenre(int id) => _context.LiteratureGenres.FirstOrDefault(g => g.Id == id);
+        public Genre? GetLiteratureGenre(int id) => _context.LiteratureGenres.FirstOrDefault(g => g.Id == id);
 
-        public LiteratureGenre? GetLiteratureGenreWithBooks(int id) => _context.LiteratureGenres.Include(g => g.Books).FirstOrDefault(g => g.Id == id);
+        public Genre? GetLiteratureGenreWithBooks(int id) => _context.LiteratureGenres.Include(g => g.Books).FirstOrDefault(g => g.Id == id);
     }
 }

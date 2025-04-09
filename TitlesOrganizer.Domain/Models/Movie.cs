@@ -2,15 +2,15 @@
 
 namespace TitlesOrganizer.Domain.Models
 {
-    public class Movie : BaseTitleModel
+    public class Movie : WorkModel
     {
         public int? Year { get; set; }
         public int? SeriesId { get; set; }
         public int? NumberInSeries { get; set; }
 
-        public virtual ICollection<VideoGenre> Genres { get; set; } = new List<VideoGenre>();
-        public virtual ICollection<Creator> Creators { get; set; } = new List<Creator>();
-        public virtual ICollection<Country> Countries { get; set; } = new List<Country>();
-        public MovieSeries? Series { get; set; }
+        public virtual ICollection<Genre> Genres { get; set; } = [];
+        public virtual ICollection<Creator> Creators { get; set; } = [];
+        public virtual ICollection<Country> Countries { get; set; } = [];
+        public virtual Series? Series { get; set; }
     }
 }

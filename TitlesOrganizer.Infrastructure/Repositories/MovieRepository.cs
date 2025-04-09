@@ -95,7 +95,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return -1;
         }
 
-        public int AddNewGenre(int movieId, VideoGenre genre)
+        public int AddNewGenre(int movieId, Genre genre)
         {
             if (!_context.VideoGenres.Contains(genre))
             {
@@ -113,7 +113,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return genre.Id;
         }
 
-        public int AddSeries(MovieSeries series)
+        public int AddSeries(Series series)
         {
             if (!_context.MovieSeries.Contains(series))
             {
@@ -146,11 +146,11 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Movie> GetAllMovies() => _context.Movies;
 
-        public IQueryable<MovieSeries> GetAllSeries() => _context.MovieSeries;
+        public IQueryable<Series> GetAllSeries() => _context.MovieSeries;
 
         public IQueryable<Creator>? GetDirectorsOfSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.SkipWhile(m => m.Creators.IsNullOrEmpty()).SelectMany(m => m.Creators).AsQueryable();
 
-        public IQueryable<VideoGenre>? GetGenresOfSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.SkipWhile(m => m.Genres.IsNullOrEmpty()).SelectMany(m => m.Genres).AsQueryable();
+        public IQueryable<Genre>? GetGenresOfSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.SkipWhile(m => m.Genres.IsNullOrEmpty()).SelectMany(m => m.Genres).AsQueryable();
 
         public Movie? GetMovieById(int movieId) => _context.Movies.Find(movieId);
 
@@ -160,11 +160,11 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Movie>? GetMoviesInSeries(int seriesId) => GetSeriesById(seriesId)?.Movies.AsQueryable();
 
-        public IQueryable<MovieSeries>? GetSeriesByDirector(int directorId) => GetDirectorById(directorId)?.Movies?.SkipWhile(m => m.Series == null).Select(m => m.Series!).AsQueryable();
+        public IQueryable<Series>? GetSeriesByDirector(int directorId) => GetDirectorById(directorId)?.Movies?.SkipWhile(m => m.Series == null).Select(m => m.Series!).AsQueryable();
 
-        public IQueryable<MovieSeries>? GetSeriesByGenre(int genreId) => GetGenreById(genreId)?.Movies?.SkipWhile(m => m.Series == null).Select(m => m.Series!).AsQueryable();
+        public IQueryable<Series>? GetSeriesByGenre(int genreId) => GetGenreById(genreId)?.Movies?.SkipWhile(m => m.Series == null).Select(m => m.Series!).AsQueryable();
 
-        public MovieSeries? GetSeriesById(int seriesId) => _context.MovieSeries.Find(seriesId);
+        public Series? GetSeriesById(int seriesId) => _context.MovieSeries.Find(seriesId);
 
         public void RemoveCountry(int movieId, string countryCode)
         {
@@ -221,7 +221,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
             return -1;
         }
 
-        public int UpdateSeries(MovieSeries series)
+        public int UpdateSeries(Series series)
         {
             _context.MovieSeries.Update(series);
             if (_context.SaveChanges() == 1)

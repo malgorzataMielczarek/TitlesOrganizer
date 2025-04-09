@@ -41,7 +41,7 @@ namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
     {
         public SeriesMappings()
         {
-            CreateMap<SeriesVM, BookSeries>()
+            CreateMap<SeriesVM, Series>()
                 .ForMember(dest => dest.Books, opt => opt.Ignore())
                 .ReverseMap()
                 .ForMember(dest => dest.Books, opt => opt.Ignore());

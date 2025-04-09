@@ -34,7 +34,7 @@ namespace TitlesOrganizer.Application.Services
             var series = _queries.GetBookSeriesWithBooks(id);
             if (series != null)
             {
-                var seriesVM = _mappings.Map<BookSeries, SeriesVM>(series);
+                var seriesVM = _mappings.Map<Series, SeriesVM>(series);
                 var paging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
                 seriesVM.Books = _mappings.Map(series.Books, paging);
                 return seriesVM;
@@ -53,7 +53,7 @@ namespace TitlesOrganizer.Application.Services
             var series = _queries.GetBookSeries(id);
             if (series != null)
             {
-                var result = _mappings.Map<BookSeries, SeriesDetailsVM>(series);
+                var result = _mappings.Map<Series, SeriesDetailsVM>(series);
 
                 var books = _queries.GetAllBooksWithAuthorsGenresAndSeries()
                     .Where(b => b.SeriesId == id)
@@ -175,7 +175,7 @@ namespace TitlesOrganizer.Application.Services
         {
             if (series != null)
             {
-                var entity = _mappings.Map<SeriesVM, BookSeries>(series);
+                var entity = _mappings.Map<SeriesVM, Series>(series);
                 if (entity.Id == default)
                 {
                     return _commands.Insert(entity);

@@ -7,17 +7,17 @@ namespace TitlesOrganizer.Infrastructure
     public class Context : IdentityDbContext
     {
         public DbSet<Book> Books { get; set; }
-        public DbSet<BookSeries> BookSeries { get; set; }
+        public DbSet<Series> BookSeries { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Creator> Creators { get; set; }
         public DbSet<Episode> Episodes { get; set; }
         public DbSet<Language> Languages { get; set; }
-        public DbSet<LiteratureGenre> LiteratureGenres { get; set; }
+        public DbSet<Genre> LiteratureGenres { get; set; }
         public DbSet<Movie> Movies { get; set; }
-        public DbSet<MovieSeries> MovieSeries { get; set; }
+        public DbSet<Series> MovieSeries { get; set; }
         public DbSet<Season> Seasons { get; set; }
         public DbSet<TvSeries> TvSeries { get; set; }
-        public DbSet<VideoGenre> VideoGenres { get; set; }
+        public DbSet<Genre> VideoGenres { get; set; }
 
         public Context(DbContextOptions options) : base(options)
         {
@@ -44,9 +44,9 @@ namespace TitlesOrganizer.Infrastructure
             modelBuilder.Entity<Book>().Property(b => b.Edition).HasMaxLength(50);
             modelBuilder.Entity<Book>().Property(b => b.Description).HasMaxLength(4000);
 
-            modelBuilder.Entity<BookSeries>().Property(bs => bs.Title).HasMaxLength(450);
-            modelBuilder.Entity<BookSeries>().Property(bs => bs.OriginalTitle).HasMaxLength(450);
-            modelBuilder.Entity<BookSeries>().Property(bs => bs.Description).HasMaxLength(4000);
+            modelBuilder.Entity<Series>().Property(bs => bs.Title).HasMaxLength(450);
+            modelBuilder.Entity<Series>().Property(bs => bs.OriginalTitle).HasMaxLength(450);
+            modelBuilder.Entity<Series>().Property(bs => bs.Description).HasMaxLength(4000);
 
             modelBuilder.Entity<Country>().Property(c => c.Code).HasColumnType("char(3)").HasMaxLength(3);
             modelBuilder.Entity<Country>().Property(c => c.Name).HasColumnType("varchar(25)").HasMaxLength(25);
@@ -58,15 +58,15 @@ namespace TitlesOrganizer.Infrastructure
             modelBuilder.Entity<Language>().Property(lang => lang.Code).HasColumnType("char(3)").HasMaxLength(3);
             modelBuilder.Entity<Language>().Property(lang => lang.Name).HasColumnType("varchar(25)").HasMaxLength(25);
 
-            modelBuilder.Entity<LiteratureGenre>().Property(lg => lg.Name).HasMaxLength(50);
+            modelBuilder.Entity<Genre>().Property(lg => lg.Name).HasMaxLength(50);
 
             modelBuilder.Entity<Movie>().Property(m => m.Title).HasMaxLength(450);
             modelBuilder.Entity<Movie>().Property(m => m.OriginalTitle).HasMaxLength(450);
             modelBuilder.Entity<Movie>().Property(m => m.Description).HasMaxLength(4000);
 
-            modelBuilder.Entity<MovieSeries>().Property(ms => ms.Title).HasMaxLength(450);
-            modelBuilder.Entity<MovieSeries>().Property(ms => ms.OriginalTitle).HasMaxLength(450);
-            modelBuilder.Entity<MovieSeries>().Property(ms => ms.Description).HasMaxLength(4000);
+            modelBuilder.Entity<Series>().Property(ms => ms.Title).HasMaxLength(450);
+            modelBuilder.Entity<Series>().Property(ms => ms.OriginalTitle).HasMaxLength(450);
+            modelBuilder.Entity<Series>().Property(ms => ms.Description).HasMaxLength(4000);
 
             modelBuilder.Entity<Season>().Property(s => s.Title).HasMaxLength(450);
             modelBuilder.Entity<Season>().Property(s => s.OriginalTitle).HasMaxLength(450);
@@ -76,7 +76,7 @@ namespace TitlesOrganizer.Infrastructure
             modelBuilder.Entity<TvSeries>().Property(ts => ts.OriginalTitle).HasMaxLength(450);
             modelBuilder.Entity<TvSeries>().Property(ts => ts.Description).HasMaxLength(4000);
 
-            modelBuilder.Entity<VideoGenre>().Property(vg => vg.Name).HasMaxLength(50);
+            modelBuilder.Entity<Genre>().Property(vg => vg.Name).HasMaxLength(50);
         }
     }
 }

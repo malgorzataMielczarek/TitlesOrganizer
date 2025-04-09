@@ -48,8 +48,8 @@ namespace TitlesOrganizer.Tests.Services
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genreId))
-                .Returns((LiteratureGenre?)null);
-            commandsRepo.Setup(r => r.Delete(It.IsAny<LiteratureGenre>()));
+                .Returns((Genre?)null);
+            commandsRepo.Setup(r => r.Delete(It.IsAny<Genre>()));
             var mappings = new Mock<IBookVMsMappings>();
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -59,7 +59,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetLiteratureGenre(genreId),
                 Times.Once);
             commandsRepo.Verify(
-                r => r.Delete(It.IsAny<LiteratureGenre>()),
+                r => r.Delete(It.IsAny<Genre>()),
                 Times.Never);
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
@@ -71,7 +71,7 @@ namespace TitlesOrganizer.Tests.Services
         {
             int pageSize = 3, pageNo = 2;
             var books = BookModuleHelpers.GetBooksList(3);
-            var genre = new LiteratureGenre()
+            var genre = new Genre()
             {
                 Id = 1,
                 Name = "Name1",
@@ -87,7 +87,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetLiteratureGenreWithBooks(genre.Id))
                 .Returns(genre);
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<LiteratureGenre, GenreVM>(genre))
+            mappings.Setup(m => m.Map<Genre, GenreVM>(genre))
                 .Returns(genreVM);
             Paging pagingParam = null;
             mappings.Setup(m => m.Map(books, It.IsAny<Paging>()))
@@ -103,7 +103,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map<LiteratureGenre, GenreVM>(genre),
+                m => m.Map<Genre, GenreVM>(genre),
                 Times.Once());
             mappings.Verify(
                 m => m.Map(books, It.IsAny<Paging>()),
@@ -124,7 +124,7 @@ namespace TitlesOrganizer.Tests.Services
         public void Get_ExistingGenreWithoutBooks()
         {
             int pageSize = 3, pageNo = 2;
-            var genre = new LiteratureGenre()
+            var genre = new Genre()
             {
                 Id = 1,
                 Name = "Name1"
@@ -139,7 +139,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetLiteratureGenreWithBooks(genre.Id))
                 .Returns(genre);
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<LiteratureGenre, GenreVM>(genre))
+            mappings.Setup(m => m.Map<Genre, GenreVM>(genre))
                 .Returns(genreVM);
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()));
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -152,7 +152,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map<LiteratureGenre, GenreVM>(genre),
+                m => m.Map<Genre, GenreVM>(genre),
                 Times.Once());
             mappings.Verify(
                 m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
@@ -183,9 +183,9 @@ namespace TitlesOrganizer.Tests.Services
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenreWithBooks(genreId))
-                .Returns((LiteratureGenre?)null);
+                .Returns((Genre?)null);
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<LiteratureGenre, GenreVM>(It.IsAny<LiteratureGenre>()));
+            mappings.Setup(m => m.Map<Genre, GenreVM>(It.IsAny<Genre>()));
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()));
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -197,7 +197,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map<LiteratureGenre, GenreVM>(It.IsAny<LiteratureGenre>()),
+                m => m.Map<Genre, GenreVM>(It.IsAny<Genre>()),
                 Times.Never());
             mappings.Verify(
                 m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
@@ -263,7 +263,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetAllBooksWithAuthorsGenresAndSeries())
                 .Returns(books.AsQueryable());
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<LiteratureGenre, GenreDetailsVM>(genre))
+            mappings.Setup(m => m.Map<Genre, GenreDetailsVM>(genre))
                 .Returns(genreDetails);
             Paging booksPagingParam = null;
             IEnumerable<Book> booksParam = null;
@@ -284,9 +284,9 @@ namespace TitlesOrganizer.Tests.Services
                 })
                 .Returns(new PartialListVM());
             Paging seriesPagingParam = null;
-            IEnumerable<BookSeries> seriesParam = null;
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()))
-                .Callback<IEnumerable<BookSeries>, Paging>((s, p) =>
+            IEnumerable<Series> seriesParam = null;
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Series>, Paging>((s, p) =>
                 {
                     seriesParam = s;
                     seriesPagingParam = p;
@@ -308,7 +308,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map<LiteratureGenre, GenreDetailsVM>(genre),
+                m => m.Map<Genre, GenreDetailsVM>(genre),
                 Times.Once());
             mappings.Verify(
                 m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
@@ -345,7 +345,7 @@ namespace TitlesOrganizer.Tests.Services
             authorsPagingParam.CurrentPage.Should().Be(authorsPageNo);
             authorsPagingParam.Count.Should().Be(default);
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()),
                 Times.Once());
             seriesParam.Should()
                 .NotBeNull().And
@@ -373,13 +373,13 @@ namespace TitlesOrganizer.Tests.Services
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenre(genreId))
-                .Returns((LiteratureGenre?)null);
+                .Returns((Genre?)null);
             queriesRepo.Setup(r => r.GetAllBooksWithAuthorsGenresAndSeries());
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<LiteratureGenre, GenreDetailsVM>(It.IsAny<LiteratureGenre>()));
+            mappings.Setup(m => m.Map<Genre, GenreDetailsVM>(It.IsAny<Genre>()));
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()));
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Creator>>(), It.IsAny<Paging>()));
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()));
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.GetDetails(genreId, booksPageSize, booksPageNo, authorsPageSize, authorsPageNo, seriesPageSize, seriesPageNo);
@@ -393,7 +393,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.VerifyNoOtherCalls();
             commandsRepo.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map<LiteratureGenre, GenreDetailsVM>(It.IsAny<LiteratureGenre>()),
+                m => m.Map<Genre, GenreDetailsVM>(It.IsAny<Genre>()),
                 Times.Never());
             mappings.Verify(
                 m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
@@ -402,7 +402,7 @@ namespace TitlesOrganizer.Tests.Services
                 m => m.Map(It.IsAny<IEnumerable<Creator>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.VerifyNoOtherCalls();
             result.Should()
@@ -458,7 +458,7 @@ namespace TitlesOrganizer.Tests.Services
             Paging pagingParam = null;
             Filtering filteringParam = null;
             mappings.Setup(m => m.Map(genres, It.IsAny<Paging>(), It.IsAny<Filtering>()))
-                .Callback<IQueryable<LiteratureGenre>, Paging, Filtering>((g, p, f) =>
+                .Callback<IQueryable<Genre>, Paging, Filtering>((g, p, f) =>
                 {
                     pagingParam = p;
                     filteringParam = f;
@@ -520,7 +520,7 @@ namespace TitlesOrganizer.Tests.Services
             Paging pagingParam = null;
             Filtering filteringParam = null;
             mappings.Setup(m => m.MapToDoubleListForItem(genres, book, It.IsAny<Paging>(), It.IsAny<Filtering>()))
-                .Callback<IQueryable<LiteratureGenre>, Book, Paging, Filtering>((g, b, p, f) =>
+                .Callback<IQueryable<Genre>, Book, Paging, Filtering>((g, b, p, f) =>
                 {
                     pagingParam = p;
                     filteringParam = f;
@@ -583,7 +583,7 @@ namespace TitlesOrganizer.Tests.Services
             Paging pagingParam = null;
             Filtering filteringParam = null;
             mappings.Setup(m => m.MapToDoubleListForItem(genres, It.IsAny<Book>(), It.IsAny<Paging>(), It.IsAny<Filtering>()))
-                .Callback<IQueryable<LiteratureGenre>, Book, Paging, Filtering>((g, b, p, f) =>
+                .Callback<IQueryable<Genre>, Book, Paging, Filtering>((g, b, p, f) =>
                 {
                     pagingParam = p;
                     filteringParam = f;
@@ -647,9 +647,9 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(books);
             var mappings = new Mock<IBookVMsMappings>();
             Paging pagingParam = null;
-            IEnumerable<LiteratureGenre> genresParam = null;
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()))
-                .Callback<IEnumerable<LiteratureGenre>, Paging>((g, p) =>
+            IEnumerable<Genre> genresParam = null;
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Genre>, Paging>((g, p) =>
                 {
                     genresParam = g;
                     pagingParam = p;
@@ -668,7 +668,7 @@ namespace TitlesOrganizer.Tests.Services
             query.VerifyNoOtherCalls();
             comm.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()),
                 Times.Once());
             pagingParam.Should().NotBeNull();
             pagingParam!.CurrentPage.Should().Be(pageNo);
@@ -694,7 +694,7 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns((Creator?)null);
             query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries());
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()));
             var service = new LiteratureGenreService(comm.Object, query.Object, mappings.Object);
 
             var result = service.GetPartialListForAuthor(authorId, pageSize, pageNo);
@@ -708,7 +708,7 @@ namespace TitlesOrganizer.Tests.Services
             query.VerifyNoOtherCalls();
             comm.VerifyNoOtherCalls();
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.VerifyNoOtherCalls();
             result.Should()
@@ -729,7 +729,7 @@ namespace TitlesOrganizer.Tests.Services
             var b1 = BookModuleHelpers.GetBook(1);
             var b2 = BookModuleHelpers.GetBook(2);
             var b3 = BookModuleHelpers.GetBook(3);
-            var genre = new LiteratureGenre()
+            var genre = new Genre()
             {
                 Id = 1,
                 Name = "Name",
@@ -744,9 +744,9 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(b2);
             queriesRepo.Setup(r => r.GetBook(b3.Id))
                 .Returns(b3);
-            LiteratureGenre genreParam = null;
-            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()))
-                .Callback<LiteratureGenre>(g => genreParam = g);
+            Genre genreParam = null;
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<Genre>()))
+                .Callback<Genre>(g => genreParam = g);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -782,7 +782,7 @@ namespace TitlesOrganizer.Tests.Services
         public void SelectBooks_ExistingLiteratureGenreIdAndNotExistingBooksIds()
         {
             var book = BookModuleHelpers.GetBook(1);
-            var genre = new LiteratureGenre()
+            var genre = new Genre()
             {
                 Id = 1,
                 Name = "Name",
@@ -797,9 +797,9 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns((Book?)null);
             queriesRepo.Setup(r => r.GetBook(3))
                 .Returns((Book?)null);
-            LiteratureGenre genreParam = null;
-            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()))
-                .Callback<LiteratureGenre>(g => genreParam = g);
+            Genre genreParam = null;
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<Genre>()))
+                .Callback<Genre>(g => genreParam = g);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -832,7 +832,7 @@ namespace TitlesOrganizer.Tests.Services
         public void SelectBooks_ExistingLiteratureGenreIdAndEmptyArray()
         {
             var book = BookModuleHelpers.GetBook(1);
-            var genre = new LiteratureGenre()
+            var genre = new Genre()
             {
                 Id = 1,
                 Name = "Name",
@@ -844,9 +844,9 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetLiteratureGenreWithBooks(genre.Id))
                 .Returns(genre);
             queriesRepo.Setup(r => r.GetBook(It.IsAny<int>()));
-            LiteratureGenre genreParam = null;
-            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()))
-                .Callback<LiteratureGenre>(g => genreParam = g);
+            Genre genreParam = null;
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<Genre>()))
+                .Callback<Genre>(g => genreParam = g);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -881,10 +881,10 @@ namespace TitlesOrganizer.Tests.Services
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetLiteratureGenreWithBooks(genreId))
-                .Returns((LiteratureGenre?)null);
+                .Returns((Genre?)null);
             queriesRepo.Setup(r => r.GetBook(book1.Id))
                 .Returns(book1);
-            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()));
+            commandsRepo.Setup(r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<Genre>()));
             var mappings = new Mock<IBookVMsMappings>();
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -897,7 +897,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(book1.Id),
                 Times.Never());
             commandsRepo.Verify(
-                r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<LiteratureGenre>()),
+                r => r.UpdateLiteratureGenreBooksRelation(It.IsAny<Genre>()),
                 Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();
@@ -911,7 +911,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Name = "Name"
             };
-            var entity = new LiteratureGenre()
+            var entity = new Genre()
             {
                 Id = genre.Id,
                 Name = genre.Name
@@ -922,14 +922,14 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(1);
             commandsRepo.Setup(r => r.Update(entity));
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<GenreVM, LiteratureGenre>(genre))
+            mappings.Setup(m => m.Map<GenreVM, Genre>(genre))
                 .Returns(entity);
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.Upsert(genre);
 
             mappings.Verify(
-                m => m.Map<GenreVM, LiteratureGenre>(genre),
+                m => m.Map<GenreVM, Genre>(genre),
                 Times.Once());
             mappings.VerifyNoOtherCalls();
             commandsRepo.Verify(
@@ -951,7 +951,7 @@ namespace TitlesOrganizer.Tests.Services
                 Id = 1,
                 Name = "Name"
             };
-            var entity = new LiteratureGenre()
+            var entity = new Genre()
             {
                 Id = genre.Id,
                 Name = genre.Name
@@ -962,21 +962,21 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(1);
             commandsRepo.Setup(r => r.Update(entity));
             var mappings = new Mock<IBookVMsMappings>();
-            mappings.Setup(m => m.Map<GenreVM, LiteratureGenre>(genre))
+            mappings.Setup(m => m.Map<GenreVM, Genre>(genre))
                 .Returns(entity);
             var service = new LiteratureGenreService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
             var result = service.Upsert(genre);
 
             mappings.Verify(
-                m => m.Map<GenreVM, LiteratureGenre>(genre),
+                m => m.Map<GenreVM, Genre>(genre),
                 Times.Once());
             mappings.VerifyNoOtherCalls();
             commandsRepo.Verify(
-                r => r.Insert(It.IsAny<LiteratureGenre>()),
+                r => r.Insert(It.IsAny<Genre>()),
                 Times.Never());
             commandsRepo.Verify(
-                r => r.Update(It.Is<LiteratureGenre>(
+                r => r.Update(It.Is<Genre>(
                     g => g.Id == 1)),
                 Times.Once());
             commandsRepo.VerifyNoOtherCalls();

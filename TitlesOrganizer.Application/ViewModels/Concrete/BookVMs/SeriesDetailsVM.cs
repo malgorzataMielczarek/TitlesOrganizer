@@ -24,7 +24,7 @@ namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
     {
         public SeriesDetailsMappings()
         {
-            CreateMap<BookSeries, SeriesDetailsVM>()
+            CreateMap<Series, SeriesDetailsVM>()
                 .ForMember(dest => dest.Books, opt => opt.Ignore());
         }
     }

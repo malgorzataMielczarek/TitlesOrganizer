@@ -190,8 +190,8 @@ namespace TitlesOrganizer.Tests.Services
             books[6].Genres = new[] { g2, g4 };
 
             IEnumerable<Book> booksParam = null;
-            IEnumerable<BookSeries> seriesParam = null;
-            IEnumerable<LiteratureGenre> genresParam = null;
+            IEnumerable<Series> seriesParam = null;
+            IEnumerable<Genre> genresParam = null;
 
             var commandsRepo = new Mock<ICreatorCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
@@ -206,11 +206,11 @@ namespace TitlesOrganizer.Tests.Services
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()))
                 .Callback<IEnumerable<Book>, Paging>((b, p) => booksParam = b)
                 .Returns(new PartialListVM());
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()))
-                .Callback<IEnumerable<BookSeries>, Paging>((s, p) => seriesParam = s)
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Series>, Paging>((s, p) => seriesParam = s)
                 .Returns(new PartialListVM());
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()))
-                .Callback<IEnumerable<LiteratureGenre>, Paging>((g, p) => genresParam = g)
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()))
+                .Callback<IEnumerable<Genre>, Paging>((g, p) => genresParam = g)
                 .Returns(new PartialListVM());
 
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -235,11 +235,11 @@ namespace TitlesOrganizer.Tests.Services
                     It.Is<Paging>(p => p.CurrentPage == booksPageNo && p.PageSize == booksPageSize)),
                 Times.Once());
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<BookSeries>>(),
+                m => m.Map(It.IsAny<IEnumerable<Series>>(),
                     It.Is<Paging>(p => p.CurrentPage == seriesPageNo && p.PageSize == seriesPageSize)),
                 Times.Once());
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(),
+                m => m.Map(It.IsAny<IEnumerable<Genre>>(),
                     It.Is<Paging>(p => p.CurrentPage == genrePageNo && p.PageSize == genrePageSize)),
                 Times.Once());
             mappings.VerifyNoOtherCalls();
@@ -290,8 +290,8 @@ namespace TitlesOrganizer.Tests.Services
             var mappings = new Mock<IBookVMsMappings>();
             mappings.Setup(m => m.Map<Creator, AuthorDetailsVM>(It.IsAny<Creator>()));
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()));
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()));
-            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()));
+            mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()));
 
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -311,10 +311,10 @@ namespace TitlesOrganizer.Tests.Services
                 m => m.Map(It.IsAny<IEnumerable<Book>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<BookSeries>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Series>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.Verify(
-                m => m.Map(It.IsAny<IEnumerable<LiteratureGenre>>(), It.IsAny<Paging>()),
+                m => m.Map(It.IsAny<IEnumerable<Genre>>(), It.IsAny<Paging>()),
                 Times.Never());
             mappings.VerifyNoOtherCalls();
             result.Should()
@@ -559,7 +559,7 @@ namespace TitlesOrganizer.Tests.Services
             var comm = new Mock<ICreatorCommandsRepository>();
             var query = new Mock<IBookModuleQueriesRepository>();
             query.Setup(q => q.GetLiteratureGenre(genreId))
-                .Returns((LiteratureGenre?)null);
+                .Returns((Genre?)null);
             query.Setup(q => q.GetAllBooksWithAuthorsGenresAndSeries());
             var mappings = new Mock<IBookVMsMappings>();
             mappings.Setup(m => m.Map(It.IsAny<IEnumerable<Creator>>(), It.IsAny<Paging>()));

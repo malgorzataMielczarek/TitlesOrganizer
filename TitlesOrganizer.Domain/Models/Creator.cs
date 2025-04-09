@@ -9,8 +9,8 @@ namespace TitlesOrganizer.Domain.Models
         public string? LastName { get; set; }
         public Profession Profession { get; set; }
 
-        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
-        public virtual ICollection<Movie> Movies { get; set; } = new List<Movie>();
-        public virtual ICollection<TvSeries> TvSeries { get; set; } = new List<TvSeries>();
+        public virtual ICollection<Book> Books { get; set; } = [];
+        public virtual ICollection<Movie> Movies { get; set; } = [];
+        public virtual ICollection<TvSeries> TvSeries { get; set; } = [];
     }
 }
