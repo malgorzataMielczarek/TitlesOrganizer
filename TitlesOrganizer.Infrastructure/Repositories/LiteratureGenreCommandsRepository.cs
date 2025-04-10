@@ -36,7 +36,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         public void UpdateLiteratureGenreBooksRelation(Genre genre)
         {
             _context.Attach(genre);
-            _context.Entry(genre).Collection(nameof(Genre.Books)).IsModified = true;
+            _context.Entry(genre).Collection(nameof(Genre.Works)).IsModified = true;
             _context.SaveChanges();
         }
     }

@@ -75,7 +75,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Name = "Name1",
-                Books = books
+                Works = books
             };
             var genreVM = new GenreVM()
             {
@@ -504,10 +504,10 @@ namespace TitlesOrganizer.Tests.Services
             var g2 = BookModuleHelpers.GetGenre(2);
             var g3 = BookModuleHelpers.GetGenre(3);
             var g4 = BookModuleHelpers.GetGenre(4);
-            g1.Books = [b1, b2];
-            g2.Books = [b1];
-            g3.Books = [b2];
-            g4.Books = [];
+            g1.Works = [b1, b2];
+            g2.Works = [b1];
+            g3.Works = [b2];
+            g4.Works = [];
             var genres = new[] { g1, g2, g3, g4 }.AsQueryable();
             var book = BookModuleHelpers.GetBook(b1.Id);
             var commands = new Mock<ILiteratureGenreCommandsRepository>();
@@ -568,10 +568,10 @@ namespace TitlesOrganizer.Tests.Services
             var g2 = BookModuleHelpers.GetGenre(2);
             var g3 = BookModuleHelpers.GetGenre(3);
             var g4 = BookModuleHelpers.GetGenre(4);
-            g1.Books = [b1, b2];
-            g2.Books = [b1];
-            g3.Books = [b2];
-            g4.Books = [];
+            g1.Works = [b1, b2];
+            g2.Works = [b1];
+            g3.Works = [b2];
+            g4.Works = [];
             var genres = new[] { g1, g2, g3, g4 }.AsQueryable();
             var commands = new Mock<ILiteratureGenreCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
@@ -626,7 +626,7 @@ namespace TitlesOrganizer.Tests.Services
             var b2 = BookModuleHelpers.GetBook(2);
             var b3 = BookModuleHelpers.GetBook(3);
             var b4 = BookModuleHelpers.GetBook(4);
-            author.Books = [BookModuleHelpers.GetBook(b1.Id), BookModuleHelpers.GetBook(b2.Id)];
+            author.Works = [BookModuleHelpers.GetBook(b1.Id), BookModuleHelpers.GetBook(b2.Id)];
             b1.Creators = [BookModuleHelpers.GetAuthor(author.Id)];
             b2.Creators = [BookModuleHelpers.GetAuthor(author.Id)];
             var g1 = BookModuleHelpers.GetGenre(1);
@@ -733,7 +733,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Name = "Name",
-                Books = [b1]
+                Works = [b1]
             };
             var booksIds = new[] { b2.Id, b3.Id };
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
@@ -767,7 +767,7 @@ namespace TitlesOrganizer.Tests.Services
             genreParam.Should()
                 .NotBeNull().And
                 .Be(genre);
-            genreParam!.Books.Should()
+            genreParam!.Works.Should()
                 .NotBeNull().And
                 .HaveCount(2).And
                 .Contain(b2).And
@@ -786,7 +786,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Name = "Name",
-                Books = [book]
+                Works = [book]
             };
             var booksIds = new[] { 2, 3 };
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
@@ -820,7 +820,7 @@ namespace TitlesOrganizer.Tests.Services
             genreParam.Should()
                 .NotBeNull().And
                 .Be(genre);
-            genreParam!.Books.Should()
+            genreParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
@@ -836,7 +836,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Name = "Name",
-                Books = [book]
+                Works = [book]
             };
             var booksIds = Array.Empty<int>();
             var commandsRepo = new Mock<ILiteratureGenreCommandsRepository>();
@@ -864,7 +864,7 @@ namespace TitlesOrganizer.Tests.Services
             genreParam.Should()
                 .NotBeNull().And
                 .Be(genre);
-            genreParam!.Books.Should()
+            genreParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();

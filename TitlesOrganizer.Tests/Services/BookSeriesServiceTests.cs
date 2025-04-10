@@ -21,7 +21,7 @@ namespace TitlesOrganizer.Tests.Services
         {
             var id = 1;
             var seriesWithBooks = BookModuleHelpers.GetSeries(id);
-            seriesWithBooks.Books = BookModuleHelpers.GetBooksList(3);
+            seriesWithBooks.Works = BookModuleHelpers.GetBooksList(3);
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeriesWithBooks(id))
@@ -44,7 +44,7 @@ namespace TitlesOrganizer.Tests.Services
             seriesParam.Should()
                 .NotBeNull().And
                 .Be(seriesWithBooks);
-            seriesParam!.Books.Should()
+            seriesParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.Verify(
@@ -60,7 +60,7 @@ namespace TitlesOrganizer.Tests.Services
         {
             var id = 1;
             var seriesWithBooks = BookModuleHelpers.GetSeries(id);
-            seriesWithBooks.Books = [];
+            seriesWithBooks.Works = [];
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
             queriesRepo.Setup(r => r.GetBookSeriesWithBooks(id))
@@ -124,7 +124,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Books = books
+                Works = books
             };
             var seriesVM = new SeriesVM()
             {
@@ -760,7 +760,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Books = [book]
+                Works = [book]
             };
             var booksIds = Array.Empty<int>();
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
@@ -788,7 +788,7 @@ namespace TitlesOrganizer.Tests.Services
             seriesParam.Should()
                 .NotBeNull().And
                 .Be(series);
-            seriesParam!.Books.Should()
+            seriesParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
@@ -806,7 +806,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Books = [b1]
+                Works = [b1]
             };
             var booksIds = new[] { b2.Id, b3.Id };
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
@@ -840,7 +840,7 @@ namespace TitlesOrganizer.Tests.Services
             seriesParam.Should()
                 .NotBeNull().And
                 .Be(series);
-            seriesParam!.Books.Should()
+            seriesParam!.Works.Should()
                 .NotBeNull().And
                 .HaveCount(2).And
                 .Contain(b2).And
@@ -859,7 +859,7 @@ namespace TitlesOrganizer.Tests.Services
             {
                 Id = 1,
                 Title = "Title",
-                Books = [book]
+                Works = [book]
             };
             var booksIds = new[] { 2, 3 };
             var commandsRepo = new Mock<IBookSeriesCommandsRepository>();
@@ -893,7 +893,7 @@ namespace TitlesOrganizer.Tests.Services
             seriesParam.Should()
                 .NotBeNull().And
                 .Be(series);
-            seriesParam!.Books.Should()
+            seriesParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();

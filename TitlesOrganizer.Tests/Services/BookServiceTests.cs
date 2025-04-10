@@ -267,7 +267,7 @@ namespace TitlesOrganizer.Tests.Services
             }.AsQueryable();
             var seriesWithBooks = BookModuleHelpers.GetSeries(series.Id);
             var seriesBooks = BookModuleHelpers.GetBooksList(3);
-            seriesWithBooks.Books = seriesBooks;
+            seriesWithBooks.Works = seriesBooks;
 
             var commandsRepo = new Mock<IBookCommandsRepository>();
             var queriesRepo = new Mock<IBookModuleQueriesRepository>();
@@ -941,7 +941,7 @@ namespace TitlesOrganizer.Tests.Services
             int pageSize = 2, pageNo = 3;
             var author = BookModuleHelpers.GetAuthor(1);
             var books = BookModuleHelpers.GetBooksList(4);
-            author.Books = books;
+            author.Works = books;
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetAuthorWithBooks(author.Id))
@@ -1004,7 +1004,7 @@ namespace TitlesOrganizer.Tests.Services
             int pageSize = 2, pageNo = 3;
             var genre = BookModuleHelpers.GetGenre(1);
             var books = BookModuleHelpers.GetBooksList(4);
-            genre.Books = books;
+            genre.Works = books;
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetLiteratureGenreWithBooks(genre.Id))
@@ -1067,7 +1067,7 @@ namespace TitlesOrganizer.Tests.Services
             int pageSize = 2, pageNo = 3;
             var series = BookModuleHelpers.GetSeries(1);
             var books = BookModuleHelpers.GetBooksList(4);
-            series.Books = books;
+            series.Works = books;
             var commands = new Mock<IBookCommandsRepository>();
             var queries = new Mock<IBookModuleQueriesRepository>();
             queries.Setup(q => q.GetBookSeriesWithBooks(series.Id))

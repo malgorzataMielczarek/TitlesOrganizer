@@ -19,9 +19,9 @@ namespace TitlesOrganizer.Application.Services
             var series = _queries.GetBookSeriesWithBooks(id);
             if (series != null)
             {
-                if (series.Books != null && series.Books.Count != 0)
+                if (series.Works != null && series.Works.Count != 0)
                 {
-                    series.Books.Clear();
+                    series.Works.Clear();
                     _commands.UpdateBookSeriesBooksRelation(series);
                 }
 
@@ -36,7 +36,7 @@ namespace TitlesOrganizer.Application.Services
             {
                 var seriesVM = _mappings.Map<Series, SeriesVM>(series);
                 var paging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
-                seriesVM.Books = _mappings.Map(series.Books, paging);
+                seriesVM.Books = _mappings.Map(series.Works, paging);
                 return seriesVM;
             }
             else
@@ -149,20 +149,20 @@ namespace TitlesOrganizer.Application.Services
 
             if (series != null)
             {
-                var booksToDelete = series.Books.Where(s => !selectedIds.Contains(s.Id)).ToList();
+                var booksToDelete = series.Works.Where(s => !selectedIds.Contains(s.Id)).ToList();
                 foreach (var book in booksToDelete)
                 {
-                    series.Books.Remove(book);
+                    series.Works.Remove(book);
                 }
 
                 foreach (var id in selectedIds)
                 {
-                    if (!series.Books.Any(b => b.Id == id))
+                    if (!series.Works.Any(b => b.Id == id))
                     {
                         var book = _queries.GetBook(id);
                         if (book != null)
                         {
-                            series.Books.Add(book);
+                            series.Works.Add(book);
                         }
                     }
                 }

@@ -75,7 +75,7 @@ namespace TitlesOrganizer.Tests.Services
             var author = new Creator()
             {
                 Id = id,
-                Books = books
+                Works = books
             };
             var authorVM = new AuthorVM() { Id = id };
             var commandsRepo = new Mock<ICreatorCommandsRepository>();
@@ -598,7 +598,7 @@ namespace TitlesOrganizer.Tests.Services
             var author = new Creator()
             {
                 Id = 1,
-                Books = new List<Book>() { book1 }
+                Works = new List<Book>() { book1 }
             };
             var booksIds = Array.Empty<int>();
             var commandsRepo = new Mock<ICreatorCommandsRepository>();
@@ -607,7 +607,7 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns(author);
             queriesRepo.Setup(r => r.GetBook(It.IsAny<int>()));
             Creator authorParam = null;
-            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Books)))
+            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Works)))
                 .Callback<Creator>(a => authorParam = a);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -621,12 +621,12 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(It.IsAny<int>()),
                 Times.Never());
             commandsRepo.Verify(
-                r => r.UpdateCreatorCollectionRelation(author, nameof(Creator.Books)),
+                r => r.UpdateCreatorCollectionRelation(author, nameof(Creator.Works)),
                 Times.Once());
             authorParam.Should()
                 .NotBeNull().And
                 .Be(author);
-            authorParam!.Books.Should()
+            authorParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
@@ -643,7 +643,7 @@ namespace TitlesOrganizer.Tests.Services
             var author = new Creator()
             {
                 Id = 1,
-                Books = [b1]
+                Works = [b1]
             };
             var booksIds = new[] { b2.Id, b3.Id };
             var commandsRepo = new Mock<ICreatorCommandsRepository>();
@@ -655,7 +655,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetBook(b3.Id))
                 .Returns(b3);
             Creator authorParam = null;
-            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Books)))
+            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Works)))
                 .Callback<Creator>(a => authorParam = a);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -672,12 +672,12 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(b3.Id),
                 Times.Once());
             commandsRepo.Verify(
-                r => r.UpdateCreatorCollectionRelation(author, nameof(Creator.Books)),
+                r => r.UpdateCreatorCollectionRelation(author, nameof(Creator.Works)),
                 Times.Once());
             authorParam.Should()
                 .NotBeNull().And
                 .Be(author);
-            authorParam!.Books.Should()
+            authorParam!.Works.Should()
                 .NotBeNull().And
                 .HaveCount(2).And
                 .Contain(b2).And
@@ -695,7 +695,7 @@ namespace TitlesOrganizer.Tests.Services
             var author = new Creator()
             {
                 Id = 1,
-                Books = [book]
+                Works = [book]
             };
             var booksIds = new[] { 2, 3 };
             var commandsRepo = new Mock<ICreatorCommandsRepository>();
@@ -707,7 +707,7 @@ namespace TitlesOrganizer.Tests.Services
             queriesRepo.Setup(r => r.GetBook(3))
                 .Returns((Book?)null);
             Creator authorParam = null;
-            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Books)))
+            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Works)))
                 .Callback<Creator>(a => authorParam = a);
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
@@ -724,12 +724,12 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(3),
                 Times.Once());
             commandsRepo.Verify(
-                r => r.UpdateCreatorCollectionRelation(author, nameof(Creator.Books)),
+                r => r.UpdateCreatorCollectionRelation(author, nameof(Creator.Works)),
                 Times.Once());
             authorParam.Should()
                 .NotBeNull().And
                 .Be(author);
-            authorParam!.Books.Should()
+            authorParam!.Works.Should()
                 .NotBeNull().And
                 .BeEmpty();
             commandsRepo.VerifyNoOtherCalls();
@@ -749,7 +749,7 @@ namespace TitlesOrganizer.Tests.Services
                 .Returns((Creator?)null);
             queriesRepo.Setup(r => r.GetBook(book1.Id))
                 .Returns(book1);
-            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Books)));
+            commandsRepo.Setup(r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Works)));
             var mappings = new Mock<IBookVMsMappings>();
             var service = new AuthorService(commandsRepo.Object, queriesRepo.Object, mappings.Object);
 
@@ -762,7 +762,7 @@ namespace TitlesOrganizer.Tests.Services
                 r => r.GetBook(book1.Id),
                 Times.Never());
             commandsRepo.Verify(
-                r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Books)),
+                r => r.UpdateCreatorCollectionRelation(It.IsAny<Creator>(), nameof(Creator.Works)),
                 Times.Never());
             commandsRepo.VerifyNoOtherCalls();
             queriesRepo.VerifyNoOtherCalls();

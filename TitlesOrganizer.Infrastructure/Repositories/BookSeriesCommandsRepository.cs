@@ -38,7 +38,7 @@ namespace TitlesOrganizer.Infrastructure.Repositories
         public void UpdateBookSeriesBooksRelation(Series series)
         {
             _context.Attach(series);
-            _context.Entry(series).Collection(nameof(Series.Books)).IsModified = true;
+            _context.Entry(series).Collection(nameof(Series.Works)).IsModified = true;
             _context.SaveChanges();
         }
     }

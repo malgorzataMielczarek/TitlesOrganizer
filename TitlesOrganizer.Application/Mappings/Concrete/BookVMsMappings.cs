@@ -20,7 +20,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
             {
                 IQueryable<Creator> authors => (IQueryable<T>)authors.Where(a => (a.Name + " " + a.LastName).Contains(searchString)),
                 IQueryable<Book> books => (IQueryable<T>)books.Where(b => b.Titles.Any(wt => wt.Title.Contains(searchString))),
-                IQueryable<Series> series => (IQueryable<T>)series.Where(s => s.Books.Any()).Where(s => s.Titles.Any(wt => wt.Title.Contains(searchString))),
+                IQueryable<Series> series => (IQueryable<T>)series.Where(s => s.Works.Any()).Where(s => s.Titles.Any(wt => wt.Title.Contains(searchString))),
                 IQueryable<Genre> genres => (IQueryable<T>)genres.Where(g => g.Name.Contains(searchString)),
                 _ => entities
             };
@@ -52,7 +52,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                     Description = author.Name + " " + author.LastName,
                     IsForItem = (item) switch
                     {
-                        Book => IsForItem(author.Books, item.Id),
+                        Book => IsForItem(author.Works, item.Id),
                         _ => false
                     }
                 },
@@ -74,7 +74,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                     Description = bookSeries.Title,
                     IsForItem = (item) switch
                     {
-                        Book => IsForItem(bookSeries.Books, item.Id),
+                        Book => IsForItem(bookSeries.Works, item.Id),
                         _ => false
                     }
                 },
@@ -84,7 +84,7 @@ namespace TitlesOrganizer.Application.Mappings.Concrete
                     Description = genre.Name,
                     IsForItem = (item) switch
                     {
-                        Book => IsForItem(genre.Books, item.Id),
+                        Book => IsForItem(genre.Works, item.Id),
                         _ => false
                     }
                 },

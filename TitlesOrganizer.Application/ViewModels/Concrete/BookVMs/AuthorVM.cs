@@ -40,7 +40,7 @@ namespace TitlesOrganizer.Application.ViewModels.Concrete.BookVMs
         public AuthorMappings()
         {
             CreateMap<AuthorVM, Creator>()
-                .ForMember(dest => dest.Books, opt => opt.Ignore())
+                .ForMember(dest => dest.Works, opt => opt.Ignore())
                 .ReverseMap()
                 .ForMember(dest => dest.Books, opt => opt.Ignore());
         }

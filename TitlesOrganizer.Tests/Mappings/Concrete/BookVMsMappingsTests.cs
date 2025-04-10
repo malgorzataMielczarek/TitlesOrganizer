@@ -314,7 +314,7 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
         public void Map_AuthorAndBook_IForItemVM(int bookId, bool isForBook)
         {
             var author = Helpers.BookModuleHelpers.GetAuthor(3);
-            author.Books = Helpers.BookModuleHelpers.GetBooksList(3);
+            author.Works = Helpers.BookModuleHelpers.GetBooksList(3);
             var book = Helpers.BookModuleHelpers.GetBook(bookId);
             var mapper = new Mock<IMapper>().Object;
             var mapping = new BookVMsMappings(mapper);
@@ -399,7 +399,7 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
         public void Map_BookSeriesAndBook_IForItemVM(int bookId, bool isForBook)
         {
             var series = Helpers.BookModuleHelpers.GetSeries(3);
-            series.Books = Helpers.BookModuleHelpers.GetBooksList(3);
+            series.Works = Helpers.BookModuleHelpers.GetBooksList(3);
             var book = Helpers.BookModuleHelpers.GetBook(bookId);
             var mapper = new Mock<IMapper>().Object;
             var mapping = new BookVMsMappings(mapper);
@@ -420,7 +420,7 @@ namespace TitlesOrganizer.Tests.Mappings.Concrete
         public void Map_LiteratureGenreAndBook_IForItemVM(int bookId, bool isForBook)
         {
             var genre = Helpers.BookModuleHelpers.GetGenre(3);
-            genre.Books = Helpers.BookModuleHelpers.GetBooksList(3);
+            genre.Works = Helpers.BookModuleHelpers.GetBooksList(3);
             var book = Helpers.BookModuleHelpers.GetBook(bookId);
             var mapper = new Mock<IMapper>().Object;
             var mapping = new BookVMsMappings(mapper);

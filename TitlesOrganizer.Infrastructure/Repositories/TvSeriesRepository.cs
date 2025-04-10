@@ -175,9 +175,9 @@ namespace TitlesOrganizer.Infrastructure.Repositories
 
         public IQueryable<Season>? GetSeasonsOfSeries(int seriesId) => GetSeriesById(seriesId)?.Seasons.AsQueryable();
 
-        public IQueryable<TvSeries>? GetSeriesByDirector(int directorId) => GetDirectorById(directorId)?.TvSeries?.AsQueryable();
+        public IQueryable<TvSeries>? GetSeriesByDirector(int directorId) => GetDirectorById(directorId)?.Works?.AsQueryable();
 
-        public IQueryable<TvSeries>? GetSeriesByGenre(int genreId) => GetGenreById(genreId)?.TvSeries?.AsQueryable();
+        public IQueryable<TvSeries>? GetSeriesByGenre(int genreId) => GetGenreById(genreId)?.Works?.AsQueryable();
 
         public TvSeries? GetSeriesById(int seriesId) => _context.TvSeries.Find(seriesId);
 
@@ -207,9 +207,9 @@ namespace TitlesOrganizer.Infrastructure.Repositories
                 if (creator != null)
                 {
                     series.Creators.Remove(creator);
-                    creator.TvSeries?.Remove(series);
+                    creator.Works?.Remove(series);
 
-                    if (creator.Movies.IsNullOrEmpty() && creator.TvSeries.IsNullOrEmpty() && creator.Books.IsNullOrEmpty())
+                    if (creator.Works.IsNullOrEmpty() && creator.Works.IsNullOrEmpty() && creator.Works.IsNullOrEmpty())
                     {
                         _context.Creators.Remove(creator);
                     }

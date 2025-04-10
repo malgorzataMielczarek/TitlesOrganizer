@@ -63,7 +63,7 @@ namespace TitlesOrganizer.Application.Services
                 if (book.Series != null && book.SeriesId.HasValue)
                 {
                     bookDetails.Series = _mappings.Map(book.Series);
-                    int booksInSeries = _queries.GetBookSeriesWithBooks(book.SeriesId.Value)!.Books.Count;
+                    int booksInSeries = _queries.GetBookSeriesWithBooks(book.SeriesId.Value)!.Works.Count;
                     bookDetails.InSeries = InSeries(book.NumberInSeries, booksInSeries);
                 }
 
@@ -125,7 +125,7 @@ namespace TitlesOrganizer.Application.Services
             else
             {
                 var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-                return _mappings.Map(author.Books, paging);
+                return _mappings.Map(author.Works, paging);
             }
         }
 
@@ -133,14 +133,14 @@ namespace TitlesOrganizer.Application.Services
         {
             var genre = _queries.GetLiteratureGenreWithBooks(genreId);
 
-            if (genre == null || genre.Books == null)
+            if (genre == null || genre.Works == null)
             {
                 return new PartialListVM(pageSize); ;
             }
             else
             {
                 var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-                return _mappings.Map(genre.Books, paging);
+                return _mappings.Map(genre.Works, paging);
             }
         }
 
@@ -148,14 +148,14 @@ namespace TitlesOrganizer.Application.Services
         {
             var series = _queries.GetBookSeriesWithBooks(seriesId);
 
-            if (series == null || series.Books == null)
+            if (series == null || series.Works == null)
             {
                 return new PartialListVM(pageSize); ;
             }
             else
             {
                 var paging = new Paging() { CurrentPage = pageNo, PageSize = pageSize };
-                return _mappings.Map(series.Books, paging);
+                return _mappings.Map(series.Works, paging);
             }
         }
 

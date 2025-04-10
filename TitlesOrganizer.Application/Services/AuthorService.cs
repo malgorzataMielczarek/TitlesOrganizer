@@ -32,7 +32,7 @@ namespace TitlesOrganizer.Application.Services
             {
                 var authorVM = _mappings.Map<Creator, AuthorVM>(author);
                 var paging = new Paging() { CurrentPage = bookPageNo, PageSize = bookPageSize };
-                authorVM.Books = _mappings.Map(author.Books, paging);
+                authorVM.Books = _mappings.Map(author.Works, paging);
                 return authorVM;
             }
             else
@@ -122,25 +122,25 @@ namespace TitlesOrganizer.Application.Services
             var author = _queries.GetAuthorWithBooks(authorId);
             if (author != null)
             {
-                var booksToRemove = author.Books.Where(b => !booksIds.Contains(b.Id)).ToList();
+                var booksToRemove = author.Works.Where(b => !booksIds.Contains(b.Id)).ToList();
                 foreach (var book in booksToRemove)
                 {
-                    author.Books.Remove(book);
+                    author.Works.Remove(book);
                 }
 
                 foreach (var id in booksIds)
                 {
-                    if (!author.Books.Any(b => b.Id == id))
+                    if (!author.Works.Any(b => b.Id == id))
                     {
                         var book = _queries.GetBook(id);
                         if (book != null)
                         {
-                            author.Books.Add(book);
+                            author.Works.Add(book);
                         }
                     }
                 }
 
-                _commands.UpdateCreatorCollectionRelation(author, nameof(Creator.Books));
+                _commands.UpdateCreatorCollectionRelation(author, nameof(Creator.Works));
             }
         }
 

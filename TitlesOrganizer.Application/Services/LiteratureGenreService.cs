@@ -31,10 +31,10 @@ namespace TitlesOrganizer.Application.Services
             if (genre != null)
             {
                 var genreVM = _mappings.Map<Genre, GenreVM>(genre);
-                if (genre.Books != null)
+                if (genre.Works != null)
                 {
                     var paging = new Paging() { CurrentPage = booksPageNo, PageSize = booksPageSize };
-                    genreVM.Books = _mappings.Map(genre.Books, paging);
+                    genreVM.Books = _mappings.Map(genre.Works, paging);
                 }
                 else
                 {
@@ -137,27 +137,27 @@ namespace TitlesOrganizer.Application.Services
             var genre = _queries.GetLiteratureGenreWithBooks(genreId);
             if (genre != null)
             {
-                if (genre.Books == null)
+                if (genre.Works == null)
                 {
-                    genre.Books = new List<Book>();
+                    genre.Works = new List<Book>();
                 }
                 else
                 {
-                    var booksToRemove = genre.Books.Where(b => !booksIds.Contains(b.Id)).ToList();
+                    var booksToRemove = genre.Works.Where(b => !booksIds.Contains(b.Id)).ToList();
                     foreach (var book in booksToRemove)
                     {
-                        genre.Books.Remove(book);
+                        genre.Works.Remove(book);
                     }
                 }
 
                 foreach (var id in booksIds)
                 {
-                    if (!genre.Books.Any(b => b.Id == id))
+                    if (!genre.Works.Any(b => b.Id == id))
                     {
                         var book = _queries.GetBook(id);
                         if (book != null)
                         {
-                            genre.Books.Add(book);
+                            genre.Works.Add(book);
                         }
                     }
                 }

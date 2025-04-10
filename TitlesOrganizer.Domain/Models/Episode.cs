@@ -7,6 +7,7 @@ namespace TitlesOrganizer.Domain.Models
         public int Number { get; set; }
         public int? AbsoluteNumber { get; set; }
         public int SeasonId { get; set; }
+        public int? Year { get; set; }
 
         public virtual Season Season { get; set; } = null!;
     }
